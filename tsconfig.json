@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext", // 生成代码的模板标准
+    "lib": ["ESNext", "DOM"], // ts需要引入的库，即声明文件
+    "skipLibCheck": true, // 是否跳过声明文件的类型检查，这可以在编译期间以牺牲类型系统准确性为代价来节省时间
+    "removeComments": true,
+    "importHelpers": true, // 是否将辅助函数从 tslib 模块导入
+    "moduleResolution": "Node",
+    "sourceMap": true,
+    "allowImportingTsExtensions": true,
+    "forceConsistentCasingInFileNames": true, // 是否区分文件系统大小写规则
+    "allowSyntheticDefaultImports": true, // 是否允许从没有默认导出的模块中默认导入
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true, // 不生成编译后的文件
+    "jsx": "preserve",
+    "strict": false, // 是否开启严格检查模式
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["node", "vite/client"],
+    "typeRoots": ["./node_modules/@types/", "./types"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "types/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
