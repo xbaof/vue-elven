@@ -48,6 +48,7 @@
     "**/.yarn": true
   },
   "files.exclude": {
+    "**/*.bat": true,
     "**/.cache": true,
     "**/bower_components": true,
     "**/.idea": true,

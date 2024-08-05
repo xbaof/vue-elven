@@ -3,12 +3,9 @@
     <n-button @click="handleThemeChangeClick"> theme: {{ theme }} </n-button>
     <n-button @click="handleMessageTriggerClick"> message </n-button>
     <n-button @click="handleNotificationTriggerClick"> notification </n-button>
-    <n-button @click="handleDialogTriggerClick"> dialog </n-button>
     <n-button @click="handleLoadingBarTriggerClick"> loadingBar </n-button>
-    <n-button @click="handleModalTriggerClick"> modal </n-button>
   </n-space>
 </template>
-
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
 import type { ConfigProviderProps } from 'naive-ui'
