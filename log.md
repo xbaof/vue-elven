@@ -2,11 +2,7 @@
 
 进度:
 
-- 2024-08-05：完成svIcon组件
+- 2024-08-10：完成'IconPicker'图标选择器组件
+- 2024-08-05：完成'svIcon'通用图标组件
 
 遗留问题:
-
-- **Menu**: ~~左侧菜单折叠时`icon`闪烁~~
-- **icons/**: contains all skin defined icons,
-- **images/**: contains a fill general used images,
-- **dev/**: contains SVG source of the skin icons.
