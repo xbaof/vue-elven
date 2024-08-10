@@ -24,6 +24,7 @@ import {
   NTooltip,
   NAvatar,
   NTabs,
+  NTab,
   NTabPane,
   NCard,
   NRow,
@@ -66,7 +67,9 @@ import {
   NTimePicker,
   NBackTop,
   NSkeleton,
-  NCascader
+  NCascader,
+  NVirtualList,
+  NEmpty
 } from 'naive-ui'
 
 const naive = create({
@@ -94,6 +97,7 @@ const naive = create({
     NTooltip,
     NAvatar,
     NTabs,
+    NTab,
     NTabPane,
     NCard,
     NRow,
@@ -136,7 +140,9 @@ const naive = create({
     NTimePicker,
     NBackTop,
     NSkeleton,
-    NCascader
+    NCascader,
+    NVirtualList,
+    NEmpty
   ]
 })
 

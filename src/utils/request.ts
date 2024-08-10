@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios'
-import { HttpCodeEnum } from '@/enums/HttpCodeEnum'
+import { HttpCodeEnum } from '@/enums/httpCodeEnum'
 import { useAuthStore } from '@/store'
 
 const defaultConfig: CreateAxiosDefaults = {
