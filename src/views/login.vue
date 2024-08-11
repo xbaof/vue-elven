@@ -1,6 +1,6 @@
 <template>
   <div style="padding: 15px">
-    <IconPicker v-model="value" filterable clearable placeholder="选择图标" />
+    <IconPicker v-model="value" clearable placeholder="选择图标" />
   </div>
 </template>
 

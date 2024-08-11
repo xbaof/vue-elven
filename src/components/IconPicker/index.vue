@@ -128,6 +128,11 @@ const drawVirtualIcons = () => {
     Object.keys(iconData).forEach((key) => {
       iconData[key].virtualIcons = groupArray(iconData[key].icons, rowMaxIcon.value)
     })
+    nextTick(() => {
+      if (!instance.refs['dynamicList' + currentActive.value]) return
+      const virtualListInst: VirtualListInst = instance.refs['dynamicList' + currentActive.value][0]
+      virtualListInst?.scrollTo({ key: selectedIconKey.value })
+    })
   }
 }
 const groupArray = (arr: string[], groupLength: number): virtualDataRow[] => {
@@ -218,6 +223,7 @@ const rowMaxIcon = computed(() => {
 })
 // 所选图标在列表中的key
 const selectedIconKey = computed(() => {
+  if (!selectedIcon.value) return 0
   const prefix = iconData[currentActive.value].prefix
   const data = iconData[currentActive.value].virtualIcons.find((o) =>
     o.icons.includes(selectedIcon.value.replace(`${prefix}:`, ''))
@@ -252,6 +258,10 @@ onMounted(async () => {
 
     .n-tabs-pane-wrapper {
       transition: none;
+
+      .n-tab-pane {
+        padding: 0.25rem 0;
+      }
     }
 
     .list-row {
