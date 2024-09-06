@@ -41,7 +41,7 @@ const set = reactive({
   sidebarTransform: computed(() => `translate3d(-${sidebar.value.opened ? 0 : sidebar.value.sidebarWidth}px, 0, 0)`),
   classes: computed(() => {
     return {
-      collapsed: set.collapsed && layout.value !== 'horizontal',
+      collapsed: set.collapsed.value,
       mobile: device.value === 'mobile'
     }
   })
