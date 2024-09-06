@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { AuthState } from '../interface'
+import type { MenuOption } from 'naive-ui'
 import { login, getUser } from '@/api/auth'
 import { getPermission } from '@/api/system'
 import generatorDynamicRouter from '@/router/dynamicRouter'
-import { RouteRecordRaw } from 'vue-router'
 
 export const useAuthStore = defineStore({
   id: 'auth',
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore({
     getAvatar(): string {
       return this.avatar
     },
-    getMenus(): RouteRecordRaw[] {
+    getMenus(): MenuOption[] {
       return this.menus
     }
   },
@@ -33,9 +33,6 @@ export const useAuthStore = defineStore({
     // 情况token及用户信息
     resetToken() {
       this.token = ''
-      this.name = this.avatar = ''
-      this.perms = []
-      this.menus = []
     },
     /**
      *  @description：登录

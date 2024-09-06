@@ -1,7 +1,9 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 const Layout = () => import('@/layout/index.vue')
 
-// 非layout布局的路由
+/**
+ * @description 非layout布局的路由
+ */
 const outsideLayout: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -13,7 +15,9 @@ const outsideLayout: RouteRecordRaw[] = [
   }
 ]
 
-// 其他功能性路由
+/**
+ * @description 其他功能性路由
+ */
 const otherRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
@@ -51,7 +55,7 @@ export const routes: RouteRecordRaw[] = [
         path: '/index',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
-        meta: { title: '首页', icon: 'el-icon-Aim', isAffix: true, sort: 0 }
+        meta: { title: '首页', icon: 'icon-park-outline:home-two', isAffix: true, sort: 0 }
       }
     ]
   },

@@ -1,9 +1,12 @@
 <template>
   <n-icon>
-    <svg-icon />
+    <icon-component />
   </n-icon>
 </template>
 <script lang="ts" setup>
+defineOptions({
+  name: 'SvgIcon'
+})
 import { h, defineComponent, defineAsyncComponent, computed } from 'vue'
 import { Icon as Iconify, IconifyIcon } from '@iconify/vue'
 
@@ -23,7 +26,7 @@ const getSvgComponent = (icon: string) => {
   return path ? defineAsyncComponent(() => modules.value[path]()) : undefined
 }
 
-const svgIcon = defineComponent({
+const iconComponent = defineComponent({
   render() {
     if (typeof props.icon === 'string' && props.icon.startsWith('local:')) {
       const svgComponent = getSvgComponent(props.icon)

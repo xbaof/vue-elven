@@ -1,24 +1,30 @@
-import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router'
+import type { MenuOption } from 'naive-ui'
 
 export interface AppState {
+  layout: 'vertical' | 'horizontal' | 'mix'
+  device: 'mobile' | 'desktop'
+  isDark: boolean
+  overrideColor: {
+    primary: string
+    success: string
+    warning: string
+    info: string
+    error: string
+  }
   sidebar: {
+    showLogo: boolean
+    sidebarWidth: number
+    accordion: boolean
+    inverted: boolean
     opened: boolean
-    withoutAnimation: boolean
     /** 判断是否手动点击Collapse*/
     isClickCollapse: boolean
   }
-  device: string
-  size: 'default' | 'large' | 'small'
-}
-
-export interface SettingState {
-  layout: 'vertical' | 'horizontal' | 'mix'
-  showLogo: boolean
+  breadcrumb: {
+    showIcon: boolean
+    dropdown: boolean
+  }
   showTagsView: boolean
-  uniqueOpened: boolean
-  primary: string
-  theme?: 'light'
-  isUnFold: boolean
 }
 
 export interface AuthState {
@@ -29,5 +35,5 @@ export interface AuthState {
   // like [ 'sys:user:add', 'sys:user:update' ]
   perms: string[]
   /** 用来渲染菜单的路由(去掉隐藏属性的路由) */
-  menus: RouteRecordRaw[]
+  menus: MenuOption[]
 }

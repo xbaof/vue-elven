@@ -49,7 +49,7 @@ export default [
         code: 200,
         msg: '获取用户信息成功',
         success: true,
-        data: { hasUser }
+        data: hasUser
       }
     }
   },
@@ -79,7 +79,7 @@ export default [
               isHidden: false,
               linkUrl: '',
               menuType: '1',
-              icon: 'el-icon-Tools',
+              icon: 'icon-park-outline:setting-two',
               isTagsView: true,
               isAffix: true
             },
@@ -94,7 +94,7 @@ export default [
               isHidden: false,
               linkUrl: 'https://www.baidu.com',
               menuType: '1',
-              icon: 'el-icon-Tools',
+              icon: 'icon-park-outline:setting-two',
               isTagsView: false,
               isAffix: false
             },
@@ -109,7 +109,7 @@ export default [
               isHidden: false,
               menuType: '1',
               linkUrl: 'https://vitejs.cn',
-              icon: 'local-vite',
+              icon: 'local:vite',
               isTagsView: true,
               isAffix: false
             },
@@ -117,7 +117,7 @@ export default [
               menuName: '菜单嵌套',
               orderSort: 1,
               path: 'menu',
-              icon: 'el-icon-Discount',
+              icon: 'icon-park-outline:all-application',
               children: [
                 {
                   menuName: '菜单1',
@@ -129,7 +129,7 @@ export default [
                   isCache: true,
                   isHidden: false,
                   menuType: '1',
-                  icon: 'el-icon-Tools',
+                  icon: 'icon-park-outline:setting-two',
                   isTagsView: true,
                   isAffix: false,
                   children: [
@@ -143,7 +143,7 @@ export default [
                       isCache: true,
                       isHidden: false,
                       menuType: '1',
-                      icon: 'el-icon-Tools',
+                      icon: 'icon-park-outline:setting-two',
                       isTagsView: true,
                       isAffix: false
                     },
@@ -157,7 +157,7 @@ export default [
                       isCache: true,
                       isHidden: false,
                       menuType: '1',
-                      icon: 'el-icon-Tools',
+                      icon: 'icon-park-outline:setting-two',
                       isTagsView: true,
                       isAffix: false,
                       children: [
@@ -171,7 +171,7 @@ export default [
                           isCache: true,
                           isHidden: false,
                           menuType: '1',
-                          icon: 'el-icon-Tools',
+                          icon: 'icon-park-outline:setting-two',
                           isTagsView: true,
                           isAffix: false
                         }
@@ -189,7 +189,7 @@ export default [
                   isCache: true,
                   isHidden: false,
                   menuType: '1',
-                  icon: 'el-icon-Tools',
+                  icon: 'icon-park-outline:setting-two',
                   isTagsView: true,
                   isAffix: false
                 }

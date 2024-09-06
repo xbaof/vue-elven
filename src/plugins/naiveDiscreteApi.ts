@@ -1,12 +1,15 @@
 import { computed } from 'vue'
-import { createDiscreteApi, darkTheme, lightTheme, type ConfigProviderProps } from 'naive-ui'
-import { useSettingStore } from '@/store'
+import { createDiscreteApi, darkTheme, type ConfigProviderProps } from 'naive-ui'
+import { useAppStore } from '@/store'
 
 export function setupNaiveDiscreteApi() {
-  const setting = useSettingStore()
+  const app = useAppStore()
 
   const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
-    theme: setting.theme ? lightTheme : darkTheme
+    theme: app.isDark ? darkTheme : null,
+    themeOverrides: {
+      common: { ...app.getThemeOverridesCommon }
+    }
   }))
   const { message, notification, loadingBar } = createDiscreteApi(['message', 'notification', 'loadingBar'], {
     configProviderProps: configProviderPropsRef

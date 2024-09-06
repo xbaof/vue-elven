@@ -69,7 +69,10 @@ import {
   NSkeleton,
   NCascader,
   NVirtualList,
-  NEmpty
+  NEmpty,
+  NScrollbar,
+  NPopselect,
+  NColorPicker
 } from 'naive-ui'
 
 const naive = create({
@@ -142,7 +145,10 @@ const naive = create({
     NSkeleton,
     NCascader,
     NVirtualList,
-    NEmpty
+    NEmpty,
+    NScrollbar,
+    NPopselect,
+    NColorPicker
   ]
 })
 

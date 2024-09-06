@@ -2,6 +2,8 @@
   <n-select
     ref="selectRef"
     v-model:value="selectedIcon"
+    filterable
+    placeholder="选择图标"
     :options="[]"
     :on-update:show="onUpdateShow"
     :on-search="onSearch"
@@ -9,7 +11,7 @@
     :menu-props="{ class: 'icon-picker_menu' }"
   >
     <template #empty>
-      <n-tabs ref="tabsRef" v-model:value="currentActive" type="line" animated>
+      <n-tabs ref="tabsRef" v-model:value="currentActive" type="line" animated @update:value="handleUpdateValue">
         <n-tab-pane v-for="(pane, paneIndex) in tabsData" :key="paneIndex" :name="pane.name" :tab="pane.tab">
           <n-virtual-list
             v-if="iconData[pane.name].virtualIcons && iconData[pane.name].virtualIcons.length > 0"
@@ -42,6 +44,9 @@
 </template>
 
 <script lang="ts" setup>
+defineOptions({
+  name: 'IconPicker'
+})
 import { h, reactive, ref, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
 import type { VirtualListInst, SelectRenderTag } from 'naive-ui'
 import { useResizeObserver, useSessionStorage, useDebounceFn } from '@vueuse/core'
@@ -88,6 +93,15 @@ const renderSelectTag: SelectRenderTag = ({ option }) => {
       h('span', { class: 'pl5' }, [option.label as string])
     ]
   )
+}
+const handleUpdateValue = (value: string) => {
+  if (selectedIcon.value.startsWith(iconData[value].prefix)) {
+    nextTick(() => {
+      if (!instance.refs['dynamicList' + currentActive.value]) return
+      const virtualListInst: VirtualListInst = instance.refs['dynamicList' + currentActive.value][0]
+      virtualListInst?.scrollTo({ key: selectedIconKey.value })
+    })
+  }
 }
 const handleSearch = (value: string) => {
   Object.keys(iconData).forEach((key) => {

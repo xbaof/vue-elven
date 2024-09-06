@@ -1,7 +1,7 @@
 <template>
   <div />
 </template>
-<script setup lang="ts" name="Redirect">
+<script setup lang="ts">
 import { unref } from 'vue'
 import { useRouter } from 'vue-router'
 const { currentRoute, replace } = useRouter()

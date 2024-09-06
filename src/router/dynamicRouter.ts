@@ -1,7 +1,11 @@
 import type { RouteRecordRaw } from 'vue-router'
+import type { MenuOption } from 'naive-ui'
 import router, { routes } from '@/router'
-export const Iframe = () => import('@/layout/routerView/iframe.vue')
-export const NotFound = () => import('@/views/error/404.vue')
+import { h } from 'vue'
+import SvgIcon from '@/components/SvgIcon/index.vue'
+
+const Iframe = () => import('@/layout/routerView/iframe.vue')
+const NotFound = () => import('@/views/error/404.vue')
 
 const modules = import.meta.glob('/src/views/**/*.vue')
 
@@ -41,17 +45,17 @@ const filterAsyncRoute = (menus: System.Menu[], parentPaths: string[] = []): Arr
       isTagsView
     } = menu
     const route: Partial<RouteRecordRaw> = {
+      path: parentPaths.length > 0 ? `/${parentPaths.join('/')}/${path}` : `/${path}`,
       meta: {
         title: menuName,
         icon: icon
       }
     }
+
     if (menu.children?.length > 0) {
-      route.path = parentPaths.length > 0 ? `/${parentPaths.join('/')}/${path}` : `/${path}`
       route.children = filterAsyncRoute(menu.children, parentPaths.concat(path))
       route.redirect = route.children[0].path
     } else {
-      route.path = parentPaths.length > 0 ? `/${parentPaths.join('/')}/${path}` : `/${path}`
       route.name = nameCase(path)
       if (!isLink) route.component = isIframe ? Iframe : getDynamicComponent(component)
       route.meta = {
@@ -70,34 +74,44 @@ const filterAsyncRoute = (menus: System.Menu[], parentPaths: string[] = []): Arr
     return route as RouteRecordRaw
   })
 }
-const filterHideRoute = (routes: RouteRecordRaw[]): RouteRecordRaw[] => {
-  return ascending(
-    routes
-      .filter((o) => !o.meta?.isHide)
-      .map((route) => {
-        if (route.children?.length) {
-          route.children = filterHideRoute(route.children)
-        }
-        return route
-      })
-  )
+
+const filterMenuOptions = (routes: RouteRecordRaw[]): MenuOption[] => {
+  return routes.map((route) => {
+    const { path, meta } = route
+    const menuOption: Partial<MenuOption> = {
+      key: path,
+      label: meta?.title,
+      icon: meta?.icon ? () => h(SvgIcon, { icon: meta?.icon as string }) : null,
+      noTagsView: !meta?.isTagsView,
+      show: !meta?.isHide,
+      isKeepAlive: meta?.isCache,
+      isAffix: meta?.isAffix,
+      isLink: meta?.isLink,
+      linkUrl: meta?.linkUrl,
+      sort: meta?.orderSort
+    }
+    if (route.children && route.children.length > 0) {
+      menuOption.children = filterMenuOptions(route.children)
+    }
+    return menuOption
+  })
 }
 
 /**
- * 动态生成路由及菜单
+ * @description 动态生成路由并返回菜单
  */
 const generatorDynamicRouter = (asyncMenus: System.Menu[]) => {
   try {
     const asyncRoutes = filterAsyncRoute(asyncMenus)
     const layout = routes.find((item) => item.name === 'Layout')!
-    const menus = [...layout.children, ...asyncRoutes]
+    const allRoutes = [...layout.children, ...asyncRoutes]
     // 将layout路由删除
     router.removeRoute(layout.name)
-    layout.children = menus
+    layout.children = allRoutes
     // 重新添加
     router.addRoute(layout)
-    // 返回排序并过滤隐藏的路由
-    return filterHideRoute(menus)
+    // 返回排序并过滤隐藏的菜单
+    return filterMenuOptions(allRoutes)
   } catch (error) {
     console.error('生成路由时出错', error)
     return Promise.reject(`生成路由时出错: ${error}`)

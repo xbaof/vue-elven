@@ -28,42 +28,61 @@
   flex-flow: column nowrap;
 }
 
-.full {
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.wh-full {
   width: 100%;
   height: 100%;
 }
 
 /* 宽度样式 */
 @for $i from 1 through 20 {
-  .width#{$i * 5} {
+  .w-#{$i * 5} {
     width: #{$i * 5%} !important;
+  }
+}
+
+/* 高度样式 */
+@for $i from 1 through 20 {
+  .h-#{$i * 5} {
+    height: #{$i * 5%} !important;
   }
 }
 
 /* 外边距、内边距全局样式 */
 @for $i from 0 through 35 {
-  .mt#{$i} {
+  .mt-#{$i} {
     margin-top: #{$i}px !important;
   }
-  .mr#{$i} {
+  .mr-#{$i} {
     margin-right: #{$i}px !important;
   }
-  .mb#{$i} {
+  .mb-#{$i} {
     margin-bottom: #{$i}px !important;
   }
-  .ml#{$i} {
+  .ml-#{$i} {
     margin-left: #{$i}px !important;
   }
-  .pt#{$i} {
+  .pt-#{$i} {
     padding-top: #{$i}px !important;
   }
-  .pr#{$i} {
+  .pr-#{$i} {
     padding-right: #{$i}px !important;
   }
-  .pb#{$i} {
+  .pb-#{$i} {
     padding-bottom: #{$i}px !important;
   }
-  .pl#{$i} {
+  .pl-#{$i} {
     padding-left: #{$i}px !important;
   }
 }

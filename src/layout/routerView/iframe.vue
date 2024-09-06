@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 import { ref, unref, onMounted, nextTick } from 'vue'
-const loading = ref(true)
+const show = ref(true)
 const currentRoute = useRoute()
 const linkUrl = ref('')
 const frameRef = ref<HTMLElement | null>(null)
@@ -19,11 +19,11 @@ function init() {
     const _frame = iframe as any
     if (_frame.attachEvent) {
       _frame.attachEvent('onload', () => {
-        loading.value = false
+        show.value = false
       })
     } else {
       iframe.onload = () => {
-        loading.value = false
+        show.value = false
       }
     }
   })
@@ -35,9 +35,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-loading="loading" class="frame" element-loading-text="加载中...">
-    <iframe ref="frameRef" :src="linkUrl" class="frame-iframe" />
-  </div>
+  <n-spin :show="show" size="large">
+    <template #description> 加载中... </template>
+    <div class="frame">
+      <iframe ref="frameRef" :src="linkUrl" class="frame-iframe" />
+    </div>
+  </n-spin>
 </template>
 
 <style lang="scss" scoped>
