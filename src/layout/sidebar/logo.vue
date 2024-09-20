@@ -19,6 +19,7 @@ const title = computed(() => import.meta.env.VITE_GLOB_TITLE)
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  outline: none;
 
   span {
     overflow: hidden;

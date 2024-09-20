@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { createHoverColor, createPressedColor } from 'naive-ui/lib/_utils/color'
 import { AppState } from '../interface'
+import { useThemeVars } from 'naive-ui'
 
 export const useAppStore = defineStore({
   id: 'app',

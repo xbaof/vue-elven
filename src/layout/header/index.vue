@@ -1,7 +1,9 @@
 <template>
-  <div class="navbar-container">
+  <div class="navbar-container" :style="{ height }">
     <navbarLeft />
     <div class="navbar-right">
+      <!-- 菜单搜索 -->
+      <search-menu class="navbar-right-item" />
       <!-- 布局配置 -->
       <theme-mode class="navbar-right-item" />
       <!-- 布局配置 -->
@@ -12,6 +14,7 @@
       <avater />
     </div>
   </div>
+  <TagsView v-if="app.showTagsView" />
 </template>
 <script lang="ts" setup>
 defineOptions({
@@ -25,19 +28,31 @@ import Breadcrumb from './components/breadcrumb.vue'
 import Settings from './components/settings.vue'
 import Avater from './components/avater.vue'
 import ThemeMode from './components/themeMode.vue'
-import { defineComponent, h } from 'vue'
+import TagsView from './components/tagsView.vue'
+import SearchMenu from './components/searchMenu.vue'
+import { defineComponent, h, computed } from 'vue'
 import { useAppStore } from '@/store'
 const app = useAppStore()
+const height = computed(() => (app.layout === 'horizontal' && app.device === 'desktop' ? '57px' : '50px'))
 
 const navbarLeft = defineComponent({
   render() {
     return h(
       'div',
-      { class: ['navbar-left'] },
+      {
+        class: ['navbar-left']
+      },
       {
         default: () => [
           app.device === 'mobile'
-            ? h(Collapse, { iconSize: 22, class: 'navbar-right-item pl-15 pr-15', style: { width: 'auto' } })
+            ? h(Collapse, {
+                iconSize: 22,
+                class: 'navbar-right-item pl-14 pr-14',
+                style: { width: 'auto' },
+                onClick: () => {
+                  app.toggleSidebar(app.sidebar.opened)
+                }
+              })
             : app.layout === 'horizontal'
               ? [
                   app.sidebar.showLogo

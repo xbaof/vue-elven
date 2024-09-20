@@ -18,8 +18,7 @@ const getDynamicComponent = (path: string) => {
 // 首字母大写 用来生成组件Name，首字母大写后的Name要和组件name相同 不然keep-alive不生效
 const nameCase = (name: string): string => name.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 
-// 按照路由中meta下的sort升序来排序路由
-const ascending = (arr) => {
+export const ascending = (arr) => {
   arr.forEach((v) => {
     if (v?.meta?.sort === null) v.meta.sort = undefined
   })
@@ -111,7 +110,7 @@ const generatorDynamicRouter = (asyncMenus: System.Menu[]) => {
     // 重新添加
     router.addRoute(layout)
     // 返回排序并过滤隐藏的菜单
-    return filterMenuOptions(allRoutes)
+    return filterMenuOptions(ascending(allRoutes))
   } catch (error) {
     console.error('生成路由时出错', error)
     return Promise.reject(`生成路由时出错: ${error}`)

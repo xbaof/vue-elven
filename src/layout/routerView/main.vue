@@ -1,7 +1,7 @@
 <template>
   <router-view v-slot="{ Component, route }">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive>
+      <keep-alive :include="tagsView.cachedViews">
         <component :is="Component" :key="route.fullPath" />
       </keep-alive>
     </transition>
@@ -11,4 +11,6 @@
 defineOptions({
   name: 'LayoutMain'
 })
+import { useTagsViewStore } from '@/store'
+const tagsView = useTagsViewStore()
 </script>

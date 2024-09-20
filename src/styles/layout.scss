@@ -1,97 +1,92 @@
-.app-wapper {
-  display: block !important;
+.n-layout-header {
+  position: relative;
+  z-index: 1;
 
-  .n-layout-header {
-    z-index: 1;
+  $navbar-right-width: 300px;
+
+  .navbar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
     box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
 
-    $navbar-right-width: 300px;
+    --item-hover-bg-color: rgb(0 0 0 / 2.5%);
 
-    .navbar-container {
-      position: relative;
+    &.isInverted {
+      --item-hover-bg-color: hsl(0deg 0% 100% / 8%);
+    }
+
+    .navbar-left,
+    .navbar-right {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       height: 100%;
+    }
 
-      --item-hover-bg-color: rgb(0 0 0 / 2.5%);
+    .navbar-left {
+      width: calc(100% - $navbar-right-width);
+    }
 
-      &.isInverted {
-        --item-hover-bg-color: hsl(0deg 0% 100% / 8%);
-      }
+    .navbar-right {
+      justify-content: flex-end;
+      min-width: $navbar-right-width;
 
-      .navbar-left,
-      .navbar-right {
+      &-item {
         display: flex;
         align-items: center;
+        justify-content: center;
+        width: 32px;
         height: 100%;
-      }
+        font-size: 16px;
+        cursor: pointer;
 
-      .navbar-left {
-        width: calc(100% - $navbar-right-width);
-      }
+        /* 快速点击时不选中内容 */
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE/Edge */
+        user-select: none; /* 标准语法 */
+        transition: background 0.3s;
 
-      .navbar-right {
-        justify-content: flex-end;
-        min-width: $navbar-right-width;
-
-        &-item {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 32px;
-          height: 100%;
-          font-size: 16px;
-          cursor: pointer;
-
-          /* 快速点击时不选中内容 */
-          -webkit-user-select: none; /* Safari */
-          -moz-user-select: none; /* Firefox */
-          -ms-user-select: none; /* IE/Edge */
-          user-select: none; /* 标准语法 */
-          transition: background 0.3s;
-
-          &:hover {
-            background: var(--item-hover-bg-color);
-          }
+        &:hover {
+          background: var(--item-hover-bg-color);
         }
       }
     }
   }
+}
 
-  .n-layout-sider {
-    position: fixed;
-    z-index: 1001;
+.n-layout-sider {
+  z-index: 2;
+  box-shadow: 10px 0 10px -10px rgb(0 0 0 / 12%);
+  transition: all 0.3s;
+}
+
+.n-menu {
+  &.n-menu--vertical {
+    .n-menu-item-content.n-menu-item-content--collapsed.n-menu-item-content--child-active {
+      &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 2px;
+        height: 100%;
+        content: '';
+        background-color: var(--primary-color);
+      }
+    }
+  }
+
+  &.n-menu--horizontal {
     height: 100%;
-    box-shadow: 10px 0 10px -10px rgb(0 0 0 / 12%);
-    transition: all 0.3s;
-  }
 
-  .n-menu {
-    &.n-menu--vertical {
-      .n-menu-item-content.n-menu-item-content--collapsed.n-menu-item-content--child-active {
-        &::after {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 2px;
-          height: 100%;
-          content: '';
-          background-color: var(--primary-color);
-        }
-      }
-    }
+    --n-item-height: 100% !important;
 
-    &.n-menu--horizontal {
-      height: 100%;
-
-      --n-item-height: 100% !important;
-
-      .n-menu-item-content {
-        &.n-menu-item-content--selected,
-        &.n-menu-item-content--child-active {
-          border-bottom: 2px solid var(--primary-color) !important;
-        }
+    .n-menu-item-content {
+      &.n-menu-item-content--selected,
+      &.n-menu-item-content--child-active {
+        border-bottom: 2px solid var(--primary-color) !important;
       }
     }
   }

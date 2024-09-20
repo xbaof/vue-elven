@@ -1,18 +1,36 @@
 <template>
-  <n-layout ref="layoutRef" :class="['wh-full', set.classes]" content-class="app-wapper" :has-sider="set.hasSider">
-    <div v-show="device === 'mobile' && sidebar.opened" class="app-mask" @click="app.toggleSidebar(sidebar.opened)" />
+  <n-layout ref="layoutRef" class="wh-full" :has-sider="hasSider">
     <n-layout-sider
-      v-if="set.hasSider"
+      v-if="hasSider"
       :collapsed-width="58"
       :width="sidebar.sidebarWidth"
-      :collapsed="set.collapsed"
+      :collapsed="!sidebar.opened"
       :inverted="sidebar.inverted"
       content-class="flex flex-col"
       collapse-mode="width"
     >
       <vertical />
     </n-layout-sider>
-    <n-layout content-class="main-container">
+    <n-drawer
+      v-else-if="device === 'mobile'"
+      v-model:show="sidebar.opened"
+      placement="left"
+      :width="sidebar.sidebarWidth"
+    >
+      <n-layout class="wh-full" has-sider>
+        <n-layout-sider
+          :collapsed-width="58"
+          :width="sidebar.sidebarWidth"
+          :collapsed="false"
+          :inverted="sidebar.inverted"
+          content-class="flex flex-col"
+          collapse-mode="width"
+        >
+          <vertical />
+        </n-layout-sider>
+      </n-layout>
+    </n-drawer>
+    <n-layout>
       <n-layout-header :inverted="layout === 'horizontal' && sidebar.inverted && device !== 'mobile'">
         <LayoutHeader />
       </n-layout-header>
@@ -23,7 +41,7 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { ref, reactive, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResizeObserver } from '@vueuse/core'
 import LayoutMain from './routerView/main.vue'
@@ -32,24 +50,9 @@ import Vertical from './sidebar/vertical.vue'
 import { useAppStore } from '@/store'
 const app = useAppStore()
 const { device, layout, sidebar } = storeToRefs(app)
-
-const set = reactive({
-  hasSider: computed(() => layout.value !== 'horizontal' || device.value === 'mobile'),
-  headerHeight: computed(() => (layout.value === 'horizontal' && device.value === 'desktop' ? '57px' : '50px')),
-  collapsed: computed(() => !sidebar.value.opened && device.value !== 'mobile'),
-  mainLeft: computed(() => (layout.value === 'horizontal' ? '0px' : `${sidebar.value.sidebarWidth}px`)),
-  sidebarTransform: computed(() => `translate3d(-${sidebar.value.opened ? 0 : sidebar.value.sidebarWidth}px, 0, 0)`),
-  classes: computed(() => {
-    return {
-      collapsed: set.collapsed.value,
-      mobile: device.value === 'mobile'
-    }
-  })
-})
-
-const overrideColor = computed(() => app.overrideColor)
+const hasSider = computed(() => layout.value !== 'horizontal' && device.value === 'desktop')
 watchEffect(() => {
-  app.toggleOverrideColor(overrideColor.value)
+  app.toggleOverrideColor(app.overrideColor)
 })
 
 const layoutRef = ref()
@@ -67,40 +70,3 @@ useResizeObserver(layoutRef, (entries) => {
   }
 })
 </script>
-
-<style lang="scss">
-.app-mask {
-  position: absolute;
-  top: 0;
-  z-index: 999;
-  width: 100%;
-  height: 100%;
-  background: #000000;
-  opacity: 0.3;
-}
-
-.collapsed {
-  .main-container {
-    margin-left: 58px;
-  }
-}
-
-.n-layout-header {
-  height: v-bind('set.headerHeight');
-}
-
-.main-container {
-  margin-left: v-bind('set.mainLeft');
-  transition: all 0.3s;
-}
-
-.mobile {
-  .main-container {
-    margin-left: 0 !important;
-  }
-
-  .n-layout-sider {
-    transform: v-bind('set.sidebarTransform');
-  }
-}
-</style>

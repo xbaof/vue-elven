@@ -90,7 +90,7 @@ const renderSelectTag: SelectRenderTag = ({ option }) => {
         icon: option.value as string,
         size: 24
       }),
-      h('span', { class: 'pl5' }, [option.label as string])
+      h('span', { class: 'pl-5' }, [option.label as string])
     ]
   )
 }

@@ -1,4 +1,5 @@
 import type { MenuOption } from 'naive-ui'
+import { RouteLocationNormalized } from 'vue-router'
 
 export interface AppState {
   layout: 'vertical' | 'horizontal' | 'mix'
@@ -34,6 +35,14 @@ export interface AuthState {
   avatar: string
   // like [ 'sys:user:add', 'sys:user:update' ]
   perms: string[]
-  /** 用来渲染菜单的路由(去掉隐藏属性的路由) */
   menus: MenuOption[]
+}
+
+export interface TagView extends Partial<RouteLocationNormalized> {
+  title?: string
+}
+
+export interface TagsViewState {
+  visitedViews: TagView[]
+  cachedViews: string[]
 }
