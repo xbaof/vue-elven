@@ -100,7 +100,7 @@ export default [
             },
             {
               menuName: 'vite',
-              orderSort: 1,
+              orderSort: 3,
               path: 'vitejs',
               component: null,
               isIframe: true,
@@ -115,7 +115,7 @@ export default [
             },
             {
               menuName: '菜单嵌套',
-              orderSort: 1,
+              orderSort: 5,
               path: 'menu',
               icon: 'icon-park-outline:all-application',
               children: [
@@ -129,7 +129,6 @@ export default [
                   isCache: true,
                   isHidden: false,
                   menuType: '1',
-                  icon: 'icon-park-outline:setting-two',
                   isTagsView: true,
                   isAffix: false,
                   children: [
@@ -143,7 +142,6 @@ export default [
                       isCache: true,
                       isHidden: false,
                       menuType: '1',
-                      icon: 'icon-park-outline:setting-two',
                       isTagsView: true,
                       isAffix: false
                     },
@@ -157,7 +155,6 @@ export default [
                       isCache: true,
                       isHidden: false,
                       menuType: '1',
-                      icon: 'icon-park-outline:setting-two',
                       isTagsView: true,
                       isAffix: false,
                       children: [
@@ -171,7 +168,6 @@ export default [
                           isCache: true,
                           isHidden: false,
                           menuType: '1',
-                          icon: 'icon-park-outline:setting-two',
                           isTagsView: true,
                           isAffix: false
                         }
@@ -189,7 +185,40 @@ export default [
                   isCache: true,
                   isHidden: false,
                   menuType: '1',
-                  icon: 'icon-park-outline:setting-two',
+                  isTagsView: true,
+                  isAffix: false
+                }
+              ]
+            },
+            {
+              menuName: '组件',
+              orderSort: 4,
+              path: 'components',
+              icon: 'icon-park-outline:components',
+              children: [
+                {
+                  menuName: '图标',
+                  orderSort: 1,
+                  path: 'icon',
+                  component: 'components/icon/index',
+                  isIframe: false,
+                  isLink: false,
+                  isCache: true,
+                  isHidden: false,
+                  menuType: '1',
+                  isTagsView: true,
+                  isAffix: false
+                },
+                {
+                  menuName: '图标选择器',
+                  orderSort: 2,
+                  path: 'iconPicker',
+                  component: 'components/iconPicker/index',
+                  isIframe: false,
+                  isLink: false,
+                  isCache: true,
+                  isHidden: false,
+                  menuType: '1',
                   isTagsView: true,
                   isAffix: false
                 }

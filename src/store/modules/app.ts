@@ -30,8 +30,14 @@ export const useAppStore = defineStore({
       // 主题反转
       inverted: true
     },
+    // 显示Footer
+    showFooter: false,
     // 显示标签页
     showTagsView: true,
+    watermark: {
+      show: false,
+      content: 'vue-elven'
+    },
     breadcrumb: {
       // 面包屑图标
       showIcon: true,

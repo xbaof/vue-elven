@@ -12,7 +12,7 @@
     height: 100%;
     box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
 
-    --item-hover-bg-color: rgb(0 0 0 / 2.5%);
+    --item-hover-bg-color: var(--button-color-2);
 
     &.isInverted {
       --item-hover-bg-color: hsl(0deg 0% 100% / 8%);
@@ -89,5 +89,11 @@
         border-bottom: 2px solid var(--primary-color) !important;
       }
     }
+  }
+}
+
+.n-layout-content {
+  .n-scrollbar {
+    padding: 15px;
   }
 }

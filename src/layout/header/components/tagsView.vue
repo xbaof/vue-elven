@@ -1,5 +1,5 @@
 <template>
-  <n-el tag="div" class="tags-view">
+  <div class="tags-view">
     <span class="tool-prev" @click="displayX -= 200">
       <svg-icon :icon="DoubleLeft" :size="20" />
     </span>
@@ -35,7 +35,7 @@
       size="small"
       :x="left"
       :y="top"
-      :options="options"
+      :options="menuOptions"
       :show="visible"
       :on-clickoutside="
         () => {
@@ -44,7 +44,7 @@
       "
       @select="handleMenuSelect"
     />
-  </n-el>
+  </div>
 </template>
 <script lang="ts" setup>
 import DoubleLeft from '@iconify-icons/icon-park-outline/double-left'
@@ -58,11 +58,12 @@ import ToRight from '@iconify-icons/icon-park-outline/to-right'
 import Minus from '@iconify-icons/icon-park-outline/minus'
 
 import SvgIcon from '@/components/SvgIcon/index.vue'
-import { ref, unref, h, watch, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
+import { ref, unref, reactive, h, watch, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router'
 import { useTagsViewStore } from '@/store'
 import { ascending } from '@/router/dynamicRouter'
 import { useScroll, useEventListener, useResizeObserver, useDebounceFn } from '@vueuse/core'
+import type { DropdownOption } from 'naive-ui'
 import { TagView, TagsViewState } from '@/store/interface'
 
 const router = useRouter()
@@ -89,30 +90,26 @@ const displayX = computed({
   }
 })
 
-const options = computed(() => [
+const menuOptions = reactive<Array<DropdownOption>>([
   {
     label: '刷新',
     key: 'refresh',
-    icon: () => h(SvgIcon, { icon: Redo }),
-    show: selectedTag.value?.path === route.path
+    icon: () => h(SvgIcon, { icon: Redo })
   },
   {
     label: '关闭当前',
     key: 'close',
-    icon: () => h(SvgIcon, { icon: Close }),
-    show: selectedTag.value && !isAffix(selectedTag.value)
+    icon: () => h(SvgIcon, { icon: Close })
   },
   {
     label: '关闭左侧',
     key: 'closeLeft',
-    icon: () => h(SvgIcon, { icon: ToLeft }),
-    show: leftHasClose()
+    icon: () => h(SvgIcon, { icon: ToLeft })
   },
   {
     label: '关闭右侧',
     key: 'closeRight',
-    icon: () => h(SvgIcon, { icon: ToRight }),
-    show: rightHasClose()
+    icon: () => h(SvgIcon, { icon: ToRight })
   },
   {
     label: '关闭其他',
@@ -140,15 +137,6 @@ const tagOnClick = (tag: TagView) => {
   })
 }
 
-// menu
-const leftHasClose = () => {
-  const index = visitedViews.value.findIndex((v) => v.path === selectedTag.value?.path)
-  return visitedViews.value.filter((v, i) => i < index && !v?.meta?.isAffix).length > 0
-}
-const rightHasClose = () => {
-  const index = visitedViews.value.findIndex((v) => v.path === selectedTag.value?.path)
-  return visitedViews.value.filter((v, i) => i > index && !v?.meta?.isAffix).length > 0
-}
 const handleMenuSelect = async (key: string) => {
   const tag: TagView = unref(selectedTag)
   switch (key) {
@@ -156,7 +144,7 @@ const handleMenuSelect = async (key: string) => {
       {
         tagsView.delCachedView(tag)
         await nextTick()
-        const { fullPath, query } = tag
+        const { fullPath, query } = route
         router.push({
           path: '/redirect' + fullPath,
           query: query
@@ -181,10 +169,8 @@ const handleMenuSelect = async (key: string) => {
       })
       break
     case 'closeOther':
-      router.push(selectedTag.value.path)
-      tagsView.delOtherViews(selectedTag.value).then(() => {
-        //moveToCurrentTag()
-      })
+      tagOnClick(selectedTag.value)
+      tagsView.delOtherViews(selectedTag.value)
       break
     case 'closeAll':
       tagsView.delAllViews().then((res: TagsViewState) => {
@@ -199,6 +185,19 @@ const handleMenuSelect = async (key: string) => {
 const handleContextMenu = (tag: TagView, e: MouseEvent) => {
   left.value = e.clientX
   top.value = e.clientY
+  // 刷新
+  menuOptions[0].show = tag.path === route.path
+  // 关闭当前
+  menuOptions[1].show = !isAffix(tag)
+  const index = visitedViews.value.findIndex((v) => v.path === tag.path)
+  // 关闭左侧
+  menuOptions[2].show = visitedViews.value.filter((v, i) => i < index && !v?.meta?.isAffix).length > 0
+  // 关闭右侧
+  menuOptions[3].show = visitedViews.value.filter((v, i) => i > index && !v?.meta?.isAffix).length > 0
+  // 关闭其他
+  menuOptions[4].show = visitedViews.value.filter((v) => !v?.meta?.isAffix && v.path !== tag.path).length > 0
+  // 关闭全部
+  menuOptions[5].show = visitedViews.value.filter((v) => !v?.meta?.isAffix).length > 0
   visible.value = true
   selectedTag.value = tag
 }
@@ -213,7 +212,7 @@ const closeSelectedTag = (view: TagView) => {
 const toLastView = (visitedViews: TagView[], view?: TagView) => {
   const latestView = visitedViews.slice(-1)[0]
   if (latestView && latestView.path) {
-    router.push(latestView.path)
+    tagOnClick(latestView)
   } else {
     if (view.name === 'Dashboard') {
       router.replace({ path: '/redirect' + view.path })

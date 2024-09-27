@@ -1,5 +1,9 @@
 <template>
-  <div class="navbar-container" :style="{ height }">
+  <div
+    class="navbar-container"
+    :class="{ isInverted: layout === 'horizontal' && sidebar.inverted && device !== 'mobile' }"
+    :style="{ height }"
+  >
     <navbarLeft />
     <div class="navbar-right">
       <!-- 菜单搜索 -->
@@ -31,9 +35,11 @@ import ThemeMode from './components/themeMode.vue'
 import TagsView from './components/tagsView.vue'
 import SearchMenu from './components/searchMenu.vue'
 import { defineComponent, h, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/store'
 const app = useAppStore()
-const height = computed(() => (app.layout === 'horizontal' && app.device === 'desktop' ? '57px' : '50px'))
+const { device, layout, sidebar } = storeToRefs(app)
+const height = computed(() => (layout.value === 'horizontal' && device.value === 'desktop' ? '57px' : '50px'))
 
 const navbarLeft = defineComponent({
   render() {
@@ -44,7 +50,7 @@ const navbarLeft = defineComponent({
       },
       {
         default: () => [
-          app.device === 'mobile'
+          device.value === 'mobile'
             ? h(Collapse, {
                 iconSize: 22,
                 class: 'navbar-right-item pl-14 pr-14',
@@ -53,14 +59,14 @@ const navbarLeft = defineComponent({
                   app.toggleSidebar(app.sidebar.opened)
                 }
               })
-            : app.layout === 'horizontal'
+            : layout.value === 'horizontal'
               ? [
                   app.sidebar.showLogo
                     ? h(Logo, { style: { height: '100%', 'min-width': `${app.sidebar.sidebarWidth}px` } })
                     : null,
                   h(Horizontal)
                 ]
-              : app.layout === 'vertical'
+              : layout.value === 'vertical'
                 ? h(Breadcrumb, { class: 'pl-14' })
                 : h(Horizontal)
         ]

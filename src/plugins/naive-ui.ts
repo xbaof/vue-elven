@@ -72,7 +72,9 @@ import {
   NEmpty,
   NScrollbar,
   NPopselect,
-  NColorPicker
+  NColorPicker,
+  NInfiniteScroll,
+  NWatermark
 } from 'naive-ui'
 
 const naive = create({
@@ -148,7 +150,9 @@ const naive = create({
     NEmpty,
     NScrollbar,
     NPopselect,
-    NColorPicker
+    NColorPicker,
+    NInfiniteScroll,
+    NWatermark
   ]
 })
 

@@ -21,11 +21,16 @@ export interface AppState {
     /** 判断是否手动点击Collapse*/
     isClickCollapse: boolean
   }
+  showFooter: boolean
+  showTagsView: boolean
+  watermark: {
+    show: boolean
+    content: string
+  }
   breadcrumb: {
     showIcon: boolean
     dropdown: boolean
   }
-  showTagsView: boolean
 }
 
 export interface AuthState {

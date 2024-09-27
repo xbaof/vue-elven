@@ -39,6 +39,7 @@
             @click="handleClick(item)"
           >
             <component :is="item.icon" v-if="item.icon" class="list-item-icon" />
+            <div v-else class="list-item-icon" />
             <span class="list-item-text">{{ item.label }}</span>
             <svg class="list-item-enter" width="20" height="20" viewBox="0 0 20 20">
               <g stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
@@ -257,14 +258,6 @@ onKeyStroke('ArrowDown', handleDown)
 .search {
   width: 560px;
   border-radius: 8px;
-
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--n-scrollbar-color);
-
-    &:hover {
-      background-color: var(--n-scrollbar-color-hover);
-    }
-  }
 
   &.isMobile {
     position: fixed;

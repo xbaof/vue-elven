@@ -61,10 +61,15 @@ a:hover {
 }
 
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
+  background-color: rgb(144 147 153 / 30%);
   border-radius: 2px;
+
+  &:hover {
+    background-color: rgb(144 147 153 / 50%);
+  }
 }

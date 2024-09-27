@@ -37,7 +37,7 @@
               :show-alpha="false"
               :swatches="swatches"
               size="small"
-              class="w-40"
+              class="w-45"
             />
           </div>
           <div class="item">
@@ -47,7 +47,7 @@
               :show-alpha="false"
               :swatches="swatches"
               size="small"
-              class="w-40"
+              class="w-45"
             />
           </div>
           <div class="item">
@@ -57,7 +57,7 @@
               :show-alpha="false"
               :swatches="swatches"
               size="small"
-              class="w-40"
+              class="w-45"
             />
           </div>
           <div class="item">
@@ -67,7 +67,7 @@
               :show-alpha="false"
               :swatches="swatches"
               size="small"
-              class="w-40"
+              class="w-45"
             />
           </div>
           <div class="item">
@@ -77,7 +77,7 @@
               :show-alpha="false"
               :swatches="swatches"
               size="small"
-              class="w-40"
+              class="w-45"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@
         <div class="configuration">
           <div class="item">
             <span>侧边栏宽度</span>
-            <n-input-number v-model:value="sidebar.sidebarWidth" size="small" class="w-40" />
+            <n-input-number v-model:value="sidebar.sidebarWidth" size="small" class="w-45" />
           </div>
           <div class="item">
             <span>深色侧边栏</span>
@@ -104,6 +104,10 @@
             <n-switch v-model:value="showTagsView" />
           </div>
           <div class="item">
+            <span>显示底部</span>
+            <n-switch v-model:value="showFooter" />
+          </div>
+          <div class="item">
             <span>显示 Logo</span>
             <n-switch v-model:value="sidebar.showLogo" />
           </div>
@@ -114,6 +118,14 @@
           <div class="item">
             <span>显示面包屑图标</span>
             <n-switch v-model:value="breadcrumb.showIcon" />
+          </div>
+          <div class="item">
+            <span>显示水印</span>
+            <n-switch v-model:value="watermark.show" />
+          </div>
+          <div class="item">
+            <span>水印内容</span>
+            <n-input v-model:value="watermark.content" size="small" class="w-45" />
           </div>
         </div>
       </n-drawer-content>
@@ -128,20 +140,26 @@ import { useAppStore } from '@/store'
 import Theme from '@iconify-icons/icon-park-outline/theme'
 
 const app = useAppStore()
-const { layout, sidebar, breadcrumb, showTagsView, overrideColor } = storeToRefs(app)
+const { layout, sidebar, breadcrumb, showTagsView, showFooter, overrideColor, watermark } = storeToRefs(app)
 
 const show = ref(false)
 const swatches = [
+  '#f56c6c',
+  '#F77234',
+  '#FF7D00',
+  '#e6a23c',
+  '#FADC19',
+  '#9FDB1D',
+  '#67C23A',
+  '#00B42A',
+  '#14C9C9',
+  '#3491FA',
   '#409eff',
-  '#13C2C2',
-  '#6959CD',
-  '#bd6758',
-  '#f47920',
-  '#F5222D',
-  '#2e3a1f',
-  '#b2d235',
-  '#6a6da9',
-  '#867892'
+  '#165DFF',
+  '#722ED1',
+  '#D91AD9',
+  '#F5319D',
+  '#909399'
 ]
 </script>
 
