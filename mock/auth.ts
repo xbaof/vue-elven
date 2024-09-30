@@ -208,19 +208,6 @@ export default [
                   menuType: '1',
                   isTagsView: true,
                   isAffix: false
-                },
-                {
-                  menuName: '图标选择器',
-                  orderSort: 2,
-                  path: 'iconPicker',
-                  component: 'components/iconPicker/index',
-                  isIframe: false,
-                  isLink: false,
-                  isCache: true,
-                  isHidden: false,
-                  menuType: '1',
-                  isTagsView: true,
-                  isAffix: false
                 }
               ]
             }

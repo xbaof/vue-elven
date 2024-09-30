@@ -1,5 +1,12 @@
 <template>
-  <n-space vertical :size="15">
+  <n-space vertical :size="15" class="main-content">
+    <n-card size="small" :segmented="{ content: true }">
+      <template #header>
+        <p>图标选择器</p>
+        <span class="describe"> 基于 n-select 和 n-virtual-list 封装，支持 IconPark 和本地 SVG 图标 </span>
+      </template>
+      <IconPicker v-model="val" clearable placeholder="输入关键词搜索" />
+    </n-card>
     <n-card title="" size="small" :segmented="{ content: true }">
       <template #header>
         <p>IconPark 示例</p>
@@ -160,8 +167,10 @@ import Cylinder from '@iconify-icons/icon-park-outline/cylinder'
 import Display from '@iconify-icons/icon-park-outline/display'
 import Dndless from '@iconify-icons/icon-park-outline/endless'
 import DrrorPrompt from '@iconify-icons/icon-park-outline/error-prompt'
+import { ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useMessage } from 'naive-ui'
+import IconPicker from '@/components/IconPicker/index.vue'
 
 const message = useMessage()
 const { copy, isSupported } = useClipboard()
@@ -172,6 +181,7 @@ const handleCopy = async (icon: string) => {
     message.success(`复制成功：${text}`)
   }
 }
+const val = ref(null)
 </script>
 <style scoped>
 .describe {

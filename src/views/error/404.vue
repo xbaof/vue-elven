@@ -1,6 +1,5 @@
 <template>
-  <div>
+  <div class="main-content">
     <h1>404</h1>
-    <div v-for="i in 100" :key="i">{{ i }}</div>
   </div>
 </template>

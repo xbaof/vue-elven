@@ -93,7 +93,9 @@
 }
 
 .n-layout-content {
-  .n-scrollbar {
-    padding: 15px;
+  .n-scrollbar .n-scrollbar-content {
+    .main-content {
+      padding: 15px;
+    }
   }
 }
