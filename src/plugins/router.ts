@@ -2,6 +2,6 @@ import type { App } from 'vue'
 import router from '../router'
 import '../router/routerGuard'
 
-export function setRouter(app: App<Element>) {
+export function setupRouter(app: App<Element>) {
   app.use(router)
 }

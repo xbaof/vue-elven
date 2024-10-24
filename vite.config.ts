@@ -6,6 +6,9 @@ import eslintPlugin from 'vite-plugin-eslint'
 import viteCompression from 'vite-plugin-compression'
 import viteSvgLoader from 'vite-svg-loader'
 import { viteMockServe } from 'vite-plugin-mock'
+import { ELV_APP } from './src/enums/cacheEnum'
+import defaultState from './src/store/modules/app/defaultState'
+import { darkTheme, lightTheme } from 'naive-ui'
 
 // https://vitejs.dev/config/
 export default ({ command, mode }: ConfigEnv): UserConfig => {
@@ -26,9 +29,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         deleteOriginFile: true // 源文件压缩后是否删除
       }),
       createHtmlPlugin({
+        minify: mode === 'production',
         inject: {
           data: {
-            title: env.VITE_GLOB_TITLE
+            AppStorageKey: ELV_APP,
+            DarkBgColor: darkTheme.common.bodyColor,
+            LightBgColor: lightTheme.common.bodyColor,
+            DefaultPrimary: defaultState().overrideColor.primary
           }
         }
       }),
@@ -92,9 +99,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           // 每个node_modules模块分成一个js文件
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
-              return env.VITE_CHECK ? id.toString().split('node_modules/.pnpm/')[1].split('/')[0].toString() : 'vendor'
+              return id.toString().split('node_modules/.pnpm/')[1].split('/')[0].toString()
             }
-            return undefined
           },
           // 用于从入口点创建的块的打包输出格式[name]表示文件名,[hash]表示该文件内容hash值
           entryFileNames: 'assets/js/[name].[hash].js', // 用于命名代码拆分时创建的共享块的输出命名

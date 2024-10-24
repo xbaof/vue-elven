@@ -67,7 +67,7 @@ const navbarLeft = defineComponent({
                   h(Horizontal)
                 ]
               : layout.value === 'vertical'
-                ? h(Breadcrumb, { class: 'pl-14' })
+                ? h(Breadcrumb, { class: 'ml-14' })
                 : h(Horizontal)
         ]
       }

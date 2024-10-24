@@ -74,7 +74,8 @@ import {
   NPopselect,
   NColorPicker,
   NInfiniteScroll,
-  NWatermark
+  NWatermark,
+  NGlobalStyle
 } from 'naive-ui'
 
 const naive = create({
@@ -152,7 +153,8 @@ const naive = create({
     NPopselect,
     NColorPicker,
     NInfiniteScroll,
-    NWatermark
+    NWatermark,
+    NGlobalStyle
   ]
 })
 

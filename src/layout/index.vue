@@ -1,5 +1,11 @@
 <template>
-  <n-layout ref="layoutRef" class="wh-full" :has-sider="hasSider" content-class="flex">
+  <n-layout
+    ref="layoutRef"
+    class="wh-full"
+    :has-sider="hasSider"
+    content-class="flex"
+    content-style="position: relative"
+  >
     <n-layout-sider
       v-if="hasSider"
       :collapsed-width="58"
@@ -45,7 +51,7 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useResizeObserver } from '@vueuse/core'
 import LayoutMain from './routerView/main.vue'

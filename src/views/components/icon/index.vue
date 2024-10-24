@@ -176,7 +176,7 @@ const message = useMessage()
 const { copy, isSupported } = useClipboard()
 const handleCopy = async (icon: string) => {
   if (isSupported.value) {
-    const text = `<svg-icon :size="30" :icon="${icon}" />`
+    const text = `<svg-icon :size="30" ${icon.startsWith('local:') ? '' : ':'}icon="${icon}" />`
     await copy(text)
     message.success(`复制成功：${text}`)
   }

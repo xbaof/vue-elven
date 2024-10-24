@@ -10,6 +10,7 @@
         </n-message-provider>
       </n-notification-provider>
     </n-dialog-provider>
+    <n-global-style />
   </n-config-provider>
 </template>
 <script lang="ts" setup>

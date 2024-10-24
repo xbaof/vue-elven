@@ -95,7 +95,7 @@ const renderSelectTag: SelectRenderTag = ({ option }) => {
   )
 }
 const handleUpdateValue = (value: string) => {
-  if (selectedIcon.value.startsWith(iconData[value].prefix)) {
+  if (selectedIcon.value && selectedIcon.value.startsWith(iconData[value].prefix)) {
     nextTick(() => {
       if (!instance.refs['dynamicList' + currentActive.value]) return
       const virtualListInst: VirtualListInst = instance.refs['dynamicList' + currentActive.value][0]

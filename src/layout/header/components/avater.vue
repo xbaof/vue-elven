@@ -1,6 +1,6 @@
 <template>
   <n-dropdown show-arrow :options="options" @select="handleSelect">
-    <div class="avatar-wrapper pr-14">
+    <div class="avatar-wrapper mr-14">
       <n-avatar :size="38" :src="auth.getAvatar" />
       <svg-icon icon="local:drop-down" size="11" />
     </div>

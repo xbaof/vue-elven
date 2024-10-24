@@ -4,10 +4,101 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title> %VITE_GLOB_TITLE% </title>
+    <script>
+      window.process = {}
+    </script>
   </head>
+
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+        }
+
+        .loader {
+          display: flex;
+          justify-content: center;
+          height: 100vh;
+          width: 100vw;
+          align-items: center;
+          font-size: 10px;
+        }
+
+        .spinner {
+          position: relative;
+          width: 3.5em;
+          height: 3.5em;
+          perspective: 7em;
+        }
+
+        .spinner div {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          left: 50%;
+          transform-origin: left;
+          animation: spinner-animation 2s infinite;
+        }
+
+        .spinner div:nth-child(1) {
+          animation-delay: 0.15s;
+        }
+
+        .spinner div:nth-child(2) {
+          animation-delay: 0.3s;
+        }
+
+        .spinner div:nth-child(3) {
+          animation-delay: 0.45s;
+        }
+
+        .spinner div:nth-child(4) {
+          animation-delay: 0.6s;
+        }
+
+        .spinner div:nth-child(5) {
+          animation-delay: 0.75s;
+        }
+
+        @keyframes spinner-animation {
+          0% {
+            transform: rotateY(0deg);
+          }
+
+          50%,
+          80% {
+            transform: rotateY(-180deg);
+          }
+
+          90%,
+          100% {
+            opacity: 0;
+            transform: rotateY(-180deg);
+          }
+        }
+      </style>
+      <div class="loader">
+        <div class="spinner">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      <script>
+        const locaApp = JSON.parse(localStorage.getItem('<%=AppStorageKey%>') || '{}')
+        document.querySelector('.loader').style.backgroundColor = locaApp?.isDark
+          ? '<%=DarkBgColor%>'
+          : '<%=LightBgColor%>'
+        document.querySelectorAll('.spinner div').forEach((o) => {
+          o.style.background = locaApp?.overrideColor?.primary || '<%=DefaultPrimary%>'
+        })
+      </script>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

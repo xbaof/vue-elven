@@ -210,6 +210,27 @@ export default [
                   isAffix: false
                 }
               ]
+            },
+            {
+              menuName: '功能',
+              orderSort: 6,
+              path: 'fun',
+              icon: 'icon-park-outline:bytedance-mini-app',
+              children: [
+                {
+                  menuName: '自定义指令',
+                  orderSort: 1,
+                  path: 'directive',
+                  component: 'fun/directives/index',
+                  isIframe: false,
+                  isLink: false,
+                  isCache: true,
+                  isHidden: false,
+                  menuType: '1',
+                  isTagsView: true,
+                  isAffix: false
+                }
+              ]
             }
           ]
         }

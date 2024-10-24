@@ -4,6 +4,7 @@ import type { MenuOption } from 'naive-ui'
 import { login, getUser } from '@/api/auth'
 import { getPermission } from '@/api/system'
 import generatorDynamicRouter from '@/router/dynamicRouter'
+import { ELV_AUTH } from '@/enums/cacheEnum'
 
 export const useAuthStore = defineStore({
   id: 'auth',
@@ -70,6 +71,7 @@ export const useAuthStore = defineStore({
     }
   },
   persist: {
+    key: ELV_AUTH,
     storage: localStorage,
     paths: ['token']
   }

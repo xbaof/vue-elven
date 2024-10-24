@@ -1,16 +1,18 @@
 import type { App } from 'vue'
-import { setPinia } from './pinia'
+import { setupPinia } from './pinia'
 import { setupNaive } from './naive-ui'
 import { setupNaiveDiscreteApi } from './naiveDiscreteApi'
-import { setRouter } from './router'
-import { setSvgIcon } from './svgIcon'
+import { setupRouter } from './router'
+import { setupCustomComponents } from './customComponents'
+import { setupDirectives } from './directives'
 
 export default {
   install(app: App<Element>) {
-    setPinia(app)
+    setupPinia(app)
     setupNaive(app)
     setupNaiveDiscreteApi()
-    setRouter(app)
-    setSvgIcon(app)
+    setupRouter(app)
+    setupCustomComponents(app)
+    setupDirectives(app)
   }
 }
