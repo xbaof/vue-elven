@@ -27,8 +27,11 @@ const defaultState = (): AppState => ({
   },
   // 显示Footer
   showFooter: false,
-  // 显示标签页
-  showTagsView: true,
+  // 标签页
+  tagsView: {
+    show: true,
+    fullScreen: false
+  },
   watermark: {
     show: false,
     content: 'vue-elven'

@@ -13,12 +13,12 @@
       <!-- 布局配置 -->
       <settings class="navbar-right-item" />
       <!-- 全屏 -->
-      <screenfull class="navbar-right-item" />
+      <full-screen class="navbar-right-item" />
       <!-- 头像菜单 -->
       <avater />
     </div>
   </div>
-  <TagsView v-if="app.showTagsView" />
+  <TagsView v-if="app.tagsView.show" />
 </template>
 <script lang="ts" setup>
 defineOptions({
@@ -27,7 +27,7 @@ defineOptions({
 import Logo from '../sidebar/logo.vue'
 import Collapse from '../sidebar/collapse.vue'
 import Horizontal from '../sidebar/horizontal.vue'
-import Screenfull from './components/screenfull.vue'
+import FullScreen from './components/fullScreen.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import Settings from './components/settings.vue'
 import Avater from './components/avater.vue'

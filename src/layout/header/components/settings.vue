@@ -101,7 +101,7 @@
           </div>
           <div class="item">
             <span>显示标签页</span>
-            <n-switch v-model:value="showTagsView" />
+            <n-switch v-model:value="tagsView.show" />
           </div>
           <div class="item">
             <span>显示底部</span>
@@ -140,7 +140,7 @@ import { useAppStore } from '@/store'
 import Theme from '@iconify-icons/icon-park-outline/theme'
 
 const app = useAppStore()
-const { layout, sidebar, breadcrumb, showTagsView, showFooter, overrideColor, watermark } = storeToRefs(app)
+const { layout, sidebar, breadcrumb, tagsView, showFooter, overrideColor, watermark } = storeToRefs(app)
 
 const show = ref(false)
 const swatches = [

@@ -22,7 +22,10 @@ export interface AppState {
     isClickCollapse: boolean
   }
   showFooter: boolean
-  showTagsView: boolean
+  tagsView: {
+    show: boolean
+    fullScreen: boolean
+  }
   watermark: {
     show: boolean
     content: string

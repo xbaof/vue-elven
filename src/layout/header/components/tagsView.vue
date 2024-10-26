@@ -56,17 +56,19 @@ import CloseOne from '@iconify-icons/icon-park-outline/close-one'
 import ToLeft from '@iconify-icons/icon-park-outline/to-left'
 import ToRight from '@iconify-icons/icon-park-outline/to-right'
 import Minus from '@iconify-icons/icon-park-outline/minus'
+import FullScreen from '@iconify-icons/icon-park-outline/full-screen'
 
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { ref, unref, reactive, h, watch, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router'
-import { useTagsViewStore } from '@/store'
+import { useTagsViewStore, useAppStore } from '@/store'
 import { ascending } from '@/router/dynamicRouter'
 import { useScroll, useEventListener, useResizeObserver, useDebounceFn } from '@vueuse/core'
 import type { DropdownOption } from 'naive-ui'
 import { TagView, TagsViewState } from '@/store/interface'
 
 const router = useRouter()
+const app = useAppStore()
 const tagsView = useTagsViewStore()
 const visitedViews = computed<TagView[]>(() => ascending(tagsView.visitedViews))
 const instance = getCurrentInstance()
@@ -120,6 +122,11 @@ const menuOptions = reactive<Array<DropdownOption>>([
     label: '关闭全部',
     key: 'closeAll',
     icon: () => h(SvgIcon, { icon: Minus })
+  },
+  {
+    label: '全屏当前页',
+    key: 'fullScreen',
+    icon: () => h(SvgIcon, { icon: FullScreen })
   }
 ])
 
@@ -176,6 +183,10 @@ const handleMenuSelect = async (key: string) => {
       tagsView.delAllViews().then((res: TagsViewState) => {
         toLastView(res.visitedViews, tag)
       })
+      break
+    case 'fullScreen':
+      tagOnClick(selectedTag.value)
+      app.tagsView.fullScreen = true
       break
     default:
       break

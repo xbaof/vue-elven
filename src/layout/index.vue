@@ -7,6 +7,7 @@
     content-style="position: relative"
   >
     <n-layout-sider
+      v-show="!tagsView.fullScreen"
       v-if="hasSider"
       :collapsed-width="58"
       :width="sidebar.sidebarWidth"
@@ -37,12 +38,16 @@
       </n-layout>
     </n-drawer>
     <n-layout content-class="flex flex-col">
-      <n-layout-header :inverted="layout === 'horizontal' && sidebar.inverted && device !== 'mobile'">
+      <n-layout-header
+        v-show="!tagsView.fullScreen"
+        :inverted="layout === 'horizontal' && sidebar.inverted && device !== 'mobile'"
+      >
         <LayoutHeader />
       </n-layout-header>
       <n-layout-content embedded :native-scrollbar="false">
         <LayoutMain />
         <n-back-top />
+        <CloseFull />
       </n-layout-content>
       <n-layout-footer v-if="showFooter">
         <LayoutFooter />
@@ -56,11 +61,12 @@ import { storeToRefs } from 'pinia'
 import { useResizeObserver } from '@vueuse/core'
 import LayoutMain from './routerView/main.vue'
 import LayoutHeader from './header/index.vue'
+import CloseFull from './header/components/closeFull.vue'
 import LayoutFooter from './footer/index.vue'
 import Vertical from './sidebar/vertical.vue'
 import { useAppStore } from '@/store'
 const app = useAppStore()
-const { device, layout, sidebar, showFooter } = storeToRefs(app)
+const { device, layout, sidebar, showFooter, tagsView } = storeToRefs(app)
 const hasSider = computed(() => layout.value !== 'horizontal' && device.value === 'desktop')
 watchEffect(() => {
   app.toggleOverrideColor(app.overrideColor)
