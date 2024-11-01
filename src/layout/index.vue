@@ -44,14 +44,12 @@
       >
         <LayoutHeader />
       </n-layout-header>
-      <n-layout-content embedded :native-scrollbar="false">
+      <n-layout-content content-class="layout-scrollbar-content" embedded :native-scrollbar="false">
         <LayoutMain />
         <n-back-top />
         <CloseFull />
+        <Footer v-if="showFooter" />
       </n-layout-content>
-      <n-layout-footer v-if="showFooter">
-        <LayoutFooter />
-      </n-layout-footer>
     </n-layout>
   </n-layout>
 </template>
@@ -62,7 +60,7 @@ import { useResizeObserver } from '@vueuse/core'
 import LayoutMain from './routerView/main.vue'
 import LayoutHeader from './header/index.vue'
 import CloseFull from './header/components/closeFull.vue'
-import LayoutFooter from './footer/index.vue'
+import Footer from './footer/index.vue'
 import Vertical from './sidebar/vertical.vue'
 import { useAppStore } from '@/store'
 const app = useAppStore()
