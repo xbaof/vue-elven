@@ -66,6 +66,7 @@ const filterAsyncRoute = (menus: System.Menu[], parentPaths: string[] = []): Arr
           isAffix: isAffix,
           isLink: isLink,
           linkUrl: linkUrl,
+          isIframe: isIframe,
           sort: orderSort
         }
       }

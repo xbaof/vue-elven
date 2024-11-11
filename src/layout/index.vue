@@ -48,14 +48,15 @@
         <LayoutMain />
         <n-back-top />
         <CloseFull />
-        <Footer v-if="showFooter" />
+        <Footer v-if="isShowFooter" />
       </n-layout-content>
     </n-layout>
   </n-layout>
 </template>
 <script setup lang="ts">
-import { ref, computed, watchEffect, onMounted } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 import { useResizeObserver } from '@vueuse/core'
 import LayoutMain from './routerView/main.vue'
 import LayoutHeader from './header/index.vue'
@@ -69,7 +70,10 @@ const hasSider = computed(() => layout.value !== 'horizontal' && device.value ==
 watchEffect(() => {
   app.toggleOverrideColor(app.overrideColor)
 })
-
+const route = useRoute()
+const isShowFooter = computed(() => {
+  return showFooter.value && !route.meta.isIframe
+})
 const layoutRef = ref()
 useResizeObserver(layoutRef, (entries) => {
   const entry = entries[0]
