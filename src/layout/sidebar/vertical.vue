@@ -39,7 +39,7 @@ const menuOptions = computed(() => {
 })
 const route = useRoute()
 const router = useRouter()
-const activeMenu = computed(() => route.path)
+const activeMenu = computed(() => route.meta?.activePath || route.path)
 const menuRef = ref(null)
 watch(route, async () => {
   await nextTick()

@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { openLink } from '@/utils'
+import { openLink, getTagViewTitle } from '@/utils'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useAppStore } from '@/store'
 import { storeToRefs } from 'pinia'
@@ -51,7 +51,9 @@ const generator = (routerMaps) => {
 
 const breadcrumbs = computed(() => {
   const matcheds = route.matched.filter((o) => o.meta && o.meta.title && !o.meta.noTagsView)
-  return generator(matcheds)
+  const breadcrumbList = generator(matcheds)
+  if (breadcrumbList.length > 0) breadcrumbList[breadcrumbList.length - 1].label = getTagViewTitle(route)
+  return breadcrumbList
 })
 const handleLink = (_key, option) => {
   if (option?.isLink) {

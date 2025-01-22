@@ -1,15 +1,15 @@
 <template>
   <div class="tags-view">
-    <span class="tool-prev" @click="displayX -= 200">
+    <span v-show="showTool" class="tool-prev" @click="displayX -= 200">
       <svg-icon :icon="DoubleLeft" :size="20" />
     </span>
-    <div ref="scrollbarRef" class="scroll-container">
+    <div ref="scrollbarRef" class="scroll-container" :class="{ 'ml-10 mr-10': !showTool }">
       <div ref="tabRef" class="tab">
         <span
           v-for="(tag, index) in visitedViews"
           :ref="'dynamic' + index"
           :key="index"
-          :class="{ active: tag.path === route.path }"
+          :class="{ active: isActive(tag), 'mr-5': index == visitedViews.length - 1 }"
           class="tags-view-item"
           @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
           @click="tagOnClick(tag)"
@@ -25,7 +25,7 @@
         </span>
       </div>
     </div>
-    <span class="tool-next" @click="displayX += 200">
+    <span v-show="showTool" class="tool-next" @click="displayX += 200">
       <svg-icon :icon="DoubleRight" :size="20" />
     </span>
     <n-dropdown
@@ -62,6 +62,7 @@ import SvgIcon from '@/components/SvgIcon/index.vue'
 import { ref, unref, reactive, h, watch, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { useRoute, useRouter, RouteRecordRaw } from 'vue-router'
 import { useTagsViewStore, useAppStore } from '@/store'
+import { isPathAndQueryEqual } from '@/store/modules/tagsView'
 import { ascending } from '@/router/dynamicRouter'
 import { useScroll, useEventListener, useResizeObserver, useDebounceFn } from '@vueuse/core'
 import type { DropdownOption } from 'naive-ui'
@@ -70,11 +71,12 @@ import { TagView, TagsViewState } from '@/store/interface'
 const router = useRouter()
 const app = useAppStore()
 const tagsView = useTagsViewStore()
-const visitedViews = computed<TagView[]>(() => ascending(tagsView.visitedViews))
+const visitedViews = computed<TagView[]>(() => tagsView.visitedViews as TagView[])
 const instance = getCurrentInstance()
 const routes = computed<RouteRecordRaw[]>(() => router.getRoutes())
 const route = useRoute()
 
+const showTool = ref(false)
 const visible = ref(false)
 const left = ref(0)
 const top = ref(0)
@@ -131,7 +133,7 @@ const menuOptions = reactive<Array<DropdownOption>>([
 ])
 
 const isActive = (tag: TagView) => {
-  return tag.path === route.path
+  return isPathAndQueryEqual(tag, route)
 }
 const isAffix = (tag: TagView) => {
   return tag.meta && tag.meta.isAffix
@@ -163,14 +165,14 @@ const handleMenuSelect = async (key: string) => {
       break
     case 'closeLeft':
       tagsView.delLeftViews(tag).then((res: TagsViewState) => {
-        if (!res.visitedViews.find((o) => o.path === route.path)) {
+        if (!res.visitedViews.find((o) => isActive(o))) {
           toLastView(res.visitedViews, tag)
         }
       })
       break
     case 'closeRight':
       tagsView.delRightViews(tag).then((res: TagsViewState) => {
-        if (!res.visitedViews.find((o) => o.path === route.path)) {
+        if (!res.visitedViews.find((o) => isActive(o))) {
           toLastView(res.visitedViews, tag)
         }
       })
@@ -197,10 +199,10 @@ const handleContextMenu = (tag: TagView, e: MouseEvent) => {
   left.value = e.clientX
   top.value = e.clientY
   // 刷新
-  menuOptions[0].show = tag.path === route.path
+  menuOptions[0].show = isActive(tag)
   // 关闭当前
   menuOptions[1].show = !isAffix(tag)
-  const index = visitedViews.value.findIndex((v) => v.path === tag.path)
+  const index = visitedViews.value.findIndex((v) => isActive(tag))
   // 关闭左侧
   menuOptions[2].show = visitedViews.value.filter((v, i) => i < index && !v?.meta?.isAffix).length > 0
   // 关闭右侧
@@ -233,9 +235,7 @@ const toLastView = (visitedViews: TagView[], view?: TagView) => {
   }
 }
 const dynamicTagView = () => {
-  const index = visitedViews.value.findIndex((item) => {
-    return item.path === route.path
-  })
+  const index = visitedViews.value.findIndex((item) => isActive(item))
   moveToTarget(index)
 }
 const moveToTarget = (index: number) => {
@@ -244,35 +244,48 @@ const moveToTarget = (index: number) => {
     if (!instance.refs['dynamic' + index]) return
     const tabItemEl = instance.refs['dynamic' + index][0]
     const tabItemElOffsetLeft = (tabItemEl as HTMLElement)?.offsetLeft
+    // tag宽度
     const tabItemOffsetWidth = (tabItemEl as HTMLElement)?.offsetWidth
     // 标签页导航栏可视长度（不包含溢出部分）
     const scrollbarRefWidth = scrollbarRef.value ? scrollbarRef.value?.offsetWidth : 0
     // 已有标签页总长度（包含溢出部分）
     const tabRefWidth = tabRef.value ? tabRef.value?.offsetWidth : 0
+    if (scrollbarRefWidth <= tabRefWidth !== showTool.value) {
+      showTool.value = scrollbarRefWidth <= tabRefWidth
+      moveToTarget(index)
+      return
+    }
     if (tabRefWidth < scrollbarRefWidth || tabItemElOffsetLeft === 0) {
       displayX.value = 0
     } else if (tabItemElOffsetLeft < displayX.value) {
       // 标签在可视区域左侧
       displayX.value = tabItemElOffsetLeft - tabNavPadding
     } else if (
-      tabItemElOffsetLeft + tabItemOffsetWidth > scrollbarRefWidth + displayX.value &&
+      tabItemElOffsetLeft + tabItemOffsetWidth < scrollbarRefWidth + displayX.value &&
       tabItemElOffsetLeft > displayX.value
     ) {
+      displayX.value = Math.max(
+        displayX.value,
+        tabItemOffsetWidth + tabItemElOffsetLeft + tabNavPadding - scrollbarRefWidth
+      )
+    } else {
       // 标签在可视区域右侧
       displayX.value = tabItemElOffsetLeft - (scrollbarRefWidth - tabNavPadding - tabItemOffsetWidth)
     }
   })
 }
 const initTags = () => {
-  const tags: TagView[] = routes.value
-    .filter((route) => route.meta && route.meta.isAffix)
-    .map((route) => {
-      return {
-        path: route.path,
-        name: route.name,
-        meta: { ...route.meta }
-      }
-    })
+  const tags: TagView[] = ascending(
+    routes.value
+      .filter((route) => route.meta && route.meta.isAffix)
+      .map((route) => {
+        return {
+          path: route.path,
+          name: route.name,
+          meta: { ...route.meta }
+        }
+      })
+  )
 
   for (const tag of tags) {
     if (tag.name) {
@@ -283,6 +296,7 @@ const initTags = () => {
 watch(
   route,
   () => {
+    if (tagsView.visitedViews.length === 0) initTags()
     if (route.name) {
       tagsView.addView(route)
     }
@@ -302,7 +316,6 @@ watch(
   }
 )
 onMounted(() => {
-  initTags()
   useResizeObserver(
     scrollbarRef,
     useDebounceFn(() => {
@@ -418,11 +431,11 @@ onMounted(() => {
     .tab {
       display: flex;
       align-items: center;
+      float: left;
       height: 100%;
       overflow: visible;
       white-space: nowrap;
       list-style: none;
-      transition: transform 0.5s ease-in-out;
     }
   }
 }

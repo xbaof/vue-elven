@@ -15,59 +15,64 @@ const getDynamicComponent = (path: string) => {
   if (!component) return NotFound
   return component
 }
+
 // 首字母大写 用来生成组件Name，首字母大写后的Name要和组件name相同 不然keep-alive不生效
 const nameCase = (name: string): string => name.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 
 export const ascending = (arr) => {
-  arr.forEach((v) => {
-    if (v?.meta?.sort === null) v.meta.sort = undefined
+  arr.forEach((v, index) => {
+    if (v?.meta?.sort === null) v.meta.sort = index + 2
   })
   return arr.sort((a, b) => {
     return a?.meta?.sort - b?.meta?.sort
   })
 }
 
-const filterAsyncRoute = (menus: System.Menu[], parentPaths: string[] = []): Array<RouteRecordRaw> => {
+const filterAsyncRoute = (menus: System.Menu[]): Array<RouteRecordRaw> => {
   return menus.map((menu) => {
     const {
-      path,
-      component,
+      menuType,
       menuName,
+      name,
+      path,
+      activePath,
+      component,
       icon,
       orderSort,
-      isLink,
       isAffix,
       isHidden,
       isCache,
       linkUrl,
-      isIframe,
       isTagsView
     } = menu
     const route: Partial<RouteRecordRaw> = {
-      path: parentPaths.length > 0 ? `/${parentPaths.join('/')}/${path}` : `/${path}`,
+      path: path.charAt(0) !== '/' ? `/${path}` : path,
       meta: {
         title: menuName,
-        icon: icon
+        icon,
+        sort: orderSort
       }
     }
 
     if (menu.children?.length > 0) {
-      route.children = filterAsyncRoute(menu.children, parentPaths.concat(path))
+      route.children = filterAsyncRoute(menu.children)
       route.redirect = route.children[0].path
     } else {
-      route.name = nameCase(path)
+      route.name = nameCase(name)
+      const isLink = menuType === '2'
+      const isIframe = menuType === '1'
       if (!isLink) route.component = isIframe ? Iframe : getDynamicComponent(component)
       route.meta = {
         ...route.meta,
         ...{
+          activePath,
           noTagsView: !isTagsView,
-          isHide: isHidden,
+          isHidden,
           isKeepAlive: isCache,
-          isAffix: isAffix,
-          isLink: isLink,
-          linkUrl: linkUrl,
-          isIframe: isIframe,
-          sort: orderSort
+          isAffix,
+          isLink,
+          linkUrl,
+          isIframe
         }
       }
     }
@@ -82,16 +87,16 @@ const filterMenuOptions = (routes: RouteRecordRaw[]): MenuOption[] => {
       key: path,
       label: meta?.title,
       icon: meta?.icon ? () => h(SvgIcon, { icon: meta?.icon as string }) : null,
-      noTagsView: !meta?.isTagsView,
-      show: !meta?.isHide,
-      isKeepAlive: meta?.isCache,
+      noTagsView: meta?.noTagsView,
+      isKeepAlive: meta?.isKeepAlive,
       isAffix: meta?.isAffix,
       isLink: meta?.isLink,
       linkUrl: meta?.linkUrl,
-      sort: meta?.orderSort
+      sort: meta?.sort
     }
-    if (route.children && route.children.length > 0) {
-      menuOption.children = filterMenuOptions(route.children)
+    const showChild = (route.children || []).filter((o) => !o.meta?.isHidden)
+    if (showChild?.length > 0) {
+      menuOption.children = filterMenuOptions(showChild)
     }
     return menuOption
   })
@@ -104,14 +109,14 @@ const generatorDynamicRouter = (asyncMenus: System.Menu[]) => {
   try {
     const asyncRoutes = filterAsyncRoute(asyncMenus)
     const layout = routes.find((item) => item.name === 'Layout')!
-    const allRoutes = [...layout.children, ...asyncRoutes]
+    const allRoutes = ascending([...layout.children, ...asyncRoutes])
     // 将layout路由删除
     router.removeRoute(layout.name)
     layout.children = allRoutes
     // 重新添加
     router.addRoute(layout)
     // 返回排序并过滤隐藏的菜单
-    return filterMenuOptions(ascending(allRoutes))
+    return filterMenuOptions(allRoutes.filter((o) => !o.meta?.isHidden))
   } catch (error) {
     console.error('生成路由时出错', error)
     return Promise.reject(`生成路由时出错: ${error}`)

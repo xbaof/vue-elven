@@ -4,22 +4,20 @@ declare namespace System {
     parentId?: number
     menuName?: string
     orderSort: number
+    name?: string
     /** 路由地址 */
     path?: string
     /** 组件路径 */
     component?: string
-    /** 是否内嵌 */
-    isIframe: boolean
-    // 是否为外链页面
-    isLink?: boolean
     /** 是否缓存 */
     isCache: boolean
     /** 是否隐藏 */
     isHidden: boolean
-    /** 类型 '0': 目录 | '1': 菜单 | '2': 权限 */
-    menuType: '0' | '1' | '2'
+    /** 类型 '0': 菜单 | '1': 内嵌 | '2': 外链 | '3': 按钮*/
+    menuType: '0' | '1' | '2' | '3'
     /** 状态 '0': 正常 | '1': 停用  */
     status: '0' | '1'
+    activePath?: string
     icon?: string
     /** 是否在tag中显示 */
     isTagsView: boolean

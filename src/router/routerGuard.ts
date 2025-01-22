@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
           .then(() => {
             if (!router.hasRoute(to.name)) {
               if (to.path === '/404' && to.redirectedFrom !== undefined) {
-                next({ path: to.redirectedFrom?.fullPath, replace: true })
+                next({ path: to.redirectedFrom?.fullPath, replace: true, query: to.query })
               } else {
                 next({ ...to, replace: true })
               }

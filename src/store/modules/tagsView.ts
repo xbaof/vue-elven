@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
+import { getTagViewTitle } from '@/utils'
+import { isObjectValueEqual } from '@/utils'
 import { TagsViewState, TagView } from '../interface'
+
+export const isPathAndQueryEqual = (a: TagView, b: TagView) =>
+  decodeURI(a.path) === decodeURI(b.path) && isObjectValueEqual(a?.query || {}, b?.query || {})
 
 export const useTagsViewStore = defineStore({
   id: 'tagsView',
@@ -12,25 +17,17 @@ export const useTagsViewStore = defineStore({
       if (view.meta.noTagsView) {
         return
       }
-      if (this.visitedViews.some((v) => v.path === view.path)) {
-        return
-      }
       if (view.meta.isLink) {
         return
       }
-      if (view.meta && view.meta.isAffix) {
-        this.visitedViews.unshift(
-          Object.assign({}, view, {
-            title: view.meta?.title || 'no-name'
-          })
-        )
-      } else {
-        this.visitedViews.push(
-          Object.assign({}, view, {
-            title: view.meta?.title || 'no-name'
-          })
-        )
+      if (this.visitedViews.some((v) => isPathAndQueryEqual(v, view))) {
+        return
       }
+      this.visitedViews.push(
+        Object.assign({}, view, {
+          title: getTagViewTitle(view)
+        })
+      )
     },
     addCachedView(view: TagView) {
       if (this.cachedViews.includes(view.name)) {
@@ -43,7 +40,7 @@ export const useTagsViewStore = defineStore({
     delVisitedView(view: TagView) {
       return new Promise((resolve) => {
         for (const [i, v] of this.visitedViews.entries()) {
-          if (v.path === view.path) {
+          if (isPathAndQueryEqual(v, view)) {
             this.visitedViews.splice(i, 1)
             break
           }
@@ -61,7 +58,7 @@ export const useTagsViewStore = defineStore({
     delOtherVisitedViews(view: TagView) {
       return new Promise((resolve) => {
         this.visitedViews = this.visitedViews.filter((v) => {
-          return v.meta?.isAffix || v.path === view.path
+          return v.meta?.isAffix || isPathAndQueryEqual(v, view)
         })
         resolve([...this.visitedViews])
       })
@@ -79,7 +76,7 @@ export const useTagsViewStore = defineStore({
     },
     updateVisitedView(view: TagView) {
       for (let v of this.visitedViews) {
-        if (v.path === view.path) {
+        if (isPathAndQueryEqual(v, view)) {
           v = Object.assign(v, view)
           break
         }
@@ -101,7 +98,7 @@ export const useTagsViewStore = defineStore({
     },
     delLeftViews(view: TagView) {
       return new Promise((resolve) => {
-        const currIndex = this.visitedViews.findIndex((v) => v.path === view.path)
+        const currIndex = this.visitedViews.findIndex((v) => isPathAndQueryEqual(v, view))
         if (currIndex === -1) {
           return
         }
@@ -117,7 +114,7 @@ export const useTagsViewStore = defineStore({
     },
     delRightViews(view: TagView) {
       return new Promise((resolve) => {
-        const currIndex = this.visitedViews.findIndex((v) => v.path === view.path)
+        const currIndex = this.visitedViews.findIndex((v) => isPathAndQueryEqual(v, view))
         if (currIndex === -1) {
           return
         }

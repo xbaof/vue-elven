@@ -39,7 +39,7 @@ const route = useRoute()
 const router = useRouter()
 const activeMenu = computed(() => {
   if (app.layout === 'horizontal') {
-    return route.path
+    return route.meta?.activePath || route.path
   }
   return route.matched[1].path
 })

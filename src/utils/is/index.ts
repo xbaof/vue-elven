@@ -125,3 +125,20 @@ export function isNullOrUnDef(val: unknown): val is null | undefined {
 export function isUrl(path: string) {
   return /^(https?|ftp|mailto|tel):/.test(path)
 }
+
+/** 空数组 | 空字符串 | 空对象 | 空Map | 空Set */
+export function isEmpty(val) {
+  if (isArray(val) || isString(val)) {
+    return val.length === 0
+  }
+
+  if (val instanceof Map || val instanceof Set) {
+    return val.size === 0
+  }
+
+  if (isObject(val)) {
+    return Object.keys(val).length === 0
+  }
+
+  return false
+}

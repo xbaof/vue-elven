@@ -10,7 +10,7 @@ const outsideLayout: RouteRecordRaw[] = [
     component: () => import('@/views/login.vue'),
     meta: {
       title: '登录',
-      isHide: true
+      isHidden: true
     }
   }
 ]
@@ -22,7 +22,7 @@ const otherRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
     component: Layout,
-    meta: { title: 'redirect', noTagsView: true, isHide: true },
+    meta: { title: 'redirect', noTagsView: true },
     children: [
       {
         path: '/redirect/:path(.*)',
