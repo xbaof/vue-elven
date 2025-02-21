@@ -68,7 +68,7 @@ const app = useAppStore()
 const { device, layout, sidebar, showFooter, tagsView } = storeToRefs(app)
 const hasSider = computed(() => layout.value !== 'horizontal' && device.value === 'desktop')
 watchEffect(() => {
-  app.toggleOverrideColor(app.overrideColor)
+  app.toggleTheme(app.overrideColor)
 })
 const route = useRoute()
 const isShowFooter = computed(() => {

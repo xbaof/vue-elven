@@ -78,7 +78,8 @@
       <n-list-item>
         <n-button
           v-longpress="
-            () => {
+            (evt) => {
+              console.log('PointerEvent：', evt)
               msg.success('长按了1000毫秒')
             }
           "

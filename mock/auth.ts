@@ -1,23 +1,4 @@
-function createUserList() {
-  return [
-    {
-      id: 1,
-      avatar: null,
-      userName: 'admin',
-      password: '123456',
-      nickName: '平台管理员',
-      token: 'Admin Token'
-    },
-    {
-      id: 2,
-      avatar: null,
-      userName: 'system',
-      password: '123456',
-      nickName: '系统管理员',
-      token: 'System Token'
-    }
-  ]
-}
+import { createUserList } from './user'
 
 export default [
   {
@@ -255,6 +236,18 @@ export default [
                   name: 'directive',
                   path: '/fun/directive',
                   component: 'fun/directives/index',
+                  isCache: true,
+                  isHidden: false,
+                  menuType: '0',
+                  isTagsView: true,
+                  isAffix: false
+                },
+                {
+                  menuName: '富文本编辑器',
+                  orderSort: 2,
+                  name: 'wangeditor',
+                  path: '/fun/wangeditor',
+                  component: 'fun/wangeditor/index',
                   isCache: true,
                   isHidden: false,
                   menuType: '0',

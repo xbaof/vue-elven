@@ -1,29 +1,19 @@
-import { useEventListener } from '@vueuse/core'
+import { onLongPress } from '@vueuse/core'
 import { Directive, type DirectiveBinding } from 'vue'
 import { isFunction } from '@/utils/is'
 
 export const longpress: Directive = {
-  mounted(el: HTMLElement, binding: DirectiveBinding<Function>) {
+  mounted(el: HTMLElement, binding: DirectiveBinding<(evt: PointerEvent) => void>) {
     const { arg, value } = binding
+
     if (isFunction(value)) {
-      const milliseconds = arg ? Number(arg) : 1000
-      let timer = null
-      const clear = () => {
-        if (clear) {
-          clearTimeout(timer)
-          timer = null
+      const delay = arg ? Number(arg) : 1000
+      onLongPress(el, value, {
+        delay,
+        modifiers: {
+          stop: true
         }
-      }
-      const onDown = (ev: PointerEvent) => {
-        clear()
-        ev.preventDefault()
-        if (timer === null) {
-          timer = setTimeout(() => value(), milliseconds)
-        }
-      }
-      useEventListener(el, 'pointerdown', onDown)
-      useEventListener(el, 'pointerup', clear)
-      useEventListener(el, 'pointerleave', clear)
+      })
     } else {
       throw new Error('Directive: longpress: callback must be a function')
     }

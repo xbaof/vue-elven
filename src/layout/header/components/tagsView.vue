@@ -300,7 +300,7 @@ watch(
     if (route.name) {
       tagsView.addView(route)
     }
-    dynamicTagView()
+    if (!app.tagsView.fullScreen) dynamicTagView()
   },
   {
     //初始化立即执行

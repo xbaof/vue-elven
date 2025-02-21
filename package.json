@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.11.1",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.7.7",
     "pinia": "^2.2.2",
     "pinia-plugin-persistedstate": "^3.2.3",

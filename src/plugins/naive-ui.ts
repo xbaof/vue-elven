@@ -76,7 +76,8 @@ import {
   NColorPicker,
   NInfiniteScroll,
   NWatermark,
-  NGlobalStyle
+  NGlobalStyle,
+  NText
 } from 'naive-ui'
 
 const naive = create({
@@ -156,7 +157,8 @@ const naive = create({
     NColorPicker,
     NInfiniteScroll,
     NWatermark,
-    NGlobalStyle
+    NGlobalStyle,
+    NText
   ]
 })
 

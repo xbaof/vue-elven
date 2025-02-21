@@ -30,13 +30,10 @@ export const useAppStore = defineStore({
         this.sidebar.isClickCollapse = opened
       }
     },
-    toggleOverrideColor(colors: {
-      primary?: string
-      success?: string
-      warning?: string
-      info?: string
-      error?: string
-    }) {
+    toggleTheme(colors: { primary?: string; success?: string; warning?: string; info?: string; error?: string }) {
+      const html = document.documentElement as HTMLElement
+      if (this.isDark) html.classList.add('dark')
+      else html.classList.remove('dark')
       Object.keys(colors).forEach((key) => {
         this.overrideColor[key] = colors[key]
         document.body.style.setProperty(`--${key}-color`, colors[key])

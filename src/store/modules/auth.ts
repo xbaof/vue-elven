@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { AuthState } from '../interface'
 import type { MenuOption } from 'naive-ui'
-import { login, getUser } from '@/api/auth'
-import { getPermission } from '@/api/system'
 import generatorDynamicRouter from '@/router/dynamicRouter'
 import { ELV_AUTH } from '@/enums/cacheEnum'
+import { LoginParam, login, getPermission } from '@/api/system/auth'
+import { getUser } from '@/api/system/user'
 
 export const useAuthStore = defineStore({
   id: 'auth',
@@ -38,7 +38,7 @@ export const useAuthStore = defineStore({
     /**
      *  @description：登录
      */
-    login(params: Login.LoginParam) {
+    login(params: LoginParam) {
       return new Promise((resolve, reject) => {
         login(params)
           .then((res) => {
