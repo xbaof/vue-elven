@@ -174,7 +174,7 @@ const flatMenus = (arr: MenuOption[], parentLabel?): MenuOption[] => {
 }
 
 // @ts-ignore
-const menuAllList = flatMenus(auth.menus.filter((o) => o.show))
+const menuAllList = flatMenus(auth.menus)
 
 // 点击跳转
 const handleClick = async (option: MenuOption) => {

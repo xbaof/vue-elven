@@ -5,7 +5,6 @@
   $navbar-right-width: 300px;
 
   .navbar-container {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -92,18 +91,34 @@
   }
 }
 
-.n-layout-content {
-  .layout-scrollbar-content {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
+.layout-main-scrollbar {
+  overflow: hidden;
+  background-color: transparent;
 
-    .main-content {
-      margin: 15px;
+  .n-layout-content {
+    height: var(--layout-content-height);
+    transition: transform 0.3s var(--n-bezier);
+
+    &.layout-content-fullScreen {
+      position: fixed;
+      z-index: 9;
+      width: 100vw;
+      height: 100vh;
+      transform: translate(calc(var(--sidebar-width) * -1), calc(var(--header-height) * -1));
     }
 
-    .footer-wrapper {
-      margin-top: auto;
+    .layout-content-scrollbar {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+
+      .main-content {
+        margin: 15px;
+      }
+
+      .footer-wrapper {
+        margin-top: auto;
+      }
     }
   }
 }

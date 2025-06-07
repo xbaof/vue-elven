@@ -1,13 +1,13 @@
 <template>
   <n-dropdown show-arrow :options="options" @select="handleSelect">
     <div class="avatar-wrapper mr-14">
-      <n-avatar :size="38" :src="auth.getAvatar" />
+      <n-avatar :size="38" :src="avatarSrc" />
       <svg-icon icon="local:drop-down" size="11" />
     </div>
   </n-dropdown>
 </template>
 <script lang="ts" setup>
-import { reactive, h } from 'vue'
+import { reactive, computed, h } from 'vue'
 import { useDialog } from 'naive-ui'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import People from '@iconify-icons/icon-park-outline/people'
@@ -15,6 +15,7 @@ import Logout from '@iconify-icons/icon-park-outline/logout'
 import { useAuthStore } from '@/store'
 const auth = useAuthStore()
 const dialog = useDialog()
+const avatarSrc = computed(() => auth.getAvatar ?? '/src/assets/images/default_avatar.png')
 const sleep = () => new Promise((resolve) => setTimeout(resolve, 150))
 const options = reactive([
   {

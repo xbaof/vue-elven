@@ -51,6 +51,7 @@ import {
   NSelect,
   NRadioGroup,
   NRadio,
+  NRadioButton,
   NSteps,
   NStep,
   NInputGroup,
@@ -77,7 +78,9 @@ import {
   NInfiniteScroll,
   NWatermark,
   NGlobalStyle,
-  NText
+  NText,
+  NFlex,
+  NImage
 } from 'naive-ui'
 
 const naive = create({
@@ -132,6 +135,7 @@ const naive = create({
     NSelect,
     NRadioGroup,
     NRadio,
+    NRadioButton,
     NSteps,
     NStep,
     NInputGroup,
@@ -158,7 +162,9 @@ const naive = create({
     NInfiniteScroll,
     NWatermark,
     NGlobalStyle,
-    NText
+    NText,
+    NFlex,
+    NImage
   ]
 })
 

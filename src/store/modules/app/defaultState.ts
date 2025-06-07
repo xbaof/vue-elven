@@ -23,7 +23,7 @@ const defaultState = (): AppState => ({
     // 菜单手风琴
     accordion: true,
     // 主题反转
-    inverted: true
+    inverted: false
   },
   // 显示Footer
   showFooter: false,

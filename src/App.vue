@@ -23,6 +23,9 @@ const themeOverrides = computed(() => {
   return {
     common: {
       ...app.getThemeOverridesCommon
+    },
+    Tooltip: {
+      padding: '4px 8px'
     }
   } as GlobalThemeOverrides
 })

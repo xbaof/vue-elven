@@ -1,5 +1,5 @@
 <template>
-  <n-space vertical :size="15" class="main-content">
+  <n-flex vertical :size="15" class="main-content">
     <n-list bordered>
       <n-list-item>
         <n-thing title="详情页" description="params传参" />
@@ -8,7 +8,7 @@
         <p class="pt-10 pb-10">当前页面参数为：{{ parameter }}</p>
       </n-list-item>
     </n-list>
-  </n-space>
+  </n-flex>
 </template>
 
 <script setup lang="ts">

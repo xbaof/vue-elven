@@ -1,5 +1,5 @@
 <template>
-  <n-space vertical :size="15" class="main-content">
+  <n-flex vertical :size="15" class="main-content">
     <n-list bordered>
       <n-list-item>
         <n-thing title="图标选择器" description="基于 n-select 和 n-virtual-list 封装，支持 IconPark 和本地 SVG 图标" />
@@ -139,7 +139,7 @@
         </n-grid>
       </n-list-item>
     </n-list>
-  </n-space>
+  </n-flex>
 </template>
 <script lang="ts" setup>
 defineOptions({

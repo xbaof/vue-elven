@@ -140,6 +140,7 @@ const isAffix = (tag: TagView) => {
 }
 const tagOnClick = (tag: TagView) => {
   const { query, path } = tag
+  if (isActive(tag)) return
   router.push({
     path,
     query

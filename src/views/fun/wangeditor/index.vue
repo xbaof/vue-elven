@@ -1,5 +1,5 @@
 <template>
-  <n-space vertical :size="15" class="main-content">
+  <n-flex vertical :size="15" class="main-content">
     <n-list bordered>
       <n-list-item>
         <n-thing title="富文本编辑器" />
@@ -12,7 +12,7 @@
         </n-form>
       </n-list-item>
     </n-list>
-  </n-space>
+  </n-flex>
 </template>
 <script lang="ts" setup>
 defineOptions({

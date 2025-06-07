@@ -61,7 +61,7 @@ export const useAuthStore = defineStore({
         const { perms, menus } = permission.data
         this.name = userName
         this.nickName = nickName
-        this.avatar = avatar ?? (await import('@/assets/images/avatar.png')).default
+        this.avatar = avatar
         this.perms = perms
         this.menus = generatorDynamicRouter(menus)
         return Promise.resolve(this.menus)

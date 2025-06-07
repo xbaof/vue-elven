@@ -1,11 +1,11 @@
 <template>
-  <n-space vertical :size="15" class="main-content">
+  <n-flex vertical :size="15" class="main-content">
     <n-list bordered>
       <n-list-item>
         <n-thing title="标签页操作" />
       </n-list-item>
       <n-list-item>
-        <n-space>
+        <n-flex>
           <n-button @click="handleClick('refresh')">
             <template #icon>
               <svg-icon :icon="Redo" />
@@ -48,7 +48,7 @@
             </template>
             全屏当前页
           </n-button>
-        </n-space>
+        </n-flex>
       </n-list-item>
     </n-list>
     <n-list bordered>
@@ -57,17 +57,17 @@
       </n-list-item>
       <n-list-item>
         <n-thing title="标签页标题">
-          <n-space :size="15">
+          <n-flex :size="15">
             <n-input v-model:value="title" style="width: 320px" />
             <n-button @click="handleQuery(1)">打开页面1（query传参） </n-button>
             <n-button @click="handleQuery(2)">打开页面2（query传参） </n-button>
             <n-button @click="handleParams(1)"> 打开页面1（params传参） </n-button>
             <n-button @click="handleParams(2)"> 打开页面2（params传参） </n-button>
-          </n-space>
+          </n-flex>
         </n-thing>
       </n-list-item>
     </n-list>
-  </n-space>
+  </n-flex>
 </template>
 <script lang="ts" setup>
 defineOptions({

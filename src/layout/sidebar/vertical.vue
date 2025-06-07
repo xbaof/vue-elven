@@ -77,7 +77,6 @@ watchEffect(() => {
 }
 
 .collapse {
-  width: 100%;
   height: 40px;
   box-shadow: 0 0 6px -3px var(--n-text-color);
 

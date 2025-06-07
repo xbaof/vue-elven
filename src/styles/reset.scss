@@ -9,7 +9,8 @@ html {
 }
 
 body {
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', SimSun, sans-serif;
+  font-family:
+    'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', SimSun, sans-serif !important;
   font-feature-settings: 'tnum', 'tnum';
   font-variant: tabular-nums;
   word-wrap: break-word;

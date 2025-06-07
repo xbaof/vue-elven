@@ -18,7 +18,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     base: env.VITE_PUBLIC_PATH,
     root,
     plugins: [
-      vue(),
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith('cropper-')
+          }
+        }
+      }),
       eslintPlugin(),
       viteCompression({
         verbose: true, // 是否在控制台中输出压缩结果

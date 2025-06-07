@@ -220,6 +220,18 @@ export default [
                   isTagsView: true,
                   isAffix: false,
                   activePath: '/tags'
+                },
+                {
+                  menuName: '图片裁剪',
+                  orderSort: 5,
+                  name: 'cropperDemo',
+                  path: '/cropperDemo',
+                  component: 'components/cropper/index',
+                  isCache: true,
+                  isHidden: false,
+                  menuType: '0',
+                  isTagsView: true,
+                  isAffix: false
                 }
               ]
             },
