@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { Menu } from './menu'
+import type { Menu } from './menu'
 
 export interface LoginParam {
   userName: string

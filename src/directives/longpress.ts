@@ -1,5 +1,5 @@
 import { onLongPress } from '@vueuse/core'
-import { Directive, type DirectiveBinding } from 'vue'
+import type { Directive, DirectiveBinding } from 'vue'
 import { isFunction } from '@/utils/is'
 
 export const longpress: Directive = {

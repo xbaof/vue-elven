@@ -1,7 +1,7 @@
 /**
  * 响应码枚举
  */
-export enum HttpCodeEnum {
+export enum StatusCodeEnum {
   // 成功
   SUCCESS = 200,
   // 未登录

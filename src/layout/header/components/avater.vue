@@ -36,7 +36,6 @@ const options = reactive([
 const handleSelect = (key: string) => {
   switch (key) {
     case 'logout':
-      // eslint-disable-next-line no-case-declarations
       const d = dialog.warning({
         title: '提示',
         content: '此操作将退出登录, 是否继续?',

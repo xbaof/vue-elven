@@ -1,5 +1,5 @@
 import type { MenuOption } from 'naive-ui'
-import { RouteLocationNormalized } from 'vue-router'
+import type { RouteLocationNormalized } from 'vue-router'
 
 export interface AppState {
   layout: 'vertical' | 'horizontal' | 'mix'

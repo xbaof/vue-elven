@@ -5,7 +5,7 @@
         <n-thing title="详情页" description="params传参" />
       </n-list-item>
       <n-list-item>
-        <p class="pt-10 pb-10">当前页面参数为：{{ parameter }}</p>
+        <p class="pt-10 pb-10"> 当前页面参数为：{{ parameter }} </p>
       </n-list-item>
     </n-list>
   </n-flex>

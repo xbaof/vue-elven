@@ -1,5 +1,5 @@
 import { useEventListener, useClipboard } from '@vueuse/core'
-import { Directive, type DirectiveBinding } from 'vue'
+import type { Directive, DirectiveBinding } from 'vue'
 
 interface ClipEl extends HTMLElement {
   clipValue: string

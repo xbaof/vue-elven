@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia'
-import { AuthState } from '../interface'
+import type { AuthState } from '../interface'
 import type { MenuOption } from 'naive-ui'
 import generatorDynamicRouter from '@/router/dynamicRouter'
 import { ELV_AUTH } from '@/enums/cacheEnum'
-import { LoginParam, login, getPermission } from '@/api/system/auth'
+import { type LoginParam, login, getPermission } from '@/api/system/auth'
 import { getUser } from '@/api/system/user'
+import { createEncryptedSerializer } from '@/utils/crypto'
 
-export const useAuthStore = defineStore({
-  id: 'auth',
+export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     token: '',
     name: '',
@@ -73,6 +73,7 @@ export const useAuthStore = defineStore({
   persist: {
     key: ELV_AUTH,
     storage: localStorage,
-    paths: ['token']
+    pick: ['token'],
+    serializer: createEncryptedSerializer()
   }
 })

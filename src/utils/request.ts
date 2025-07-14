@@ -1,5 +1,11 @@
-import axios, { AxiosInstance, CreateAxiosDefaults, InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios'
-import { HttpCodeEnum } from '@/enums/httpCodeEnum'
+import axios, {
+  type AxiosInstance,
+  type CreateAxiosDefaults,
+  type InternalAxiosRequestConfig,
+  type AxiosError,
+  type AxiosResponse
+} from 'axios'
+import { StatusCodeEnum } from '@/enums/httpEnum'
 import { useAuthStore } from '@/store'
 
 const defaultConfig: CreateAxiosDefaults = {
@@ -36,8 +42,8 @@ class HttpRequest {
     this.service.interceptors.response.use(
       (response: AxiosResponse) => {
         const data = response.data
-        const statusCode = data.code || HttpCodeEnum.INTERNAL_SERVER_ERROR
-        if (statusCode !== HttpCodeEnum.SUCCESS) {
+        const statusCode = data.code || StatusCodeEnum.INTERNAL_SERVER_ERROR
+        if (statusCode !== StatusCodeEnum.SUCCESS) {
           window.$message.error(data.msg || '未知错误，请重试')
           return Promise.reject(data)
         }
@@ -51,16 +57,16 @@ class HttpRequest {
         if (response) {
           switch (response.status) {
             // 未登录
-            case HttpCodeEnum.UNAUTHORIZED:
+            case StatusCodeEnum.UNAUTHORIZED:
               window.$message.error('401令牌失效。刷新token等情况 待完善')
               break
-            case HttpCodeEnum.FORBIDDEN:
+            case StatusCodeEnum.FORBIDDEN:
               window.$message.error('很抱歉，您的访问权限等级不够，请联系管理员!')
               break
-            case HttpCodeEnum.NOT_FOUND:
+            case StatusCodeEnum.NOT_FOUND:
               window.$message.error('你所访问的资源不存在!')
               break
-            case HttpCodeEnum.INTERNAL_SERVER_ERROR:
+            case StatusCodeEnum.INTERNAL_SERVER_ERROR:
               window.$message.error('系统内部错误!')
               break
             default:

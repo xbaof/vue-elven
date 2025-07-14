@@ -358,12 +358,12 @@ onMounted(() => {
       width: 14px;
       height: 14px;
       font-style: normal;
+      vertical-align: -0.15em;
       color: var(--icon-color-hover);
       text-align: center;
-      vertical-align: -0.15em;
       border-radius: 50%;
-      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       transform-origin: 100% 50%;
+      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 
       &:hover {
         color: #ffffff !important;
@@ -430,9 +430,9 @@ onMounted(() => {
     white-space: nowrap;
 
     .tab {
+      float: left;
       display: flex;
       align-items: center;
-      float: left;
       height: 100%;
       overflow: visible;
       white-space: nowrap;

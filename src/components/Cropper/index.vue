@@ -202,7 +202,6 @@ const handleChange = (e) => {
   }
 }
 onMounted(async () => {
-  debugger
   await nextTick()
   imageRef.value?.$ready(() => {
     toolbars[0].action()

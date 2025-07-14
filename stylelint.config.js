@@ -1,5 +1,5 @@
 // @see https://stylelint.bootcss.com/
-module.exports = {
+export default {
   extends: [
     'stylelint-config-standard',
     'stylelint-config-html/vue',
@@ -17,7 +17,18 @@ module.exports = {
       customSyntax: 'postcss-scss'
     }
   ],
-  ignoreFiles: ['**/*.js', '**/*.jsx', '**/*.tsx', '**/*.ts', '**/*.json', '**/*.md', '**/*.yaml'],
+  ignoreFiles: [
+    '**/*.js',
+    '**/*.jsx',
+    '**/*.tsx',
+    '**/*.ts',
+    '**/*.json',
+    '**/*.md',
+    '**/*.yaml',
+    'dist/**',
+    'node_modules/**',
+    'public/**'
+  ],
   /*
    * null  => 关闭该规则
    * always => 必须

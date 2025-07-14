@@ -1,6 +1,6 @@
 import { useEventListener, useDebounceFn, useThrottleFn } from '@vueuse/core'
 import { isFunction } from '@/utils/is'
-import { Directive, type DirectiveBinding } from 'vue'
+import type { Directive, DirectiveBinding } from 'vue'
 
 export interface OptimizeOptions {
   /** 事件名 */

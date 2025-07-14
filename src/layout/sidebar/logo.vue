@@ -46,8 +46,8 @@ const title = computed(() => import.meta.env.VITE_GLOB_TITLE)
   &.has-title {
     span {
       width: auto;
-      transition: transform 0.4s ease-in-out;
       transform: scale(1);
+      transition: transform 0.4s ease-in-out;
     }
   }
 }

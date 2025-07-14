@@ -1,4 +1,4 @@
-import { TagView } from '@/store/interface'
+import type { TagView } from '@/store/interface'
 
 /**
  * @description 创建超链接
@@ -9,8 +9,7 @@ export function openLink(href: string, target: '_blank' | '_self' | '_parent' | 
   const n = document.createElement('a')
   n.setAttribute('href', href)
   n.setAttribute('target', target)
-  n.setAttribute('rel', 'noreferrer noopener'), n.setAttribute('id', 'external')
-  const r = document.getElementById('external')
+  n.setAttribute('rel', 'noreferrer noopener')
   document.body.appendChild(n)
   n.click()
   n.remove()

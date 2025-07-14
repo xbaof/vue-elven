@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
 import { getTagViewTitle } from '@/utils'
 import { isObjectValueEqual } from '@/utils'
-import { TagsViewState, TagView } from '../interface'
+import type { TagsViewState, TagView } from '../interface'
 
 export const isPathAndQueryEqual = (a: TagView, b: TagView) =>
   decodeURI(a.path) === decodeURI(b.path) && isObjectValueEqual(a?.query || {}, b?.query || {})
 
-export const useTagsViewStore = defineStore({
-  id: 'tagsView',
+export const useTagsViewStore = defineStore('tagsView', {
   state: (): TagsViewState => ({
     visitedViews: [],
     cachedViews: [] //  keepAlive 缓存页面

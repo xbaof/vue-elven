@@ -1,35 +1,6 @@
 <template>
   <n-layout ref="layoutRef" class="wh-full" :has-sider="hasSider" content-class="flex">
-    <n-layout-sider
-      v-if="hasSider"
-      :collapsed-width="58"
-      :width="sidebar.sidebarWidth"
-      :collapsed="!sidebar.opened"
-      :inverted="sidebar.inverted"
-      content-class="flex flex-col"
-      collapse-mode="width"
-    >
-      <vertical />
-    </n-layout-sider>
-    <n-drawer
-      v-else-if="device === 'mobile'"
-      v-model:show="sidebar.opened"
-      placement="left"
-      :width="sidebar.sidebarWidth"
-    >
-      <n-layout class="wh-full" has-sider>
-        <n-layout-sider
-          :collapsed-width="58"
-          :width="sidebar.sidebarWidth"
-          :collapsed="false"
-          :inverted="sidebar.inverted"
-          content-class="flex flex-col"
-          collapse-mode="width"
-        >
-          <vertical />
-        </n-layout-sider>
-      </n-layout>
-    </n-drawer>
+    <LayoutSiderOrDrawer />
     <n-layout content-class="layout-main-scrollbar">
       <n-layout-header
         ref="layoutHeaderRef"
@@ -54,7 +25,7 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, defineComponent, h } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useResizeObserver } from '@vueuse/core'
@@ -63,6 +34,7 @@ import LayoutHeader from './header/index.vue'
 import CloseFull from './header/components/closeFull.vue'
 import Footer from './footer/index.vue'
 import Vertical from './sidebar/vertical.vue'
+import { NLayoutSider, NDrawer, NLayout, type LayoutSiderProps } from 'naive-ui'
 import { useAppStore } from '@/store'
 
 const app = useAppStore()
@@ -70,6 +42,43 @@ const { device, layout, sidebar, showFooter, tagsView } = storeToRefs(app)
 const hasSider = computed(() => layout.value !== 'horizontal' && device.value === 'desktop')
 const route = useRoute()
 const isShowFooter = computed(() => showFooter.value && !route.meta.isIframe)
+
+const LayoutSiderOrDrawer = defineComponent(() => {
+  return () => {
+    const siderProps: LayoutSiderProps = {
+      collapsedWidth: 58,
+      width: sidebar.value.sidebarWidth,
+      inverted: sidebar.value.inverted,
+      contentClass: 'flex flex-col',
+      collapseMode: 'width'
+    }
+    const siderContent = { default: () => h(Vertical) }
+
+    return hasSider.value
+      ? h(NLayoutSider, { ...siderProps, collapsed: !sidebar.value.opened }, siderContent)
+      : device.value === 'mobile'
+        ? h(
+            NDrawer,
+            {
+              show: sidebar.value.opened,
+              placement: 'left',
+              width: sidebar.value.sidebarWidth,
+              'onUpdate:show': (val: boolean) => (sidebar.value.opened = val)
+            },
+            {
+              default: () =>
+                h(
+                  NLayout,
+                  { class: 'wh-full', hasSider: true },
+                  {
+                    default: () => h(NLayoutSider, { ...siderProps, collapsed: false }, siderContent)
+                  }
+                )
+            }
+          )
+        : null
+  }
+})
 
 // 抽离函数：同步主题和侧边栏宽度的设置
 const updateThemeAndSidebar = () => {

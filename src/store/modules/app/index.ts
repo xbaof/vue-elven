@@ -1,11 +1,10 @@
 import { defineStore } from 'pinia'
 import { createHoverColor, createPressedColor } from 'naive-ui/lib/_utils/color'
-import { AppState } from '../../interface'
+import type { AppState } from '../../interface'
 import { ELV_APP } from '@/enums/cacheEnum'
 import defaultState from './defaultState'
 
-export const useAppStore = defineStore({
-  id: 'app',
+export const useAppStore = defineStore('app', {
   state: defaultState,
   getters: {
     getThemeOverridesCommon(state) {

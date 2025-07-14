@@ -59,8 +59,8 @@
         <n-thing title="标签页标题">
           <n-flex :size="15">
             <n-input v-model:value="title" style="width: 320px" />
-            <n-button @click="handleQuery(1)">打开页面1（query传参） </n-button>
-            <n-button @click="handleQuery(2)">打开页面2（query传参） </n-button>
+            <n-button @click="handleQuery(1)"> 打开页面1（query传参） </n-button>
+            <n-button @click="handleQuery(2)"> 打开页面2（query传参） </n-button>
             <n-button @click="handleParams(1)"> 打开页面1（params传参） </n-button>
             <n-button @click="handleParams(2)"> 打开页面2（params传参） </n-button>
           </n-flex>

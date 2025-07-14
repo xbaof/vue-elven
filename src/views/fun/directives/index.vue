@@ -7,7 +7,7 @@
       <n-list-item>
         <n-flex>
           <n-input v-model:value="copyText" clearable placeholder="请输入" style="width: 320px" />
-          <n-button v-clipboard:click="copyText">复制</n-button>
+          <n-button v-clipboard:click="copyText"> 复制 </n-button>
         </n-flex>
       </n-list-item>
     </n-list>
@@ -36,8 +36,9 @@
               },
               timeout: 1000
             }"
-            >防抖测试</n-button
           >
+            防抖测试
+          </n-button>
         </n-flex>
       </n-list-item>
     </n-list>
@@ -66,8 +67,9 @@
               },
               timeout: 1000
             }"
-            >节流测试</n-button
           >
+            节流测试
+          </n-button>
         </n-flex>
       </n-list-item>
     </n-list>
@@ -83,8 +85,9 @@
               msg.success('长按了1000毫秒')
             }
           "
-          >长按测试</n-button
         >
+          长按测试
+        </n-button>
       </n-list-item>
     </n-list>
   </n-flex>

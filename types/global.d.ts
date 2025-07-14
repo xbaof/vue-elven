@@ -4,8 +4,9 @@ declare interface ImportMeta {
   VITE_OPEN: boolean
   VITE_PUBLIC_PATH: string
   VITE_DROP_CONSOLE: boolean
-  VITE_API_URL: string
+  VITE_API_BASE_URL: string
   VITE_OPEN_VISUALIZER: boolean
+  VITE_CRYPTO_SECRET_KEY: string
 }
 
 interface ImportMetaEnv extends ImportMeta {

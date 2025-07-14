@@ -1,4 +1,4 @@
-import { AppState } from '../../interface'
+import type { AppState } from '../../interface'
 
 const defaultState = (): AppState => ({
   layout: 'vertical',
