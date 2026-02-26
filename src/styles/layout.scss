@@ -1,0 +1,124 @@
+.n-layout-header {
+  position: relative;
+  z-index: 1;
+
+  $navbar-right-width: 300px;
+
+  .navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+
+    --item-hover-bg-color: var(--button-color-2);
+
+    &.isInverted {
+      --item-hover-bg-color: hsl(0deg 0% 100% / 8%);
+    }
+
+    .navbar-left,
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .navbar-left {
+      width: calc(100% - $navbar-right-width);
+    }
+
+    .navbar-right {
+      justify-content: flex-end;
+      min-width: $navbar-right-width;
+
+      &-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 100%;
+        font-size: 16px;
+        cursor: pointer;
+
+        /* 快速点击时不选中内容 */
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE/Edge */
+        user-select: none; /* 标准语法 */
+        transition: background 0.3s;
+
+        &:hover {
+          background: var(--item-hover-bg-color);
+        }
+      }
+    }
+  }
+}
+
+.n-layout-sider {
+  z-index: 2;
+  box-shadow: 10px 0 10px -10px rgb(0 0 0 / 12%);
+  transition: all 0.3s;
+}
+
+.n-menu {
+  &.n-menu--vertical {
+    .n-menu-item-content.n-menu-item-content--collapsed.n-menu-item-content--child-active {
+      &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 2px;
+        height: 100%;
+        content: '';
+        background-color: var(--primary-color);
+      }
+    }
+  }
+
+  &.n-menu--horizontal {
+    height: 100%;
+
+    --n-item-height: 100% !important;
+
+    .n-menu-item-content {
+      &.n-menu-item-content--selected,
+      &.n-menu-item-content--child-active {
+        border-bottom: 2px solid var(--primary-color) !important;
+      }
+    }
+  }
+}
+
+.layout-main-scrollbar {
+  overflow: hidden;
+  background-color: transparent;
+
+  .n-layout-content {
+    height: var(--layout-content-height);
+    transition: transform 0.3s var(--n-bezier);
+
+    &.layout-content-fullScreen {
+      position: fixed;
+      z-index: 9;
+      width: 100vw;
+      height: 100vh;
+      transform: translate(calc(var(--sidebar-width) * -1), calc(var(--header-height) * -1));
+    }
+
+    .layout-content-scrollbar {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+
+      .main-content {
+        margin: 15px;
+      }
+
+      .footer-wrapper {
+        margin-top: auto;
+      }
+    }
+  }
+}
