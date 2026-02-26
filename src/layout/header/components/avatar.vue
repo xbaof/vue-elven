@@ -1,0 +1,83 @@
+<template>
+  <n-dropdown show-arrow :options="options" @select="handleSelect">
+    <div class="avatar-wrapper mr-14">
+      <n-avatar :size="38" :src="avatarSrc" />
+      <svg-icon icon="local:drop-down" size="11" />
+    </div>
+  </n-dropdown>
+</template>
+<script lang="ts" setup>
+import { reactive, computed, h } from 'vue'
+import { useDialog, type DialogReactive } from 'naive-ui'
+import { useRoute, useRouter } from 'vue-router'
+import SvgIcon from '@/components/SvgIcon/index.vue'
+import People from '@iconify-icons/icon-park-outline/people'
+import Logout from '@iconify-icons/icon-park-outline/logout'
+import { useUserStore, useAuthStore } from '@/store'
+
+defineOptions({
+  name: 'HeaderAvatar'
+})
+
+const userStore = useUserStore()
+const authStore = useAuthStore()
+const dialog = useDialog()
+const route = useRoute()
+const router = useRouter()
+const avatarSrc = computed(() => userStore.getAvatar ?? '/src/assets/images/default_avatar.png')
+const sleep = () => new Promise((resolve) => setTimeout(resolve, 150))
+const options = reactive([
+  {
+    label: '个人资料',
+    key: 'profile',
+    icon: () => h(SvgIcon, { icon: People })
+  },
+  {
+    label: '退出登录',
+    key: 'logout',
+    icon: () => h(SvgIcon, { icon: Logout })
+  }
+])
+const handleSelect = (key: string) => {
+  switch (key) {
+    case 'logout':
+      const dialogRef: DialogReactive = dialog.warning({
+        title: '提示',
+        content: '此操作将退出登录, 是否继续?',
+        positiveText: '确定',
+        negativeText: '取消',
+        onPositiveClick: async () => {
+          dialogRef.loading = true
+          await sleep()
+          authStore.logOut()
+          await router.replace({
+            path: '/login',
+            query: route.query
+          })
+        }
+      })
+      break
+    default:
+      break
+  }
+}
+</script>
+<style scoped lang="scss">
+.avatar-wrapper {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: 8px;
+  cursor: pointer;
+
+  .n-avatar {
+    border-radius: 10px;
+  }
+
+  .n-icon {
+    margin-top: 28px;
+    margin-left: 4px;
+    color: var(--header-action-color);
+  }
+}
+</style>

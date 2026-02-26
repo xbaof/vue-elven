@@ -1,0 +1,17 @@
+html.dark {
+  /* wangEditor */
+  --w-e-toolbar-color: rgb(255 255 255 / 82%);
+  --w-e-toolbar-bg-color: rgb(24 24 28);
+  --w-e-textarea-bg-color: rgb(24 24 28);
+  --w-e-textarea-color: rgb(255 255 255 / 82%);
+  --w-e-toolbar-active-bg-color: rgb(72 72 78);
+
+  .w-e-bar-item button:hover,
+  .w-e-menu-tooltip-v5::before {
+    color: rgb(255 255 255 / 82%);
+  }
+
+  .w-e-bar-item .disabled:hover {
+    color: var(--w-e-toolbar-disabled-color);
+  }
+}
