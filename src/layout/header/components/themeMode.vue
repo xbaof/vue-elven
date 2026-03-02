@@ -7,9 +7,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import sunOneIcon from '@iconify-icons/icon-park-outline/sun-one'
+import moonIcon from '@iconify-icons/icon-park-outline/moon'
 import { useAppStore } from '@/store'
-import SunOne from '@iconify-icons/icon-park-outline/sun-one'
-import Moon from '@iconify-icons/icon-park-outline/moon'
 
 defineOptions({
   name: 'ThemeMode'
@@ -18,7 +18,9 @@ defineOptions({
 const app = useAppStore()
 const { isDark } = storeToRefs(app)
 
-const currentIcon = computed(() => (isDark.value ? SunOne : Moon))
+const currentIcon = computed(() => {
+  return isDark.value ? sunOneIcon : moonIcon
+})
 
 const toggleTheme = () => {
   app.isDark = !app.isDark

@@ -7,8 +7,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFullscreen } from '@vueuse/core'
-import FullScreen from '@iconify-icons/icon-park-outline/full-screen'
-import OffScreen from '@iconify-icons/icon-park-outline/off-screen'
+import offScreenIcon from '@iconify-icons/icon-park-outline/off-screen'
+import fullScreenIcon from '@iconify-icons/icon-park-outline/full-screen'
 
 defineOptions({
   name: 'FullScreen'
@@ -16,5 +16,7 @@ defineOptions({
 
 const { isFullscreen, toggle } = useFullscreen()
 
-const currentIcon = computed(() => (isFullscreen.value ? OffScreen : FullScreen))
+const currentIcon = computed(() => {
+  return isFullscreen.value ? offScreenIcon : fullScreenIcon
+})
 </script>

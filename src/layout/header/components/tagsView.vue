@@ -1,7 +1,7 @@
 <template>
   <div class="tags-view">
     <span v-show="showTool" class="tool-prev" @click="displayX -= 200">
-      <svg-icon :icon="DoubleLeft" :size="20" />
+      <svg-icon :icon="doubleLeftIcon" :size="20" />
     </span>
     <div ref="scrollbarRef" class="scroll-container" :class="{ 'ml-10 mr-10': !showTool }">
       <div ref="tabRef" class="tab">
@@ -22,14 +22,14 @@
           <svg-icon
             v-if="!isAffix(tag)"
             class="tags-view-item-close"
-            :icon="CloseSmall"
+            :icon="closeSmallIcon"
             @click.prevent.stop="closeSelectedTag(tag)"
           />
         </span>
       </div>
     </div>
     <span v-show="showTool" class="tool-next" @click="displayX += 200">
-      <svg-icon :icon="DoubleRight" :size="20" />
+      <svg-icon :icon="doubleRightIcon" :size="20" />
     </span>
     <n-dropdown
       class="tags-view-menu"
@@ -50,24 +50,25 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, unref, reactive, h, watch, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
+import { computed, getCurrentInstance, h, nextTick, onMounted, reactive, ref, unref, watch } from 'vue'
 import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router'
-import { useScroll, useEventListener, useResizeObserver, useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useEventListener, useResizeObserver, useScroll } from '@vueuse/core'
+import doubleLeftIcon from '@iconify-icons/icon-park-outline/double-left'
+import doubleRightIcon from '@iconify-icons/icon-park-outline/double-right'
+import closeSmallIcon from '@iconify-icons/icon-park-outline/close-small'
+import refreshIcon from '@iconify-icons/icon-park-outline/redo'
+import closeIcon from '@iconify-icons/icon-park-outline/close'
+import closeOtherIcon from '@iconify-icons/icon-park-outline/close-one'
+import closeLeftIcon from '@iconify-icons/icon-park-outline/to-left'
+import closeRightIcon from '@iconify-icons/icon-park-outline/to-right'
+import closeAllIcon from '@iconify-icons/icon-park-outline/minus'
+import fullScreenIcon from '@iconify-icons/icon-park-outline/full-screen'
 import type { DropdownOption } from 'naive-ui'
-import DoubleLeft from '@iconify-icons/icon-park-outline/double-left'
-import DoubleRight from '@iconify-icons/icon-park-outline/double-right'
-import CloseSmall from '@iconify-icons/icon-park-outline/close-small'
-import Redo from '@iconify-icons/icon-park-outline/redo'
-import Close from '@iconify-icons/icon-park-outline/close'
-import CloseOne from '@iconify-icons/icon-park-outline/close-one'
-import ToLeft from '@iconify-icons/icon-park-outline/to-left'
-import ToRight from '@iconify-icons/icon-park-outline/to-right'
-import Minus from '@iconify-icons/icon-park-outline/minus'
-import FullScreen from '@iconify-icons/icon-park-outline/full-screen'
 import SvgIcon from '@/components/SvgIcon/index.vue'
-import { useTagsViewStore, useAppStore } from '@/store'
+import { useAppStore, useTagsViewStore } from '@/store'
 import { isPathAndQueryEqual, toTagView } from '@/store/modules/tagsView'
 import { sortRoutesByMetaOrder } from '@/router/dynamicRouter'
+import { safeRouterPush, safeRouterReplace } from '@/router/navigation'
 import type { TagView, TagsViewState } from '@/store/types'
 
 defineOptions({
@@ -90,15 +91,15 @@ const left = ref(0)
 const top = ref(0)
 const selectedTag = ref<TagView>()
 
-const scrollbarRef = ref()
-const tabRef = ref()
+const scrollbarRef = ref<HTMLElement | null>(null)
+const tabRef = ref<HTMLElement | null>(null)
 const { x } = useScroll(scrollbarRef, { behavior: 'smooth' })
 const displayX = computed({
   get() {
     return x.value
   },
-  set(val) {
-    x.value = val
+  set(value) {
+    x.value = value
   }
 })
 
@@ -106,100 +107,100 @@ const menuOptions = reactive<Array<DropdownOption>>([
   {
     label: '刷新',
     key: 'refresh',
-    icon: () => h(SvgIcon, { icon: Redo })
+    icon: () => h(SvgIcon, { icon: refreshIcon })
   },
   {
     label: '关闭当前',
     key: 'close',
-    icon: () => h(SvgIcon, { icon: Close })
+    icon: () => h(SvgIcon, { icon: closeIcon })
   },
   {
     label: '关闭左侧',
     key: 'closeLeft',
-    icon: () => h(SvgIcon, { icon: ToLeft })
+    icon: () => h(SvgIcon, { icon: closeLeftIcon })
   },
   {
     label: '关闭右侧',
     key: 'closeRight',
-    icon: () => h(SvgIcon, { icon: ToRight })
+    icon: () => h(SvgIcon, { icon: closeRightIcon })
   },
   {
     label: '关闭其他',
     key: 'closeOther',
-    icon: () => h(SvgIcon, { icon: CloseOne })
+    icon: () => h(SvgIcon, { icon: closeOtherIcon })
   },
   {
     label: '关闭全部',
     key: 'closeAll',
-    icon: () => h(SvgIcon, { icon: Minus })
+    icon: () => h(SvgIcon, { icon: closeAllIcon })
   },
   {
     label: '全屏当前页',
     key: 'fullScreen',
-    icon: () => h(SvgIcon, { icon: FullScreen })
+    icon: () => h(SvgIcon, { icon: fullScreenIcon })
   }
 ])
 
-const isActive = (tag: TagView) => {
+const isActive = (tag: TagView): boolean => {
   return isPathAndQueryEqual(tag, currentRouteTag.value)
 }
-const isAffix = (tag: TagView) => {
+
+const isAffix = (tag: TagView): boolean => {
   return Boolean(tag.meta?.isAffix)
 }
-const tagOnClick = (tag: TagView) => {
-  const { query, path } = tag
-  if (isActive(tag)) return
-  router
-    .push({
-      path,
-      query
-    })
-    .catch((err) => {
-      console.error('路由跳转失败:', err)
-    })
+
+const tagOnClick = (tag: TagView): void => {
+  const { path, query } = tag
+  if (isActive(tag)) {
+    return
+  }
+  void safeRouterPush(router, { path, query })
 }
 
-const handleMenuSelect = async (key: string) => {
+const handleMenuSelect = async (key: string): Promise<void> => {
   const tag = unref(selectedTag)
-  if (!tag) return
+  if (!tag) {
+    return
+  }
 
   switch (key) {
-    case 'refresh':
-      {
-        tagsView.delCachedView(tag)
-        await nextTick()
-        const { fullPath, query } = route
-        router.push({
-          path: '/redirect' + fullPath,
-          query: query
-        })
-      }
+    case 'refresh': {
+      tagsView.delCachedView(tag)
+      await nextTick()
+      const { fullPath, query } = route
+      await safeRouterPush(router, {
+        path: '/redirect' + fullPath,
+        query
+      })
       break
+    }
     case 'close':
       closeSelectedTag(tag)
       break
     case 'closeLeft':
-      tagsView.delLeftViews(tag).then((res: TagsViewState) => {
-        if (!res.visitedViews.find((o) => isActive(o))) {
-          toLastView(res.visitedViews, tag)
+      tagsView.delLeftViews(tag).then((result: TagsViewState) => {
+        if (!result.visitedViews.find((item) => isActive(item))) {
+          toLastView(result.visitedViews, tag)
         }
       })
       break
     case 'closeRight':
-      tagsView.delRightViews(tag).then((res: TagsViewState) => {
-        if (!res.visitedViews.find((o) => isActive(o))) {
-          toLastView(res.visitedViews, tag)
+      tagsView.delRightViews(tag).then((result: TagsViewState) => {
+        if (!result.visitedViews.find((item) => isActive(item))) {
+          toLastView(result.visitedViews, tag)
         }
       })
       break
     case 'closeOther':
-      if (!selectedTag.value) break
+      if (!selectedTag.value) {
+        break
+      }
       tagOnClick(selectedTag.value)
       tagsView.delOtherViews(selectedTag.value)
       break
     case 'closeAll':
-      tagsView.delAllViews().then((res: TagsViewState) => {
-        toLastView(res.visitedViews, tag)
+      tagsView.delAllViews().then((result: TagsViewState) => {
+        toLastView(result.visitedViews, tag)
       })
       break
     case 'fullScreen':
@@ -211,114 +212,116 @@ const handleMenuSelect = async (key: string) => {
     default:
       break
   }
+
   visible.value = false
 }
-/**
- * 处理右键菜单
- */
-const handleContextMenu = (tag: TagView, e: MouseEvent) => {
-  left.value = e.clientX
-  top.value = e.clientY
-  const index = visitedViews.value.findIndex((v) => isPathAndQueryEqual(v, tag))
 
-  // 动态设置菜单项显示状态
-  menuOptions[0].show = isActive(tag) // 刷新
-  menuOptions[1].show = !isAffix(tag) // 关闭当前
-  menuOptions[2].show = visitedViews.value.filter((v, i) => i < index && !v?.meta?.isAffix).length > 0 // 关闭左侧
-  menuOptions[3].show = visitedViews.value.filter((v, i) => i > index && !v?.meta?.isAffix).length > 0 // 关闭右侧
-  menuOptions[4].show = visitedViews.value.filter((v) => !v?.meta?.isAffix && !isPathAndQueryEqual(v, tag)).length > 0 // 关闭其他
-  menuOptions[5].show = visitedViews.value.filter((v) => !v?.meta?.isAffix).length > 0 // 关闭全部
+/**
+ * 处理右键菜单项显示状态。
+ */
+const handleContextMenu = (tag: TagView, event: MouseEvent): void => {
+  left.value = event.clientX
+  top.value = event.clientY
+  const index = visitedViews.value.findIndex((item) => isPathAndQueryEqual(item, tag))
+
+  menuOptions[0].show = isActive(tag)
+  menuOptions[1].show = !isAffix(tag)
+  menuOptions[2].show =
+    visitedViews.value.filter((item, itemIndex) => itemIndex < index && !item?.meta?.isAffix).length > 0
+  menuOptions[3].show =
+    visitedViews.value.filter((item, itemIndex) => itemIndex > index && !item?.meta?.isAffix).length > 0
+  menuOptions[4].show =
+    visitedViews.value.filter((item) => !item?.meta?.isAffix && !isPathAndQueryEqual(item, tag)).length > 0
+  menuOptions[5].show = visitedViews.value.filter((item) => !item?.meta?.isAffix).length > 0
 
   visible.value = true
   selectedTag.value = tag
 }
-// 关闭当前
-const closeSelectedTag = (view: TagView) => {
-  tagsView.delView(view).then((res: TagsViewState) => {
+
+const closeSelectedTag = (view: TagView): void => {
+  tagsView.delView(view).then((result: TagsViewState) => {
     if (isActive(view)) {
-      toLastView(res.visitedViews, view)
+      toLastView(result.visitedViews, view)
     }
   })
 }
-const toLastView = (visitedViews: TagView[], view?: TagView) => {
-  const latestView = visitedViews.at(-1)
+
+const toLastView = (viewList: TagView[], view?: TagView): void => {
+  const latestView = viewList.at(-1)
   if (latestView && latestView.path) {
     tagOnClick(latestView)
+    return
+  }
+
+  if (view?.name === 'Dashboard') {
+    void safeRouterReplace(router, { path: '/redirect' + view.path })
   } else {
-    if (view?.name === 'Dashboard') {
-      router.replace({ path: '/redirect' + view.path }).catch((err) => {
-        console.error('路由跳转失败:', err)
-      })
-    } else {
-      router.push('/')
-    }
+    void safeRouterPush(router, '/')
   }
 }
 
 /**
- * 动态定位到当前激活的标签
+ * 将滚动条定位到当前激活标签。
  */
-const dynamicTagView = () => {
+const dynamicTagView = (): void => {
   const index = visitedViews.value.findIndex((item) => isActive(item))
   if (index >= 0) {
     moveToTarget(index)
   }
 }
+
 /**
- * 移动滚动条到目标标签位置
+ * 计算并移动滚动条位置。
  */
-const moveToTarget = (index: number) => {
-  if (!instance) return
+const moveToTarget = (index: number): void => {
+  if (!instance) {
+    return
+  }
 
   nextTick(() => {
-    const TAB_NAV_PADDING = 10
+    const tabNavPadding = 10
     const dynamicRefs = instance.refs['dynamic' + index] as HTMLElement[] | undefined
-    if (!dynamicRefs?.length) return
+    if (!dynamicRefs?.length) {
+      return
+    }
 
-    const tabItemEl = dynamicRefs[0] as HTMLElement
-    const tabItemElOffsetLeft = tabItemEl.offsetLeft
-    const tabItemOffsetWidth = tabItemEl.offsetWidth
+    const tabItemElement = dynamicRefs[0]
+    const tabItemOffsetLeft = tabItemElement.offsetLeft
+    const tabItemOffsetWidth = tabItemElement.offsetWidth
     const scrollbarRefWidth = scrollbarRef.value ? scrollbarRef.value.offsetWidth : 0
     const tabRefWidth = tabRef.value ? tabRef.value.offsetWidth : 0
 
-    // 如果工具按钮显示状态需要更新，递归调用
     if (scrollbarRefWidth <= tabRefWidth !== showTool.value) {
       showTool.value = scrollbarRefWidth <= tabRefWidth
       moveToTarget(index)
       return
     }
 
-    // 计算滚动位置
-    if (tabRefWidth < scrollbarRefWidth || tabItemElOffsetLeft === 0) {
+    if (tabRefWidth < scrollbarRefWidth || tabItemOffsetLeft === 0) {
       displayX.value = 0
-    } else if (tabItemElOffsetLeft < displayX.value) {
-      // 标签在可视区域左侧
-      displayX.value = tabItemElOffsetLeft - TAB_NAV_PADDING
+    } else if (tabItemOffsetLeft < displayX.value) {
+      displayX.value = tabItemOffsetLeft - tabNavPadding
     } else if (
-      tabItemElOffsetLeft + tabItemOffsetWidth < scrollbarRefWidth + displayX.value &&
-      tabItemElOffsetLeft > displayX.value
+      tabItemOffsetLeft + tabItemOffsetWidth < scrollbarRefWidth + displayX.value &&
+      tabItemOffsetLeft > displayX.value
     ) {
-      // 标签在可视区域内，需要调整滚动位置
       displayX.value = Math.max(
         displayX.value,
-        tabItemOffsetWidth + tabItemElOffsetLeft + TAB_NAV_PADDING - scrollbarRefWidth
+        tabItemOffsetWidth + tabItemOffsetLeft + tabNavPadding - scrollbarRefWidth
       )
     } else {
-      // 标签在可视区域右侧
-      displayX.value = tabItemElOffsetLeft - (scrollbarRefWidth - TAB_NAV_PADDING - tabItemOffsetWidth)
+      displayX.value = tabItemOffsetLeft - (scrollbarRefWidth - tabNavPadding - tabItemOffsetWidth)
     }
   })
 }
 
-/**
- * 全局点击关闭菜单
- */
 useEventListener(document, 'click', () => {
   visible.value = false
 })
-const initTags = () => {
+
+const initTags = (): void => {
   const tags: TagView[] = sortRoutesByMetaOrder(
-    routes.value.filter((route) => route.meta?.isAffix).map((route) => toTagView(route))
+    routes.value.filter((item) => item.meta?.isAffix).map((item) => toTagView(item))
   )
 
   for (const tag of tags) {
@@ -327,6 +330,7 @@ const initTags = () => {
     }
   }
 }
+
 watch(
   route,
   () => {
@@ -344,6 +348,7 @@ watch(
     immediate: true
   }
 )
+
 onMounted(() => {
   useResizeObserver(
     scrollbarRef,
@@ -417,35 +422,6 @@ onMounted(() => {
         content: '';
         background: #ffffff;
         border-radius: 50%;
-      }
-    }
-  }
-
-  &-menu {
-    position: absolute;
-    z-index: 3000;
-    padding: 5px 0;
-    margin: 0;
-    font-size: 12px;
-    font-weight: 400;
-    color: #333333;
-    list-style-type: none;
-    background: #ffffff;
-    border-radius: 4px;
-    box-shadow: 2px 2px 3px 0 rgb(0 0 0 / 30%);
-
-    li {
-      padding: 7px 16px;
-      margin: 0;
-      cursor: pointer;
-
-      &:hover {
-        color: var(--el-color-primary);
-        background: var(--el-color-primary-light-9);
-      }
-
-      .icon.el-icon {
-        margin-right: 3px;
       }
     }
   }

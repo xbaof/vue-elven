@@ -1,15 +1,15 @@
 <template>
   <div v-if="tagsView.fullScreen" class="closeFull-wrapper">
     <div class="closeFull-icon">
-      <svg-icon :icon="Close" :size="12" @click="handleClose" />
+      <svg-icon :icon="closeIcon" :size="12" @click="handleClose" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
+import closeIcon from '@iconify-icons/icon-park-outline/close'
 import { useAppStore } from '@/store'
-import Close from '@iconify-icons/icon-park-outline/close'
 
 defineOptions({
   name: 'CloseFull'

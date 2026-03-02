@@ -10,10 +10,13 @@
 import { reactive, computed, h } from 'vue'
 import { useDialog, type DialogReactive } from 'naive-ui'
 import { useRoute, useRouter } from 'vue-router'
+import peopleIcon from '@iconify-icons/icon-park-outline/people'
+import logoutIcon from '@iconify-icons/icon-park-outline/logout'
 import SvgIcon from '@/components/SvgIcon/index.vue'
-import People from '@iconify-icons/icon-park-outline/people'
-import Logout from '@iconify-icons/icon-park-outline/logout'
-import { useUserStore, useAuthStore } from '@/store'
+import { useAuthStore } from '@/store/modules/auth'
+import { useUserStore } from '@/store/modules/user'
+import { useUiFeedback } from '@/hooks/useUiFeedback'
+import { safeRouterReplace } from '@/router/navigation'
 
 defineOptions({
   name: 'HeaderAvatar'
@@ -22,23 +25,46 @@ defineOptions({
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const dialog = useDialog()
+const uiFeedback = useUiFeedback()
 const route = useRoute()
 const router = useRouter()
 const avatarSrc = computed(() => userStore.getAvatar ?? '/src/assets/images/default_avatar.png')
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 150))
+const sleep = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 150))
+
 const options = reactive([
   {
     label: '个人资料',
     key: 'profile',
-    icon: () => h(SvgIcon, { icon: People })
+    icon: () => h(SvgIcon, { icon: peopleIcon })
   },
   {
     label: '退出登录',
     key: 'logout',
-    icon: () => h(SvgIcon, { icon: Logout })
+    icon: () => h(SvgIcon, { icon: logoutIcon })
   }
 ])
-const handleSelect = (key: string) => {
+
+/**
+ * 执行退出登录流程，失败时给出统一错误提示。
+ */
+const handleLogout = async (dialogRef: DialogReactive): Promise<void> => {
+  dialogRef.loading = true
+  try {
+    await sleep()
+    authStore.logOut()
+    await safeRouterReplace(router, {
+      path: '/login',
+      query: route.query
+    })
+    uiFeedback.msgSuccess('已退出登录')
+  } catch (error) {
+    uiFeedback.msgErrorFromUnknown(error, '退出登录失败，请稍后重试')
+  } finally {
+    dialogRef.loading = false
+  }
+}
+
+const handleSelect = (key: string): void => {
   switch (key) {
     case 'logout':
       const dialogRef: DialogReactive = dialog.warning({
@@ -46,15 +72,7 @@ const handleSelect = (key: string) => {
         content: '此操作将退出登录, 是否继续?',
         positiveText: '确定',
         negativeText: '取消',
-        onPositiveClick: async () => {
-          dialogRef.loading = true
-          await sleep()
-          authStore.logOut()
-          await router.replace({
-            path: '/login',
-            query: route.query
-          })
-        }
+        onPositiveClick: async () => handleLogout(dialogRef)
       })
       break
     default:

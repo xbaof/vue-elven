@@ -13,6 +13,19 @@ import { darkTheme, lightTheme } from 'naive-ui'
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
+
+  const parseBoolean = (value?: string): boolean => {
+    return typeof value === 'string' && value.trim().toLowerCase() === 'true'
+  }
+
+  const parsePort = (value?: string): number => {
+    const port = Number(value)
+    if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+      return 7956
+    }
+    return port
+  }
+
   return {
     base: env.VITE_PUBLIC_PATH || '/',
     resolve: {
@@ -31,12 +44,13 @@ export default defineConfig(({ command, mode }) => {
           }
         }),
         viteCompression({
-          verbose: true, // 是否在控制台中输出压缩结果
-          disable: false,
+          // 在控制台输出压缩结果
+          verbose: true,
           threshold: 10240,
           algorithm: 'gzip',
           ext: '.gz',
-          deleteOriginFile: true // 源文件压缩后是否删除
+          // 压缩后删除原始文件
+          deleteOriginFile: true
         }),
         createHtmlPlugin({
           minify: mode === 'production',
@@ -60,7 +74,7 @@ export default defineConfig(({ command, mode }) => {
         })
       ]
 
-      if (Boolean(env.VITE_OPEN)) {
+      if (parseBoolean(env.VITE_OPEN_VISUALIZER)) {
         plugins.push(
           visualizer({
             gzipSize: true,
@@ -74,9 +88,9 @@ export default defineConfig(({ command, mode }) => {
 
     server: {
       host: '0.0.0.0',
-      port: Number(env.VITE_PORT),
-      open: Boolean(env.VITE_OPEN),
-      // 设为 true 时若端口已被占用则会直接退出，而不是尝试下一个可用端口
+      port: parsePort(env.VITE_PORT),
+      open: parseBoolean(env.VITE_OPEN),
+      // 端口占用时自动尝试下一个可用端口
       strictPort: false,
       cors: true,
       proxy: {
@@ -95,33 +109,42 @@ export default defineConfig(({ command, mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: Boolean(env.VITE_DROP_CONSOLE) || false,
+          drop_console: parseBoolean(env.VITE_DROP_CONSOLE),
           drop_debugger: true
         }
       },
-      // 10kb以下，转Base64
+      // 10KB 以下资源内联为 Base64
       assetsInlineLimit: 1024 * 10,
-      // 消除打包大小超过500kb警告
+      // 调整 chunk 体积告警阈值
       chunkSizeWarningLimit: 2000,
       // 启用 CSS 代码分割
       cssCodeSplit: true,
       rollupOptions: {
         output: {
-          // 每个node_modules模块分成一个js文件
+          // 按依赖分组，避免生成过多零碎 chunk
           manualChunks(id: string) {
-            if (id.includes('node_modules')) {
-              return id.toString().split('node_modules/.pnpm/')[1].split('/')[0].toString()
+            if (!id.includes('node_modules')) {
+              return
             }
+
+            if (id.includes('@iconify')) {
+              return 'iconify'
+            }
+
+            if (id.includes('vue-router') || id.includes('pinia') || id.includes('@vueuse')) {
+              return 'framework'
+            }
+
+            return 'vendor'
           },
-          // 用于从入口点创建的块的打包输出格式[name]表示文件名,[hash]表示该文件内容hash值
-          entryFileNames: 'assets/js/[name]-[hash].js', // 用于命名代码拆分时创建的共享块的输出命名
-          chunkFileNames: 'assets/js/[name]-[hash].js', // 用于输出静态资源的命名，[ext]表示文件扩展名
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          chunkFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
         }
       }
     },
 
-    // 依赖优化
+    // 依赖预构建
     optimizeDeps: {
       include: ['vue', 'vue-router', 'pinia', 'naive-ui', 'axios', '@vueuse/core'],
       exclude: ['@iconify/vue']

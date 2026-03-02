@@ -17,7 +17,7 @@ export interface AppState {
     accordion: boolean
     inverted: boolean
     opened: boolean
-    /** 判断是否手动点击Collapse*/
+    /** 是否由用户手动触发折叠 */
     isClickCollapse: boolean
   }
   showFooter: boolean
@@ -46,7 +46,7 @@ export interface UserState {
 }
 
 export interface PermissionState {
-  /** 是否已经基于权限生成并挂载过动态路由 */
+  /** 是否已基于权限生成并挂载动态路由 */
   isDynamicRouteAdded: boolean
   routes: RouteRecordRaw[]
   roles: string[]

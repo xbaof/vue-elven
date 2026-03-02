@@ -2,13 +2,13 @@ import type { App } from 'vue'
 
 declare global {
   interface ImportMetaEnv {
-    VITE_PORT: number
+    VITE_PORT: string
     VITE_GLOB_TITLE: string
-    VITE_OPEN: boolean
+    VITE_OPEN: 'true' | 'false'
     VITE_PUBLIC_PATH: string
-    VITE_DROP_CONSOLE: boolean
+    VITE_DROP_CONSOLE: 'true' | 'false'
     VITE_API_BASE_URL: string
-    VITE_OPEN_VISUALIZER: boolean
+    VITE_OPEN_VISUALIZER: 'true' | 'false'
     VITE_CRYPTO_SECRET_KEY: string
     VITE_CRYPTO_IV_KEY: string
   }

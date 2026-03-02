@@ -32,7 +32,7 @@
             v-optimize="{
               event: 'click',
               fn: () => {
-                msg.success('这是一条防抖测试消息')
+                uiFeedback.msgSuccess('这是一条防抖测试消息')
               },
               timeout: 1000
             }"
@@ -63,7 +63,7 @@
             v-optimize:throttle="{
               event: 'click',
               fn: () => {
-                msg.success('这是一条节流测试消息')
+                uiFeedback.msgSuccess('这是一条节流测试消息')
               },
               timeout: 1000
             }"
@@ -82,7 +82,7 @@
           v-longpress="
             (evt: PointerEvent) => {
               console.log('PointerEvent：', evt)
-              msg.success('长按了1000毫秒')
+              uiFeedback.msgSuccess('长按了1000毫秒')
             }
           "
         >
@@ -96,17 +96,17 @@
 defineOptions({
   name: 'Directive'
 })
-import { useMessage } from 'naive-ui'
 import { ref } from 'vue'
+import { useUiFeedback } from '@/hooks/useUiFeedback'
 const copyText = ref<string>('')
 const debounceText = ref<string>('')
 const throttleText = ref<string>('')
 
-const msg = useMessage()
+const uiFeedback = useUiFeedback()
 const onDebounce = () => {
-  msg.success(debounceText.value)
+  uiFeedback.msgSuccess(debounceText.value)
 }
 const onThrottle = () => {
-  msg.success(throttleText.value)
+  uiFeedback.msgSuccess(throttleText.value)
 }
 </script>

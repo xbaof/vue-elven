@@ -8,49 +8,50 @@
         <n-flex>
           <n-button @click="handleClick('refresh')">
             <template #icon>
-              <svg-icon :icon="Redo" />
+              <svg-icon :icon="refreshIcon" />
             </template>
             刷新当前
           </n-button>
           <n-button @click="handleClick('close')">
             <template #icon>
-              <svg-icon :icon="Close" />
+              <svg-icon :icon="closeIcon" />
             </template>
             关闭当前
           </n-button>
           <n-button @click="handleClick('closeLeft')">
             <template #icon>
-              <svg-icon :icon="ToLeft" />
+              <svg-icon :icon="closeLeftIcon" />
             </template>
             关闭左侧
           </n-button>
           <n-button @click="handleClick('closeRight')">
             <template #icon>
-              <svg-icon :icon="ToRight" />
+              <svg-icon :icon="closeRightIcon" />
             </template>
             关闭右侧
           </n-button>
           <n-button @click="handleClick('closeOther')">
             <template #icon>
-              <svg-icon :icon="CloseOne" />
+              <svg-icon :icon="closeOtherIcon" />
             </template>
             关闭其他
           </n-button>
           <n-button @click="handleClick('closeAll')">
             <template #icon>
-              <svg-icon :icon="Minus" />
+              <svg-icon :icon="closeAllIcon" />
             </template>
             关闭全部
           </n-button>
           <n-button @click="handleClick('fullScreen')">
             <template #icon>
-              <svg-icon :icon="FullScreen" />
+              <svg-icon :icon="fullScreenIcon" />
             </template>
             全屏当前页
           </n-button>
         </n-flex>
       </n-list-item>
     </n-list>
+
     <n-list bordered>
       <n-list-item>
         <n-thing title="页内跳转" />
@@ -69,23 +70,24 @@
     </n-list>
   </n-flex>
 </template>
+
 <script lang="ts" setup>
 defineOptions({
   name: 'Tags'
 })
-import Redo from '@iconify-icons/icon-park-outline/redo'
-import Close from '@iconify-icons/icon-park-outline/close'
-import CloseOne from '@iconify-icons/icon-park-outline/close-one'
-import ToLeft from '@iconify-icons/icon-park-outline/to-left'
-import ToRight from '@iconify-icons/icon-park-outline/to-right'
-import Minus from '@iconify-icons/icon-park-outline/minus'
-import FullScreen from '@iconify-icons/icon-park-outline/full-screen'
 
 import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import refreshIcon from '@iconify-icons/icon-park-outline/redo'
+import closeIcon from '@iconify-icons/icon-park-outline/close'
+import closeOtherIcon from '@iconify-icons/icon-park-outline/close-one'
+import closeLeftIcon from '@iconify-icons/icon-park-outline/to-left'
+import closeRightIcon from '@iconify-icons/icon-park-outline/to-right'
+import closeAllIcon from '@iconify-icons/icon-park-outline/minus'
+import fullScreenIcon from '@iconify-icons/icon-park-outline/full-screen'
 import { useAppStore, useTagsViewStore } from '@/store'
 import { isPathAndQueryEqual, toTagView } from '@/store/modules/tagsView'
-import { TagView, TagsViewState } from '@/store/types'
+import type { TagView } from '@/store/types'
 
 const title = ref('标题-01')
 
@@ -93,91 +95,96 @@ const router = useRouter()
 const route = useRoute()
 const app = useAppStore()
 const tagsView = useTagsViewStore()
-const tag = computed<TagView>(
-  () => tagsView.visitedViews.find((item) => isPathAndQueryEqual(item, toTagView(route))) as TagView
-)
 
-const handleClick = async (key: string) => {
+type tagActionKey = 'refresh' | 'close' | 'closeLeft' | 'closeRight' | 'closeOther' | 'closeAll' | 'fullScreen'
+
+const currentTag = computed<TagView>(() => {
+  const matchedTag = tagsView.visitedViews.find((item) => isPathAndQueryEqual(item, toTagView(route)))
+  return matchedTag ?? toTagView(route)
+})
+
+const handleClick = async (key: tagActionKey): Promise<void> => {
+  const tag = currentTag.value
+
   switch (key) {
-    case 'refresh':
-      {
-        tagsView.delCachedView(tag.value)
-        await nextTick()
-        const { fullPath, query } = route
-        router.push({
-          path: '/redirect' + fullPath,
-          query: query
-        })
+    case 'refresh': {
+      await tagsView.delCachedView(tag)
+      await nextTick()
+      const { fullPath, query } = route
+      await router.push({
+        path: '/redirect' + fullPath,
+        query
+      })
+      break
+    }
+    case 'close': {
+      const { visitedViews } = await tagsView.delView(tag)
+      toLastView(visitedViews, tag)
+      break
+    }
+    case 'closeLeft': {
+      const { visitedViews } = await tagsView.delLeftViews(tag)
+      if (!visitedViews.find((item) => isPathAndQueryEqual(item, toTagView(route)))) {
+        toLastView(visitedViews, tag)
       }
       break
-    case 'close':
-      tagsView.delView(tag.value).then((res) => {
-        const data = res as TagsViewState
-        toLastView(data.visitedViews, tag.value)
-      })
+    }
+    case 'closeRight': {
+      const { visitedViews } = await tagsView.delRightViews(tag)
+      if (!visitedViews.find((item) => isPathAndQueryEqual(item, toTagView(route)))) {
+        toLastView(visitedViews, tag)
+      }
       break
-    case 'closeLeft':
-      tagsView.delLeftViews(tag.value).then((res) => {
-        const data = res as TagsViewState
-        if (!data.visitedViews.find((o) => isPathAndQueryEqual(o, toTagView(route)))) {
-          toLastView(data.visitedViews, tag.value)
-        }
-      })
-      break
-    case 'closeRight':
-      tagsView.delRightViews(tag.value).then((res) => {
-        const data = res as TagsViewState
-        if (!data.visitedViews.find((o) => isPathAndQueryEqual(o, toTagView(route)))) {
-          toLastView(data.visitedViews, tag.value)
-        }
-      })
-      break
+    }
     case 'closeOther':
-      tagOnClick(tag.value)
-      tagsView.delOtherViews(tag.value)
+      tagOnClick(tag)
+      await tagsView.delOtherViews(tag)
       break
-    case 'closeAll':
-      tagsView.delAllViews().then((res) => {
-        const data = res as TagsViewState
-        toLastView(data.visitedViews, tag.value)
-      })
+    case 'closeAll': {
+      const { visitedViews } = await tagsView.delAllViews()
+      toLastView(visitedViews, tag)
       break
+    }
     case 'fullScreen':
-      tagOnClick(tag.value)
+      tagOnClick(tag)
       app.tagsView.fullScreen = true
       break
     default:
       break
   }
 }
-const toLastView = (visitedViews: TagView[], view?: TagView) => {
-  const latestView = visitedViews.slice(-1)[0]
-  if (latestView && latestView.path) {
+
+const toLastView = (visitedViews: TagView[], view?: TagView): void => {
+  const latestView = visitedViews.at(-1)
+  if (latestView?.path) {
     tagOnClick(latestView)
+    return
+  }
+
+  if (view?.name === 'Dashboard') {
+    void router.replace({ path: '/redirect' + view.path })
   } else {
-    if (view?.name === 'Dashboard') {
-      router.replace({ path: '/redirect' + view.path })
-    } else {
-      router.push('/')
-    }
+    void router.push('/')
   }
 }
 
-const tagOnClick = (tag: TagView) => {
+const tagOnClick = (tag: TagView): void => {
   const { path } = tag
-  router.push(path)
+  void router.push(path)
 }
-const handleQuery = (id: number) => {
-  router.push({
+
+const handleQuery = (id: number): void => {
+  void router.push({
     name: 'TagsQuery',
-    query: { id: id, tagViewTitle: title.value }
+    query: { id, tagViewTitle: title.value }
   })
 }
-const handleParams = (id: number) => {
+
+const handleParams = (id: number): void => {
   // 路由跳转
-  router.push({
+  void router.push({
     name: 'TagsParams',
-    params: { id: id, tagViewTitle: title.value }
+    params: { id, tagViewTitle: title.value }
   })
 }
 </script>

@@ -13,7 +13,9 @@
     "lint:eslint:fix": "eslint --cache --max-warnings 0 \"src/**/*.{vue,ts,tsx}\" --fix",
     "lint:prettier": "prettier --write \"**/*.{js,ts,json,tsx,css,less,scss,vue,html,md}\" --ignore \"node_modules/**\" --ignore \"dist/**\"",
     "lint:stylelint": "stylelint --cache --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "prepare": "husky",
+    "commitlint": "commitlint --last --verbose"
   },
   "dependencies": {
     "@vueuse/core": "^14.1.0",
@@ -26,6 +28,8 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "^9.39.2",
     "@iconify-icons/icon-park-outline": "^1.2.11",
     "@iconify/vue": "^5.0.0",
@@ -36,6 +40,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-vue": "^10.6.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "naive-ui": "^2.43.2",
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
@@ -79,5 +85,16 @@
     "dashboard"
   ],
   "author": "Vue Elven Team",
-  "license": "MIT"
+  "license": "MIT",
+  "lint-staged": {
+    "*.{js,ts,tsx,vue}": [
+      "eslint --max-warnings 0 --fix"
+    ],
+    "*.{css,scss,less,postcss,vue}": [
+      "stylelint --fix"
+    ],
+    "*.{json,md,html}": [
+      "prettier --write"
+    ]
+  }
 }

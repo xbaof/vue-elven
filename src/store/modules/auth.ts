@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia'
 import type { AuthState } from '../types'
 import type { ReqLogin } from '@/api/system/types'
-import { login } from '@/api/system/auth'
+import { login as loginApi } from '@/api/system/auth'
 import { ELV_AUTH } from '@/enums/cacheEnum'
-import { useUserStore, usePermissionStore, useTagsViewStore } from '@/store'
+import { usePermissionStore } from './permission'
+import { useTagsViewStore } from './tagsView'
+import { useUserStore } from './user'
 import { createFullEncryptSerializer } from '@/utils/pinia-persist.serializer'
+import router from '@/router'
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -17,30 +20,28 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     /**
-     * 登录并保存 token
+     * 登录并保存 token。
      */
-    login(params: ReqLogin) {
-      return new Promise<string>((resolve, reject) => {
-        login(params)
-          .then((res) => {
-            const { data } = res
-            this.token = data.token
-            resolve(data.token)
-          })
-          .catch((error) => {
-            reject(error)
-          })
-      })
+    async login(params: ReqLogin): Promise<string> {
+      const response = await loginApi(params)
+      const { data } = response
+      this.token = data.token
+      return data.token
     },
-    /** 前端登出 */
-    logOut() {
-      useUserStore().resetUser()
-      usePermissionStore().resetPermission()
-      useTagsViewStore().resetTagsView()
-      // 重置token
+    /**
+     * 前端登出并重置相关状态。
+     */
+    logOut(): void {
+      const userStore = useUserStore()
+      const permissionStore = usePermissionStore()
+      const tagsViewStore = useTagsViewStore()
+
+      userStore.resetUser()
+      permissionStore.resetPermission(router)
+      tagsViewStore.resetTagsView()
       this.resetAuth()
     },
-    resetAuth() {
+    resetAuth(): void {
       this.$reset()
     }
   },
