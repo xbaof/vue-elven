@@ -18,13 +18,13 @@
 </template>
 <script lang="ts" setup>
 import { computed, h } from 'vue'
-import { useRoute, useRouter, type RouteRecordNormalized } from 'vue-router'
+import { useRoute, type RouteRecordNormalized } from 'vue-router'
+import type { MenuOption } from 'naive-ui'
 import { storeToRefs } from 'pinia'
-import { openLink } from '@/utils'
 import { getTagViewTitle, toTagView } from '@/store/modules/tagsView'
 import { useAppStore } from '@/store'
-import { TagView } from '@/store/types'
 import SvgIcon from '@/components/SvgIcon/index.vue'
+import { useMenuNavigate } from '@/hooks/useMenuNavigate'
 
 defineOptions({
   name: 'Breadcrumb'
@@ -32,7 +32,7 @@ defineOptions({
 
 const app = useAppStore()
 const route = useRoute()
-const router = useRouter()
+const { navigateByMenuOption } = useMenuNavigate()
 const { breadcrumb } = storeToRefs(app)
 
 interface BreadcrumbItem {
@@ -46,7 +46,7 @@ interface BreadcrumbItem {
 }
 
 /**
- * 生成面包屑数据
+ * 根据匹配到的路由记录生成面包屑树。
  */
 const generator = (routerMaps: RouteRecordNormalized[]): BreadcrumbItem[] => {
   return routerMaps.map((o) => {
@@ -72,7 +72,7 @@ const generator = (routerMaps: RouteRecordNormalized[]): BreadcrumbItem[] => {
 }
 
 /**
- * 面包屑列表
+ * 当前路由对应的面包屑列表。
  */
 const breadcrumbs = computed(() => {
   const matcheds = route.matched.filter((o) => o.meta?.title)
@@ -87,16 +87,10 @@ const breadcrumbs = computed(() => {
 })
 
 /**
- * 处理面包屑点击
+ * 处理面包屑点击跳转。
  */
 const handleLink = (_key: string, option: BreadcrumbItem) => {
-  if (option?.isLink && option.linkUrl) {
-    openLink(option.linkUrl)
-  } else {
-    const targetPath = typeof option.redirect === 'string' ? option.redirect : option.key
-    router.push(targetPath).catch((err) => {
-      console.error('路由跳转失败:', err)
-    })
-  }
+  const targetPath = typeof option.redirect === 'string' ? option.redirect : option.key
+  void navigateByMenuOption(option as MenuOption, targetPath)
 }
 </script>

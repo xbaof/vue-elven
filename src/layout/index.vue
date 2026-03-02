@@ -48,22 +48,24 @@ const route = useRoute()
 const hasSider = computed(() => layout.value !== 'horizontal' && device.value === 'desktop')
 const isShowFooter = computed(() => showFooter.value && !route.meta?.isIframe)
 
-// 侧边栏配置常量
-const SIDEBAR_COLLAPSED_WIDTH = 58
-const RESPONSIVE_BREAKPOINTS = {
+// 侧边栏折叠后的默认宽度
+const sideBarCollapsedWidth = 58
+
+// 响应式断点
+const responsiveBreakpoints = {
   mobile: 760,
   tablet: 990
 } as const
 
 /**
- * 侧边栏或抽屉组件
- * 根据设备和布局模式动态渲染
+ * 侧边栏渲染组件
+ * 根据设备类型和布局模式在 Sider 与 Drawer 间切换
  */
 const LayoutSiderOrDrawer = defineComponent({
   name: 'LayoutSiderOrDrawer',
   setup() {
     const siderProps = computed<LayoutSiderProps>(() => ({
-      collapsedWidth: SIDEBAR_COLLAPSED_WIDTH,
+      collapsedWidth: sideBarCollapsedWidth,
       width: sidebar.value.sidebarWidth,
       inverted: sidebar.value.inverted,
       contentClass: 'flex flex-col',
@@ -116,12 +118,12 @@ const LayoutSiderOrDrawer = defineComponent({
 })
 
 /**
- * 同步主题和侧边栏宽度的设置
+ * 同步主题与侧边栏相关的 CSS 变量
  */
-const updateThemeAndSidebar = () => {
+const updateThemeAndSidebar = (): void => {
   app.toggleTheme(app.overrideColor)
 
-  const widthValue = hasSider.value ? (sidebar.value.opened ? sidebar.value.sidebarWidth : SIDEBAR_COLLAPSED_WIDTH) : 0
+  const widthValue = hasSider.value ? (sidebar.value.opened ? sidebar.value.sidebarWidth : sideBarCollapsedWidth) : 0
 
   document.body.style.setProperty('--sidebar-width', `${widthValue}px`)
   document.body.style.setProperty(
@@ -130,29 +132,27 @@ const updateThemeAndSidebar = () => {
   )
 }
 
-// 每次设置更新时同步主题及侧边栏宽度
+// 配置变更时同步主题与布局变量
 watchEffect(updateThemeAndSidebar)
 
 /**
- * 响应式布局处理
- * 根据窗口宽度自动调整侧边栏和设备类型
+ * 根据容器宽度切换设备模式与侧边栏状态
  */
 const layoutRef = ref<HTMLElement>()
 useResizeObserver(layoutRef, ([entry]) => {
   const { width } = entry.contentRect
 
-  if (width <= RESPONSIVE_BREAKPOINTS.mobile) {
+  if (width <= responsiveBreakpoints.mobile) {
     app.toggleSidebar(false, 'mobile')
-  } else if (width <= RESPONSIVE_BREAKPOINTS.tablet) {
+  } else if (width <= responsiveBreakpoints.tablet) {
     app.toggleSidebar(false, 'desktop')
   } else {
-    // 宽度大于990时，若未点击折叠则保持打开状态，否则关闭
     app.toggleSidebar(!sidebar.value.isClickCollapse, 'desktop')
   }
 })
 
 /**
- * 同步头部高度到 CSS 变量
+ * 将头部高度同步到 CSS 变量，供内容区域计算高度使用
  */
 const layoutHeaderRef = ref<HTMLElement>()
 useResizeObserver(layoutHeaderRef, ([entry]) => {

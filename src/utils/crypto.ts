@@ -13,6 +13,17 @@ const AES_CONFIG = {
 }
 
 /**
+ * 解析解密后的字符串，优先按 JSON 解析，失败则返回原字符串。
+ */
+const parseDecryptedData = (plainText: string): unknown => {
+  try {
+    return JSON.parse(plainText)
+  } catch {
+    return plainText
+  }
+}
+
+/**
  * 加密工具类
  */
 export class CryptoUtil {
@@ -39,20 +50,14 @@ export class CryptoUtil {
    * @param encryptedData 加密后的Base64密文字符串
    * @returns 泛型指定的原数据类型，解密失败返回null
    */
-  static decrypt<T = any>(encryptedData: Nullable<string>): Nullable<T> {
+  static decrypt<T = unknown>(encryptedData: Nullable<string>): Nullable<T> {
     try {
       if (!encryptedData || typeof encryptedData !== 'string') return null
       const decryptResult = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY, AES_CONFIG)
       const plainText = decryptResult.toString(CryptoJS.enc.Utf8)
       if (!plainText) return null
 
-      // 尝试解析JSON，解析失败则返回纯字符串
-      try {
-        return JSON.parse(plainText) as T
-      } catch {
-        // 解析失败说明原数据是纯字符串，直接返回
-        return plainText as unknown as T
-      }
+      return parseDecryptedData(plainText) as T
     } catch (error) {
       console.error('【AES解密失败】', error)
       return null

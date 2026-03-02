@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { safeRouterReplace } from '@/router/navigation'
 
 defineOptions({
   name: 'Redirect'
@@ -12,8 +13,8 @@ defineOptions({
 
 const router = useRouter()
 
-const handleRedirect = () => {
-  const { currentRoute, replace } = router
+const handleRedirect = async (): Promise<void> => {
+  const { currentRoute } = router
   const { params, query } = currentRoute.value
   const path = params.path
 
@@ -25,15 +26,13 @@ const handleRedirect = () => {
   const targetPath = Array.isArray(path) ? path.join('/') : String(path)
   const fullPath = targetPath.startsWith('/') ? targetPath : `/${targetPath}`
 
-  replace({
+  await safeRouterReplace(router, {
     path: fullPath,
     query
-  }).catch((err) => {
-    console.error('Redirect failed:', err)
   })
 }
 
 onMounted(() => {
-  handleRedirect()
+  void handleRedirect()
 })
 </script>

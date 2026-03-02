@@ -29,8 +29,8 @@ export function isObjectValueEqual(a: Recordable, b: Recordable): boolean {
     const propA = a[propName]
     const propB = b[propName]
     if (!Object.prototype.hasOwnProperty.call(b, propName)) return false
-    if (propA instanceof Object) {
-      if (!isObjectValueEqual(propA, propB)) return false
+    if (propA instanceof Object && propB instanceof Object) {
+      if (!isObjectValueEqual(propA as Recordable, propB as Recordable)) return false
     } else if (propA !== propB) {
       return false
     }

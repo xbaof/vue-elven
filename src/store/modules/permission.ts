@@ -3,7 +3,9 @@ import type { PermissionState } from '../types'
 import { getPermission } from '@/api/system/auth'
 import { basicLayoutRoutes } from '@/router/staticRoutes'
 import generatorDynamicRouter from '@/router/dynamicRouter'
-import { useRouter } from 'vue-router'
+import type { RouteRecordRaw, Router } from 'vue-router'
+
+let buildingRoutesPromise: Promise<RouteRecordRaw[]> | null = null
 
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionState => ({
@@ -14,33 +16,54 @@ export const usePermissionStore = defineStore('permission', {
   }),
   actions: {
     /**
-     * 从后端拉取菜单与权限，并基于菜单构建动态路由
+     * 从后端拉取菜单与权限，并基于菜单生成动态路由。
      */
-    async buildRoutes() {
-      const permissionRes = await getPermission()
-      const { perms, menus, roles } = permissionRes.data
-      this.perms = perms
-      if (roles && roles.length) {
-        this.roles = roles
+    async buildRoutes(): Promise<RouteRecordRaw[]> {
+      if (this.isDynamicRouteAdded && this.routes.length > 0) {
+        return this.routes
       }
 
-      const asyncRoutes = generatorDynamicRouter(menus, basicLayoutRoutes)
-      this.routes = asyncRoutes
-      this.isDynamicRouteAdded = true
-      return asyncRoutes
-    },
-    /** 重置路由 */
-    resetRoutes() {
-      const router = useRouter()
-      // 仅重置 Layout 相关的动态子路由
-      const layout = basicLayoutRoutes.find((item) => item.name === 'Layout')
-      if (layout && router.hasRoute(layout.name!)) {
-        router.removeRoute(layout.name!)
+      if (buildingRoutesPromise) {
+        return buildingRoutesPromise
+      }
+
+      buildingRoutesPromise = (async (): Promise<RouteRecordRaw[]> => {
+        const permissionResponse = await getPermission()
+        const { perms, menus, roles } = permissionResponse.data
+        this.perms = perms
+        if (roles && roles.length) {
+          this.roles = roles
+        }
+
+        const asyncRoutes = generatorDynamicRouter(menus, basicLayoutRoutes)
+        this.routes = asyncRoutes
+        this.isDynamicRouteAdded = true
+        return asyncRoutes
+      })()
+
+      try {
+        return await buildingRoutesPromise
+      } finally {
+        buildingRoutesPromise = null
       }
     },
-    resetPermission() {
-      this.resetRoutes()
-      this.isDynamicRouteAdded = false
+    /**
+     * 重置路由，仅移除 Layout 相关动态子路由。
+     */
+    resetRoutes(router: Router): void {
+      const layoutRoute = basicLayoutRoutes.find((item) => item.name === 'Layout')
+      if (layoutRoute && router.hasRoute(layoutRoute.name!)) {
+        router.removeRoute(layoutRoute.name!)
+      }
+    },
+    /**
+     * 重置权限状态。
+     */
+    resetPermission(router?: Router): void {
+      if (router) {
+        this.resetRoutes(router)
+      }
+      buildingRoutesPromise = null
       this.$reset()
     }
   }

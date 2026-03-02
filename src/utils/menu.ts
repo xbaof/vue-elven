@@ -4,7 +4,17 @@ import SvgIcon from '@/components/SvgIcon/index.vue'
 import type { RouteRecordRaw } from 'vue-router'
 
 /**
- * @description 获取标签页标题
+ * 安全创建菜单图标渲染函数。
+ */
+const createMenuIcon = (icon: unknown): MenuOption['icon'] => {
+  if (typeof icon !== 'string' || !icon) {
+    return undefined
+  }
+  return () => h(SvgIcon, { icon })
+}
+
+/**
+ * @description 将路由树转换为 naive-ui 菜单数据
  * @param routes
  * @returns naive-ui 菜单数据源
  */
@@ -14,7 +24,7 @@ export function transformRoutesToMenus(routes: RouteRecordRaw[]): MenuOption[] {
     const menuOption: Partial<MenuOption> = {
       key: path,
       label: meta?.title,
-      icon: meta?.icon ? () => h(SvgIcon, { icon: meta?.icon as string }) : undefined,
+      icon: createMenuIcon(meta?.icon),
       isTagsView: meta?.isTagsView,
       isKeepAlive: meta?.isKeepAlive,
       isAffix: meta?.isAffix,
@@ -37,23 +47,23 @@ export function transformRoutesToMenus(routes: RouteRecordRaw[]): MenuOption[] {
  * @returns {MenuOption[]}
  */
 export function flatRoutesToMenus(options: RouteRecordRaw[], parentLabel?: Nullable<string>): MenuOption[] {
-  let reslut: MenuOption[] = []
+  let result: MenuOption[] = []
   options
     .filter((o) => !o.meta?.isHidden)
     .forEach((route) => {
       const { path, meta } = route
       const label = parentLabel ? `${parentLabel} > ${meta?.title}` : meta?.title
       if (route.children && route.children.length > 0) {
-        reslut = reslut.concat(flatRoutesToMenus(route.children, label))
+        result = result.concat(flatRoutesToMenus(route.children, label))
       } else {
-        reslut.push({
+        result.push({
           key: path,
           label: label,
           isLink: meta?.isLink,
-          icon: meta?.icon ? () => h(SvgIcon, { icon: meta?.icon as string }) : undefined,
+          icon: createMenuIcon(meta?.icon),
           linkUrl: meta?.linkUrl
         })
       }
     })
-  return reslut
+  return result
 }

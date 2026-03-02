@@ -6,9 +6,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
+import menuUnfoldOneIcon from '@iconify-icons/icon-park-outline/menu-unfold-one'
+import menuFoldOneIcon from '@iconify-icons/icon-park-outline/menu-fold-one'
 import { useAppStore } from '@/store'
-import menuFoldOne from '@iconify-icons/icon-park-outline/menu-fold-one'
-import menuUnfoldOne from '@iconify-icons/icon-park-outline/menu-unfold-one'
 
 defineOptions({
   name: 'SidebarCollapse'
@@ -25,7 +25,9 @@ const props = withDefaults(defineProps<Props>(), {
 const app = useAppStore()
 const { sidebar } = storeToRefs(app)
 
-const currentIcon = computed(() => (sidebar.value.opened ? menuUnfoldOne : menuFoldOne))
+const currentIcon = computed(() => {
+  return sidebar.value.opened ? menuUnfoldOneIcon : menuFoldOneIcon
+})
 
 const handleClick = () => {
   app.toggleSidebar(sidebar.value.opened)

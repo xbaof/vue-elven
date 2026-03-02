@@ -42,7 +42,7 @@
             <n-upload action="#" accept="image/*" :show-file-list="false" @before-upload="beforeUpload">
               <n-button size="small">
                 <template #icon>
-                  <svg-icon :size="16" :icon="UploadOne" />
+                  <svg-icon :size="16" :icon="uploadIcon" />
                 </template>
               </n-button>
             </n-upload>
@@ -75,17 +75,18 @@ defineOptions({
 })
 import 'cropperjs'
 import type { CropperImage, CropperSelection } from 'cropperjs'
-import { ref, computed, onMounted, nextTick, PropType } from 'vue'
-import { type UploadFileInfo, useMessage } from 'naive-ui'
 import type { IconifyIcon } from '@iconify/vue'
-import UploadOne from '@iconify-icons/icon-park-outline/upload-one'
-import Refresh from '@iconify-icons/icon-park-outline/refresh'
-import Rotate from '@iconify-icons/icon-park-outline/rotate'
-import rotationHorizontal from '@iconify-icons/icon-park-outline/rotation-horizontal'
-import rotationVertical from '@iconify-icons/icon-park-outline/rotation-vertical'
-import zoomIn from '@iconify-icons/icon-park-outline/zoom-in'
-import zoomOut from '@iconify-icons/icon-park-outline/zoom-out'
+import { ref, computed, onMounted, nextTick, PropType } from 'vue'
+import { type UploadFileInfo } from 'naive-ui'
+import uploadOneIcon from '@iconify-icons/icon-park-outline/upload-one'
+import refreshIcon from '@iconify-icons/icon-park-outline/refresh'
+import rotateIcon from '@iconify-icons/icon-park-outline/rotate'
+import rotationHorizontalIcon from '@iconify-icons/icon-park-outline/rotation-horizontal'
+import rotationVerticalIcon from '@iconify-icons/icon-park-outline/rotation-vertical'
+import zoomInIcon from '@iconify-icons/icon-park-outline/zoom-in'
+import zoomOutIcon from '@iconify-icons/icon-park-outline/zoom-out'
 import SvgIcon from '@/components/SvgIcon/index.vue'
+import { useUiFeedback } from '@/hooks/useUiFeedback'
 
 // 定义类型
 interface ToolbarItem {
@@ -136,7 +137,8 @@ const selectionInfo = ref({
 })
 const imageRef = ref<CropperImage | null>(null)
 const selectionRef = ref<CropperSelection | null>(null)
-const message = useMessage()
+const uiFeedback = useUiFeedback()
+const uploadIcon = uploadOneIcon
 
 // 计算属性
 const isCircle = computed(() => props.mode === 'circle')
@@ -148,7 +150,7 @@ const cropperHeight = computed(() => {
 // 工具栏配置
 const toolbars: ToolbarItem[] = [
   {
-    icon: Refresh,
+    icon: refreshIcon,
     tooltip: '重置',
     action: () => {
       selectionRef.value?.$reset()
@@ -157,14 +159,14 @@ const toolbars: ToolbarItem[] = [
     }
   },
   {
-    icon: Rotate,
+    icon: rotateIcon,
     tooltip: '逆时针旋转',
     action: () => {
       imageRef.value?.$rotate('-45deg')
     }
   },
   {
-    icon: Rotate,
+    icon: rotateIcon,
     isTransform: true,
     tooltip: '顺时针旋转',
     action: () => {
@@ -172,28 +174,28 @@ const toolbars: ToolbarItem[] = [
     }
   },
   {
-    icon: rotationHorizontal,
+    icon: rotationHorizontalIcon,
     tooltip: '横向翻转',
     action: () => {
       imageRef.value?.$scale(-1, 1)
     }
   },
   {
-    icon: rotationVertical,
+    icon: rotationVerticalIcon,
     tooltip: '纵向翻转',
     action: () => {
       imageRef.value?.$scale(1, -1)
     }
   },
   {
-    icon: zoomIn,
+    icon: zoomInIcon,
     tooltip: '放大',
     action: () => {
       imageRef.value?.$zoom(0.1)
     }
   },
   {
-    icon: zoomOut,
+    icon: zoomOutIcon,
     tooltip: '缩小',
     action: () => {
       imageRef.value?.$zoom(-0.1)
@@ -204,12 +206,12 @@ const toolbars: ToolbarItem[] = [
 // 方法
 const beforeUpload = async (data: { file: UploadFileInfo }) => {
   if (!data.file.file) {
-    message.error('请选择要上传的文件')
+    uiFeedback.msgError('请选择要上传的文件')
     return false
   }
 
   if (!data.file.file.type.includes('image/')) {
-    message.error('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。')
+    uiFeedback.msgError('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。')
     return false
   }
 
@@ -225,12 +227,12 @@ const beforeUpload = async (data: { file: UploadFileInfo }) => {
       }
 
       reader.onerror = () => {
-        message.error('文件读取失败')
+        uiFeedback.msgError('文件读取失败')
         resolve(false)
       }
     })
   } catch (error) {
-    message.error('上传失败')
+    uiFeedback.msgErrorFromUnknown(error, '上传失败，请稍后重试')
     return false
   }
 }
@@ -321,7 +323,7 @@ const confirmCropImage = async (): Promise<ImageInfo> => {
     }
   } catch (error) {
     console.error('裁剪失败:', error)
-    throw new Error((error as Error).message || '生成图片失败')
+    throw error
   }
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div @click="showModal = true">
-    <svg-icon :icon="Search" />
+    <svg-icon :icon="searchIcon" />
     <n-modal
       v-model:show="showModal"
       preset="card"
@@ -20,7 +20,7 @@
           @input="onSearch"
         >
           <template #prefix>
-            <svg-icon :icon="Search" />
+            <svg-icon :icon="searchIcon" />
           </template>
         </n-input>
         <n-button v-if="app.device === 'mobile'" class="ml-10" text type="primary" @click="showModal = false">
@@ -124,23 +124,22 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, shallowRef, unref, nextTick, getCurrentInstance, computed } from 'vue'
+import { computed, getCurrentInstance, nextTick, ref, shallowRef, unref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
-import { onKeyStroke, useScroll, useDebounceFn } from '@vueuse/core'
+import { onKeyStroke, useDebounceFn, useScroll } from '@vueuse/core'
+import searchIcon from '@iconify-icons/icon-park-outline/search'
 import type { MenuOption } from 'naive-ui'
-import Search from '@iconify-icons/icon-park-outline/search'
 import { useAppStore, usePermissionStore } from '@/store'
-import { openLink } from '@/utils'
+import { useMenuNavigate } from '@/hooks/useMenuNavigate'
 import { flatRoutesToMenus } from '@/utils/menu'
 
 defineOptions({
   name: 'SearchMenu'
 })
 
-const router = useRouter()
 const app = useAppStore()
 const permissionStore = usePermissionStore()
+const { navigateByMenuOption } = useMenuNavigate()
 const { routes } = storeToRefs(permissionStore)
 const showModal = ref(false)
 const instance = getCurrentInstance()
@@ -160,99 +159,122 @@ const menuAllList = computed<SearchableMenu[]>(() =>
   }))
 )
 
-const handleSearch = () => {
+const handleSearch = (): void => {
   const keyword = searchMenuLabel.value.toLocaleLowerCase().trim()
   activeIndex.value = 0
-  searchResult.value = keyword ? menuAllList.value.filter((o) => o.__labelLower.includes(keyword)) : []
+  searchResult.value = keyword ? menuAllList.value.filter((item) => item.__labelLower.includes(keyword)) : []
 }
+
 const onSearch = useDebounceFn(handleSearch, 300)
 
-// 点击跳转
-const handleClick = async (option: MenuOption) => {
+/**
+ * 点击搜索结果后跳转。
+ */
+const handleClick = async (option: MenuOption): Promise<void> => {
   showModal.value = false
   await nextTick()
-  if (option.isLink && option.linkUrl) {
-    openLink(option.linkUrl as string)
-  } else {
-    router.push(String(option.key)).catch((err) => {
-      console.error('路由跳转失败:', err)
-    })
-  }
+  await navigateByMenuOption(option, String(option.key))
 }
-// 滚动
-const handleScroll = () => {
-  if (!instance) return
+
+/**
+ * 将当前高亮项滚动到可视区域。
+ */
+const handleScroll = (): void => {
+  if (!instance) {
+    return
+  }
+
   const liRefs = instance.refs['li' + activeIndex.value] as HTMLElement[] | undefined
-  if (!liRefs?.length) return
-  // li的padding
+  if (!liRefs?.length) {
+    return
+  }
+
   const liItemPadding = 8
-  const liItemEl = liRefs[0]
-  const liItemElOffsetTop = (liItemEl as HTMLElement)?.offsetTop
-  const liItemOffsetHeight = (liItemEl as HTMLElement)?.offsetHeight
-  // 可视长度（不包含溢出部分）
-  const scrollbarRefHeight = scrollbarRef.value ? scrollbarRef.value?.offsetHeight : 0
-  // 总长度（包含溢出部分）
-  const ulRefHeight = ulRef.value ? ulRef.value?.offsetHeight : 0
-  if (ulRefHeight <= scrollbarRefHeight || liItemElOffsetTop === 0) {
+  const liItemElement = liRefs[0]
+  const liItemOffsetTop = liItemElement.offsetTop
+  const liItemOffsetHeight = liItemElement.offsetHeight
+  const scrollbarRefHeight = scrollbarRef.value ? scrollbarRef.value.offsetHeight : 0
+  const ulRefHeight = ulRef.value ? ulRef.value.offsetHeight : 0
+
+  if (ulRefHeight <= scrollbarRefHeight || liItemOffsetTop === 0) {
     y.value = 0
-  } else if (liItemElOffsetTop < y.value) {
-    // 在可视区域上侧
-    y.value = liItemElOffsetTop - liItemPadding
-  } else if (liItemElOffsetTop + liItemOffsetHeight > scrollbarRefHeight + y.value && liItemElOffsetTop > y.value) {
-    // 在可视区域下侧
-    y.value = liItemElOffsetTop - (scrollbarRefHeight - liItemOffsetHeight - liItemPadding)
+    return
+  }
+
+  if (liItemOffsetTop < y.value) {
+    y.value = liItemOffsetTop - liItemPadding
+    return
+  }
+
+  if (liItemOffsetTop + liItemOffsetHeight > scrollbarRefHeight + y.value && liItemOffsetTop > y.value) {
+    y.value = liItemOffsetTop - (scrollbarRefHeight - liItemOffsetHeight - liItemPadding)
   }
 }
-// 鼠标滑入
-const handleMouseenter = (e: MouseEvent) => {
-  const target = e.currentTarget as HTMLElement | null
-  if (!target) return
+
+const handleMouseenter = (event: MouseEvent): void => {
+  const target = event.currentTarget as HTMLElement | null
+  if (!target) {
+    return
+  }
+
   const index = target.dataset.index
-  if (index == null) return
+  if (index == null) {
+    return
+  }
+
   activeIndex.value = Number(index)
 }
-// 向上
-const handleUp = () => {
-  if (!searchResult.value.length) return
+
+const handleUp = (): void => {
+  if (!searchResult.value.length) {
+    return
+  }
+
   activeIndex.value--
   if (activeIndex.value < 0) {
     activeIndex.value = searchResult.value.length - 1
   }
   handleScroll()
 }
-// 向下
-const handleDown = () => {
-  if (!searchResult.value.length) return
+
+const handleDown = (): void => {
+  if (!searchResult.value.length) {
+    return
+  }
+
   activeIndex.value++
   if (activeIndex.value > searchResult.value.length - 1) {
     activeIndex.value = 0
   }
   handleScroll()
 }
-// 回车
-const handleEnter = async () => {
+
+const handleEnter = async (): Promise<void> => {
   if (!searchResult.value.length) {
     return
   }
-  const result = unref(searchResult)
-  const index = unref(activeIndex)
-  if (result.length === 0 || index < 0 || index >= result.length) {
+
+  const resultList = unref(searchResult)
+  const currentIndex = unref(activeIndex)
+  if (resultList.length === 0 || currentIndex < 0 || currentIndex >= resultList.length) {
     return
   }
-  const to = result[index]
-  if (to) {
-    handleClick(to)
+
+  const selectedOption = resultList[currentIndex]
+  if (selectedOption) {
+    await handleClick(selectedOption)
   }
 }
 
 /**
- * 弹窗关闭后重置状态
+ * 弹窗关闭后重置搜索状态。
  */
-const handleAfterLeave = () => {
+const handleAfterLeave = (): void => {
   searchMenuLabel.value = ''
   searchResult.value = []
   activeIndex.value = 0
 }
+
 onKeyStroke('Enter', handleEnter)
 onKeyStroke('ArrowUp', handleUp)
 onKeyStroke('ArrowDown', handleDown)

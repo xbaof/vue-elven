@@ -1,8 +1,8 @@
-type Recordable<T = any> = Record<string, T>
+type Recordable<T = unknown> = Record<string, T>
 
-type AnyObject = Recordable<any>
+type AnyObject = Recordable<unknown>
 
-type Fn<T = void> = (...args: any[]) => T
+type Fn<T = void, TArgs extends unknown[] = unknown[]> = (...args: TArgs) => T
 
 type Noop = () => void
 
@@ -14,6 +14,6 @@ type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
 }
 
-type PromiseFn<T = any> = (...args: any[]) => Promise<T>
+type PromiseFn<T = unknown, TArgs extends unknown[] = unknown[]> = (...args: TArgs) => Promise<T>
 
 type StringNumber = string | number

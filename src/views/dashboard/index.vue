@@ -7,10 +7,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useMessage } from 'naive-ui'
+import { useUiFeedback } from '@/hooks/useUiFeedback'
 import { ref } from 'vue'
 const icon = ref<string>('aaaaaaaaaaa')
-const msg = useMessage()
+const uiFeedback = useUiFeedback()
 const options = [
   {
     label: '滨海湾金沙，新加坡',

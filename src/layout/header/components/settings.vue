@@ -1,6 +1,6 @@
 <template>
   <div @click="show = true">
-    <svg-icon :icon="Theme" />
+    <svg-icon :icon="themeIcon" />
     <n-drawer v-model:show="show" :width="310">
       <n-drawer-content title="系统配置" closable>
         <n-divider> 导航栏模式 </n-divider>
@@ -136,8 +136,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import themeIcon from '@iconify-icons/icon-park-outline/theme'
 import { useAppStore } from '@/store'
-import Theme from '@iconify-icons/icon-park-outline/theme'
 
 defineOptions({
   name: 'Settings'

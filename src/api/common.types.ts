@@ -19,7 +19,7 @@ export interface Res {
  * 带数据的响应结构
  * @template T 数据类型
  */
-export interface ResData<T = any> extends Res {
+export interface ResData<T = unknown> extends Res {
   /** 具体数据 */
   data: T
 }
@@ -38,7 +38,7 @@ export interface PageBase {
  * 分页请求额外参数（用于扩展）
  * @template T 扩展字段类型
  */
-export type ReqPageExtra<T = any> = {
+export type ReqPageExtra<T extends object = Recordable<never>> = {
   [P in keyof T]?: T[P]
 }
 
@@ -46,13 +46,13 @@ export type ReqPageExtra<T = any> = {
  * 分页请求参数
  * @template T 扩展字段类型
  */
-export type ReqPage<T = any> = PageBase & ReqPageExtra<T>
+export type ReqPage<T extends object = Recordable<never>> = PageBase & ReqPageExtra<T>
 
 /**
  * 分页响应结构
  * @template T 列表项类型
  */
-export interface ResPage<T = any> extends PageBase {
+export interface ResPage<T = unknown> extends PageBase {
   /** 数据列表 */
   list: T[]
   /** 总记录数 */
@@ -83,19 +83,19 @@ export interface TimeRangeParams {
  * 带排序的分页请求
  * @template T 扩展字段类型
  */
-export type ReqPageWithSort<T = any> = ReqPage<T> & SortParams
+export type ReqPageWithSort<T extends object = Recordable<never>> = ReqPage<T> & SortParams
 
 /**
  * 带时间范围的分页请求
  * @template T 扩展字段类型
  */
-export type ReqPageWithTimeRange<T = any> = ReqPage<T> & TimeRangeParams
+export type ReqPageWithTimeRange<T extends object = Recordable<never>> = ReqPage<T> & TimeRangeParams
 
 /**
  * 完整的分页请求（包含排序和时间范围）
  * @template T 扩展字段类型
  */
-export type ReqPageFull<T = any> = ReqPage<T> & SortParams & TimeRangeParams
+export type ReqPageFull<T extends object = Recordable<never>> = ReqPage<T> & SortParams & TimeRangeParams
 
 /**
  * ID 参数（单个）

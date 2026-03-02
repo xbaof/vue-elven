@@ -5,28 +5,30 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store'
 import { useRoute, useRouter } from 'vue-router'
-import { useMessage } from 'naive-ui'
+import { safeRouterReplace } from '@/router/navigation'
+import { useUiFeedback } from '@/hooks/useUiFeedback'
 const authStore = useAuthStore()
 
 const route = useRoute()
 const router = useRouter()
-const message = useMessage()
-const handleLogin = () => {
-  message.loading('登录中...')
-  authStore
-    .login({
+const uiFeedback = useUiFeedback()
+
+const handleLogin = async (): Promise<void> => {
+  const stopLoading = uiFeedback.startLoading('登录中...')
+
+  try {
+    await authStore.login({
       userName: 'admin',
       password: '123456',
       captchaCode: '',
       captchaId: ''
     })
-    .then(() => {
-      message.destroyAll()
-      message.success('登录成功，即将进入系统')
-      setTimeout(() => router.replace((route.query.redirect as string) ?? '/'))
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+    uiFeedback.msgSuccess('登录成功，即将进入系统')
+    await safeRouterReplace(router, (route.query.redirect as string) ?? '/')
+  } catch (error) {
+    uiFeedback.msgErrorFromUnknown(error, '操作失败')
+  } finally {
+    stopLoading()
+  }
 }
 </script>

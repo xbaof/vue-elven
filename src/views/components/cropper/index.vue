@@ -23,25 +23,29 @@ defineOptions({
   name: 'CropperDemo'
 })
 
-import { ref } from 'vue'
-import type { ImageRenderToolbarProps } from 'naive-ui'
+import { ref, defineAsyncComponent } from 'vue'
+import { type ImageRenderToolbarProps } from 'naive-ui'
 import { downloadByData } from '@/utils/index'
-import Cropper from '@/components/Cropper/index.vue'
+import { useUiFeedback } from '@/hooks/useUiFeedback'
+import type CropperComponent from '@/components/Cropper/index.vue'
 import CropperImage from './cropper_image.png'
 
+const Cropper = defineAsyncComponent(() => import('@/components/Cropper/index.vue'))
+
 const imgSrc = ref(CropperImage)
+const uiFeedback = useUiFeedback()
 
 const cropImage = ref<string>('')
 const mode = ref<'rectangle' | 'circle'>('rectangle')
-const cropper = ref<InstanceType<typeof Cropper> | null>(null)
-const handleCropImage = async () => {
+const cropper = ref<InstanceType<typeof CropperComponent> | null>(null)
+const handleCropImage = async (): Promise<void> => {
   if (!cropper.value) return
 
   try {
     const cropImgInfo = await cropper.value.confirmCropImage()
     cropImage.value = cropImgInfo.base64 || ''
   } catch (error) {
-    console.error('裁剪图片失败:', error)
+    uiFeedback.msgErrorFromUnknown(error, '裁剪图片失败，请稍后重试')
   }
 }
 
@@ -56,7 +60,7 @@ const renderToolbar = ({ nodes }: ImageRenderToolbarProps) => {
           downloadByData(cropImgInfo.blob, 'cropped-image.png')
         }
       } catch (error) {
-        console.error('下载裁剪图片失败:', error)
+        uiFeedback.msgErrorFromUnknown(error, '裁剪图片失败，请稍后重试')
       }
     }
   }

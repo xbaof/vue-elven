@@ -7,8 +7,8 @@ interface ClipEl extends HTMLElement {
 const { copy, isSupported } = useClipboard()
 
 export const clipboard: Directive = {
-  mounted(el: ClipEl, binding: DirectiveBinding) {
-    el.clipValue = binding.value
+  mounted(el: ClipEl, binding: DirectiveBinding<string | undefined>) {
+    el.clipValue = binding.value ?? ''
     const arg = binding.arg ?? 'dblclick'
     useEventListener(el, arg, async () => {
       if (!el.clipValue) return
@@ -20,7 +20,7 @@ export const clipboard: Directive = {
       }
     })
   },
-  updated(el: ClipEl, binding: DirectiveBinding) {
-    el.clipValue = binding.value
+  updated(el: ClipEl, binding: DirectiveBinding<string | undefined>) {
+    el.clipValue = binding.value ?? ''
   }
 }

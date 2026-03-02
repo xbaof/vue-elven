@@ -1,11 +1,11 @@
 import { useAuthStore, usePermissionStore, useUserStore } from '@/store'
-import type { Router } from 'vue-router'
+import type { RouteLocationNormalized, Router } from 'vue-router'
 
 // 白名单路由
 const whiteList = ['/login', '/redirect']
 
 function createBeforeEachGuard(router: Router) {
-  return async (to: any, from: any, next: any) => {
+  return async (to: RouteLocationNormalized, _from: RouteLocationNormalized) => {
     window.$loadingBar.start()
     const authStore = useAuthStore()
     const token = authStore.getToken
@@ -13,43 +13,43 @@ function createBeforeEachGuard(router: Router) {
     // 已登录
     if (token) {
       if (to.path === '/login') {
-        next({ path: '/' })
-        return
+        return { path: '/' }
       }
 
       const permissionStore = usePermissionStore()
-      // 首次登录或刷新页面时，拉取用户权限并生成动态路由
+      // 首次登录或刷新时，拉取用户信息并挂载动态路由
       if (!permissionStore.isDynamicRouteAdded) {
         try {
           const userStore = useUserStore()
           await Promise.all([userStore.fetchUserInfo(), permissionStore.buildRoutes()])
-          if (!router.hasRoute(to.name || '')) {
+          const toName = to.name
+          if (!toName || !router.hasRoute(toName)) {
             if (to.path === '/404' && to.redirectedFrom !== undefined) {
-              next({
+              return {
                 path: to.redirectedFrom?.fullPath,
                 replace: true,
                 query: to.query
-              })
-            } else {
-              next({ ...to, replace: true })
+              }
             }
-          } else {
-            next()
+            return {
+              path: to.path,
+              query: to.query,
+              hash: to.hash,
+              replace: true
+            }
           }
         } catch {
           authStore.resetAuth()
-          next('/login')
+          return '/login'
         }
-      } else {
-        next()
       }
-    } else {
-      if (whiteList.includes(to.path)) {
-        next()
-      } else {
-        next('/login')
-      }
+      return
     }
+
+    if (whiteList.includes(to.path)) {
+      return
+    }
+    return '/login'
   }
 }
 
