@@ -1,0 +1,93 @@
+import type { IconifyIcon } from '@iconify/vue'
+import adProductIcon from '@iconify-icons/icon-park-outline/ad-product'
+import apiAppIcon from '@iconify-icons/icon-park-outline/api-app'
+import appSwitchIcon from '@iconify-icons/icon-park-outline/app-switch'
+import applicationOneIcon from '@iconify-icons/icon-park-outline/application-one'
+import associationIcon from '@iconify-icons/icon-park-outline/association'
+import asteriskIcon from '@iconify-icons/icon-park-outline/asterisk'
+import badgeIcon from '@iconify-icons/icon-park-outline/badge'
+import benzIcon from '@iconify-icons/icon-park-outline/benz'
+import blocksAndArrowsIcon from '@iconify-icons/icon-park-outline/blocks-and-arrows'
+import categoryManagementIcon from '@iconify-icons/icon-park-outline/category-management'
+import circleFiveLineIcon from '@iconify-icons/icon-park-outline/circle-five-line'
+import circleFourIcon from '@iconify-icons/icon-park-outline/circle-four'
+import circleFourLineIcon from '@iconify-icons/icon-park-outline/circle-four-line'
+import circleThreeIcon from '@iconify-icons/icon-park-outline/circle-three'
+import circleTwoLineIcon from '@iconify-icons/icon-park-outline/circle-two-line'
+import circlesAndTrianglesIcon from '@iconify-icons/icon-park-outline/circles-and-triangles'
+import circlesSevenIcon from '@iconify-icons/icon-park-outline/circles-seven'
+import circularConnectionIcon from '@iconify-icons/icon-park-outline/circular-connection'
+import coneIcon from '@iconify-icons/icon-park-outline/cone'
+import conesIcon from '@iconify-icons/icon-park-outline/cones'
+import convergingGatewayIcon from '@iconify-icons/icon-park-outline/converging-gateway'
+import coordinateSystemIcon from '@iconify-icons/icon-park-outline/coordinate-system'
+import crossRingIcon from '@iconify-icons/icon-park-outline/cross-ring'
+import crossRingTwoIcon from '@iconify-icons/icon-park-outline/cross-ring-two'
+import crownTwoIcon from '@iconify-icons/icon-park-outline/crown-two'
+import cubeIcon from '@iconify-icons/icon-park-outline/cube'
+import cubeFiveIcon from '@iconify-icons/icon-park-outline/cube-five'
+import cubeFourIcon from '@iconify-icons/icon-park-outline/cube-four'
+import cubeThreeIcon from '@iconify-icons/icon-park-outline/cube-three'
+import cubeTwoIcon from '@iconify-icons/icon-park-outline/cube-two'
+import cycleArrowIcon from '@iconify-icons/icon-park-outline/cycle-arrow'
+import cycleOneIcon from '@iconify-icons/icon-park-outline/cycle-one'
+import cylinderIcon from '@iconify-icons/icon-park-outline/cylinder'
+import displayIcon from '@iconify-icons/icon-park-outline/display'
+import endlessIcon from '@iconify-icons/icon-park-outline/endless'
+import errorPromptIcon from '@iconify-icons/icon-park-outline/error-prompt'
+
+export type IconSource = string | IconifyIcon
+
+export interface IconOptionItem {
+  iconValue: string
+  iconData: IconSource
+}
+
+const iconParkBaseList: IconOptionItem[] = [
+  { iconValue: 'icon-park-outline:ad-product', iconData: adProductIcon },
+  { iconValue: 'icon-park-outline:api-app', iconData: apiAppIcon },
+  { iconValue: 'icon-park-outline:app-switch', iconData: appSwitchIcon },
+  { iconValue: 'icon-park-outline:application-one', iconData: applicationOneIcon },
+  { iconValue: 'icon-park-outline:association', iconData: associationIcon },
+  { iconValue: 'icon-park-outline:asterisk', iconData: asteriskIcon },
+  { iconValue: 'icon-park-outline:badge', iconData: badgeIcon },
+  { iconValue: 'icon-park-outline:benz', iconData: benzIcon },
+  { iconValue: 'icon-park-outline:category-management', iconData: categoryManagementIcon },
+  { iconValue: 'icon-park-outline:converging-gateway', iconData: convergingGatewayIcon },
+  { iconValue: 'icon-park-outline:coordinate-system', iconData: coordinateSystemIcon },
+  { iconValue: 'icon-park-outline:cube', iconData: cubeIcon },
+  { iconValue: 'icon-park-outline:cycle-arrow', iconData: cycleArrowIcon },
+  { iconValue: 'icon-park-outline:cylinder', iconData: cylinderIcon },
+  { iconValue: 'icon-park-outline:display', iconData: displayIcon },
+  { iconValue: 'icon-park-outline:endless', iconData: endlessIcon },
+  { iconValue: 'icon-park-outline:error-prompt', iconData: errorPromptIcon }
+]
+
+const iconParkExtraDemoList: IconOptionItem[] = [
+  { iconValue: 'icon-park-outline:blocks-and-arrows', iconData: blocksAndArrowsIcon },
+  { iconValue: 'icon-park-outline:circle-five-line', iconData: circleFiveLineIcon },
+  { iconValue: 'icon-park-outline:circle-four', iconData: circleFourIcon },
+  { iconValue: 'icon-park-outline:circle-four-line', iconData: circleFourLineIcon },
+  { iconValue: 'icon-park-outline:circle-three', iconData: circleThreeIcon },
+  { iconValue: 'icon-park-outline:circle-two-line', iconData: circleTwoLineIcon },
+  { iconValue: 'icon-park-outline:circles-and-triangles', iconData: circlesAndTrianglesIcon },
+  { iconValue: 'icon-park-outline:circles-seven', iconData: circlesSevenIcon },
+  { iconValue: 'icon-park-outline:circular-connection', iconData: circularConnectionIcon },
+  { iconValue: 'icon-park-outline:cone', iconData: coneIcon },
+  { iconValue: 'icon-park-outline:cones', iconData: conesIcon },
+  { iconValue: 'icon-park-outline:cross-ring', iconData: crossRingIcon },
+  { iconValue: 'icon-park-outline:cross-ring-two', iconData: crossRingTwoIcon },
+  { iconValue: 'icon-park-outline:crown-two', iconData: crownTwoIcon },
+  { iconValue: 'icon-park-outline:cube-five', iconData: cubeFiveIcon },
+  { iconValue: 'icon-park-outline:cube-four', iconData: cubeFourIcon },
+  { iconValue: 'icon-park-outline:cube-three', iconData: cubeThreeIcon },
+  { iconValue: 'icon-park-outline:cube-two', iconData: cubeTwoIcon },
+  { iconValue: 'icon-park-outline:cycle-one', iconData: cycleOneIcon }
+]
+
+export const iconParkDemoList: IconOptionItem[] = [...iconParkBaseList, ...iconParkExtraDemoList]
+
+export const iconParkPickerList: IconOptionItem[] = [
+  ...iconParkBaseList,
+  { iconValue: 'local:vite', iconData: 'local:vite' }
+]

@@ -5,13 +5,14 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { safeRouterReplace } from '@/router/navigation'
+import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 
 defineOptions({
   name: 'Redirect'
 })
 
 const router = useRouter()
+const { replace } = useSafeNavigation()
 
 const handleRedirect = async (): Promise<void> => {
   const { currentRoute } = router
@@ -26,7 +27,7 @@ const handleRedirect = async (): Promise<void> => {
   const targetPath = Array.isArray(path) ? path.join('/') : String(path)
   const fullPath = targetPath.startsWith('/') ? targetPath : `/${targetPath}`
 
-  await safeRouterReplace(router, {
+  await replace({
     path: fullPath,
     query
   })

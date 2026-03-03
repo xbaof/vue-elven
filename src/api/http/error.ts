@@ -2,6 +2,9 @@ import axios, { type AxiosError } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
 import type { RequestError } from './types'
 
+const defaultUnknownErrorMessage = '未知错误，请稍后重试'
+const defaultRequestFailedMessage = '请求失败，请稍后重试'
+
 export const isRequestError = (error: unknown): error is RequestError => {
   return (
     typeof error === 'object' &&
@@ -28,8 +31,8 @@ const getHttpStatusMessage = (status: number): string => {
 }
 
 const normalizeAxiosError = (error: AxiosError): RequestError => {
-  const message = error.message || ''
-  const lowerMessage = message.toLowerCase()
+  const messageText = error.message || ''
+  const lowerMessageText = messageText.toLowerCase()
 
   if (error.code === 'ERR_CANCELED') {
     return {
@@ -39,7 +42,7 @@ const normalizeAxiosError = (error: AxiosError): RequestError => {
     }
   }
 
-  if (lowerMessage.includes('network error')) {
+  if (lowerMessageText.includes('network error')) {
     return {
       kind: 'network',
       message: '网络连接异常，请检查网络后重试',
@@ -47,7 +50,7 @@ const normalizeAxiosError = (error: AxiosError): RequestError => {
     }
   }
 
-  if (error.code === 'ECONNABORTED' || lowerMessage.includes('timeout')) {
+  if (error.code === 'ECONNABORTED' || lowerMessageText.includes('timeout')) {
     return {
       kind: 'timeout',
       message: '请求超时，请稍后重试',
@@ -66,18 +69,46 @@ const normalizeAxiosError = (error: AxiosError): RequestError => {
 
   return {
     kind: 'unknown',
-    message: '请求失败，请稍后重试',
+    message: defaultRequestFailedMessage,
     raw: error
   }
 }
 
-export const normalizeRequestError = (error: unknown): RequestError => {
+/**
+ * 是否允许展示请求错误消息。
+ */
+export const canShowRequestError = (requestError: RequestError, showErrorMessage: boolean = true): boolean => {
+  if (!showErrorMessage) {
+    return false
+  }
+  if (requestError.kind === 'canceled') {
+    return false
+  }
+  return requestError.messageShown !== true
+}
+
+/**
+ * 标记错误消息已展示，避免重复弹窗。
+ */
+export const markRequestErrorShown = (requestError: RequestError): RequestError => {
+  requestError.messageShown = true
+  return requestError
+}
+
+export const normalizeRequestError = (error: unknown, fallbackMessage?: string): RequestError => {
   if (isRequestError(error)) {
     return error
   }
 
   if (axios.isAxiosError(error)) {
-    return normalizeAxiosError(error)
+    const requestError = normalizeAxiosError(error)
+    if (fallbackMessage && requestError.kind === 'unknown') {
+      return {
+        ...requestError,
+        message: fallbackMessage
+      }
+    }
+    return requestError
   }
 
   if (error instanceof Error && error.message) {
@@ -88,13 +119,17 @@ export const normalizeRequestError = (error: unknown): RequestError => {
     }
   }
 
+  if (fallbackMessage) {
+    return {
+      kind: 'unknown',
+      message: fallbackMessage,
+      raw: error
+    }
+  }
+
   return {
     kind: 'unknown',
-    message: '未知错误，请稍后重试',
+    message: defaultUnknownErrorMessage,
     raw: error
   }
-}
-
-export const getRequestErrorMessage = (error: unknown): string => {
-  return normalizeRequestError(error).message
 }

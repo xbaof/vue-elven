@@ -6,6 +6,7 @@ export type RequestErrorKind = 'business' | 'network' | 'timeout' | 'http' | 'ca
 export interface RequestError {
   kind: RequestErrorKind
   message: string
+  messageShown?: boolean
   status?: number
   code?: number
   raw?: unknown

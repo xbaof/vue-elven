@@ -1,9 +1,9 @@
-﻿import axios, { type AxiosResponse, type CreateAxiosDefaults } from 'axios'
+import axios, { type AxiosResponse, type CreateAxiosDefaults } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
 import { useAuthStore } from '@/store'
 import type { ResData } from '@/api/common.types'
 import { addPendingRequest, clearAllPendingRequests, removePendingRequest } from './cancel'
-import { getRequestErrorMessage, isRequestError, normalizeRequestError } from './error'
+import { canShowRequestError, isRequestError, markRequestErrorShown, normalizeRequestError } from './error'
 import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, RequestError, RequestOptions } from './types'
 
 const defaultConfig: CreateAxiosDefaults = {
@@ -19,9 +19,9 @@ const shouldShowErrorMessage = (config?: RequestConfig): boolean => {
   return config?.showErrorMessage !== false
 }
 
-const msgError = (message: string): void => {
+const showRequestErrorMessage = (messageText: string): void => {
   if (window.$message) {
-    window.$message.error(message)
+    window.$message.error(messageText)
   }
 }
 
@@ -58,8 +58,9 @@ service.interceptors.response.use(
         raw: responseData
       }
 
-      if (shouldShowErrorMessage(responseConfig)) {
-        msgError(requestError.message)
+      if (canShowRequestError(requestError, shouldShowErrorMessage(responseConfig))) {
+        showRequestErrorMessage(requestError.message)
+        markRequestErrorShown(requestError)
       }
       return Promise.reject(requestError)
     }
@@ -73,8 +74,10 @@ service.interceptors.response.use(
     }
 
     const requestError = normalizeRequestError(error)
-    if ((!requestConfig || shouldShowErrorMessage(requestConfig)) && requestError.kind !== 'canceled') {
-      msgError(requestError.message)
+    const shouldDisplayMessage = !requestConfig || shouldShowErrorMessage(requestConfig)
+    if (canShowRequestError(requestError, shouldDisplayMessage)) {
+      showRequestErrorMessage(requestError.message)
+      markRequestErrorShown(requestError)
     }
     return Promise.reject(requestError)
   }
@@ -124,5 +127,5 @@ const request: HttpRequestMethods = {
 
 export default request
 
-export { clearAllPendingRequests, getRequestErrorMessage, isRequestError, normalizeRequestError }
+export { canShowRequestError, clearAllPendingRequests, isRequestError, markRequestErrorShown, normalizeRequestError }
 export type { RequestConfig, RequestError, RequestErrorKind, RequestOptions } from './types'
