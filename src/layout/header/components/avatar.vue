@@ -9,14 +9,14 @@
 <script lang="ts" setup>
 import { reactive, computed, h } from 'vue'
 import { useDialog, type DialogReactive } from 'naive-ui'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import peopleIcon from '@iconify-icons/icon-park-outline/people'
 import logoutIcon from '@iconify-icons/icon-park-outline/logout'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useAuthStore } from '@/store/modules/auth'
 import { useUserStore } from '@/store/modules/user'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { safeRouterReplace } from '@/router/navigation'
+import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 
 defineOptions({
   name: 'HeaderAvatar'
@@ -25,9 +25,9 @@ defineOptions({
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const dialog = useDialog()
+const { replace } = useSafeNavigation()
 const uiFeedback = useUiFeedback()
 const route = useRoute()
-const router = useRouter()
 const avatarSrc = computed(() => userStore.getAvatar ?? '/src/assets/images/default_avatar.png')
 const sleep = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 150))
 
@@ -52,7 +52,7 @@ const handleLogout = async (dialogRef: DialogReactive): Promise<void> => {
   try {
     await sleep()
     authStore.logOut()
-    await safeRouterReplace(router, {
+    await replace({
       path: '/login',
       query: route.query
     })

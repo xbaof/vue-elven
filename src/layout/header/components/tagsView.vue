@@ -68,8 +68,8 @@ import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useAppStore, useTagsViewStore } from '@/store'
 import { isPathAndQueryEqual, toTagView } from '@/store/modules/tagsView'
 import { sortRoutesByMetaOrder } from '@/router/dynamicRouter'
-import { safeRouterPush, safeRouterReplace } from '@/router/navigation'
-import type { TagView, TagsViewState } from '@/store/types'
+import { useTagsActions, type TagActionKey } from '@/hooks/useTagsActions'
+import type { TagView } from '@/store/types'
 
 defineOptions({
   name: 'TagsView'
@@ -82,8 +82,7 @@ const visitedViews = computed<TagView[]>(() => tagsView.visitedViews as TagView[
 const instance = getCurrentInstance()
 const routes = computed<RouteRecordRaw[]>(() => router.getRoutes())
 const route = useRoute()
-
-const currentRouteTag = computed<TagView>(() => toTagView(route))
+const { currentRouteTag, isCurrentTag, isAffixTag, openTag, closeCurrentTag, executeTagAction } = useTagsActions()
 
 const showTool = ref(false)
 const visible = ref(false)
@@ -142,76 +141,24 @@ const menuOptions = reactive<Array<DropdownOption>>([
 ])
 
 const isActive = (tag: TagView): boolean => {
-  return isPathAndQueryEqual(tag, currentRouteTag.value)
+  return isCurrentTag(tag)
 }
 
 const isAffix = (tag: TagView): boolean => {
-  return Boolean(tag.meta?.isAffix)
+  return isAffixTag(tag)
 }
 
 const tagOnClick = (tag: TagView): void => {
-  const { path, query } = tag
-  if (isActive(tag)) {
-    return
-  }
-  void safeRouterPush(router, { path, query })
+  void openTag(tag)
 }
 
-const handleMenuSelect = async (key: string): Promise<void> => {
+const handleMenuSelect = async (key: TagActionKey): Promise<void> => {
   const tag = unref(selectedTag)
   if (!tag) {
     return
   }
 
-  switch (key) {
-    case 'refresh': {
-      tagsView.delCachedView(tag)
-      await nextTick()
-      const { fullPath, query } = route
-      await safeRouterPush(router, {
-        path: '/redirect' + fullPath,
-        query
-      })
-      break
-    }
-    case 'close':
-      closeSelectedTag(tag)
-      break
-    case 'closeLeft':
-      tagsView.delLeftViews(tag).then((result: TagsViewState) => {
-        if (!result.visitedViews.find((item) => isActive(item))) {
-          toLastView(result.visitedViews, tag)
-        }
-      })
-      break
-    case 'closeRight':
-      tagsView.delRightViews(tag).then((result: TagsViewState) => {
-        if (!result.visitedViews.find((item) => isActive(item))) {
-          toLastView(result.visitedViews, tag)
-        }
-      })
-      break
-    case 'closeOther':
-      if (!selectedTag.value) {
-        break
-      }
-      tagOnClick(selectedTag.value)
-      tagsView.delOtherViews(selectedTag.value)
-      break
-    case 'closeAll':
-      tagsView.delAllViews().then((result: TagsViewState) => {
-        toLastView(result.visitedViews, tag)
-      })
-      break
-    case 'fullScreen':
-      if (selectedTag.value) {
-        tagOnClick(selectedTag.value)
-        app.tagsView.fullScreen = true
-      }
-      break
-    default:
-      break
-  }
+  await executeTagAction(key, tag)
 
   visible.value = false
 }
@@ -239,25 +186,7 @@ const handleContextMenu = (tag: TagView, event: MouseEvent): void => {
 }
 
 const closeSelectedTag = (view: TagView): void => {
-  tagsView.delView(view).then((result: TagsViewState) => {
-    if (isActive(view)) {
-      toLastView(result.visitedViews, view)
-    }
-  })
-}
-
-const toLastView = (viewList: TagView[], view?: TagView): void => {
-  const latestView = viewList.at(-1)
-  if (latestView && latestView.path) {
-    tagOnClick(latestView)
-    return
-  }
-
-  if (view?.name === 'Dashboard') {
-    void safeRouterReplace(router, { path: '/redirect' + view.path })
-  } else {
-    void safeRouterPush(router, '/')
-  }
+  void closeCurrentTag(view)
 }
 
 /**

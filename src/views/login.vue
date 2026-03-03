@@ -4,13 +4,13 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/store'
-import { useRoute, useRouter } from 'vue-router'
-import { safeRouterReplace } from '@/router/navigation'
+import { useRoute } from 'vue-router'
+import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 const authStore = useAuthStore()
 
 const route = useRoute()
-const router = useRouter()
+const { replace } = useSafeNavigation()
 const uiFeedback = useUiFeedback()
 
 const handleLogin = async (): Promise<void> => {
@@ -24,7 +24,7 @@ const handleLogin = async (): Promise<void> => {
       captchaId: ''
     })
     uiFeedback.msgSuccess('登录成功，即将进入系统')
-    await safeRouterReplace(router, (route.query.redirect as string) ?? '/')
+    await replace((route.query.redirect as string) ?? '/')
   } catch (error) {
     uiFeedback.msgErrorFromUnknown(error, '操作失败')
   } finally {

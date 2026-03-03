@@ -1,30 +1,9 @@
 import { useMessage } from 'naive-ui'
-import { getRequestErrorMessage, isRequestError } from '@/api/http'
+import { canShowRequestError, markRequestErrorShown, normalizeRequestError } from '@/api/http'
 
 type MessageKind = 'success' | 'error' | 'warning' | 'info'
 
 const defaultFallbackErrorMessage = '操作失败，请稍后重试'
-const unknownErrorMessage = '未知错误，请稍后重试'
-
-/**
- * 统一提取错误提示文案。
- */
-const getErrorMessage = (error: unknown, fallbackMessage = defaultFallbackErrorMessage): string => {
-  if (isRequestError(error) && error.message) {
-    return error.message
-  }
-
-  const requestErrorMessage = getRequestErrorMessage(error)
-  if (requestErrorMessage && requestErrorMessage !== unknownErrorMessage) {
-    return requestErrorMessage
-  }
-
-  if (error instanceof Error && error.message.trim()) {
-    return error.message.trim()
-  }
-
-  return fallbackMessage
-}
 
 /**
  * 统一消息反馈能力。
@@ -57,7 +36,7 @@ export const useUiFeedback = () => {
   }
 
   /**
-   * 显示全局加载消息，返回关闭函数。
+   * 显示全局加载消息，并返回关闭函数。
    */
   const startLoading = (content = '加载中...'): Noop => {
     const loadingMessage = messageApi.loading(content, { duration: 0 })
@@ -68,8 +47,13 @@ export const useUiFeedback = () => {
    * 基于 unknown 错误对象显示错误提示，并返回最终文案。
    */
   const msgErrorFromUnknown = (error: unknown, fallbackMessage = defaultFallbackErrorMessage): string => {
-    const errorMessage = getErrorMessage(error, fallbackMessage)
-    return message('error', errorMessage)
+    const requestError = normalizeRequestError(error, fallbackMessage)
+    if (!canShowRequestError(requestError)) {
+      return requestError.message
+    }
+
+    markRequestErrorShown(requestError)
+    return message('error', requestError.message)
   }
 
   return {
