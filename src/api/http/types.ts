@@ -1,10 +1,10 @@
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import type { ResData } from '@/api/common.types'
 
-export type RequestErrorKind = 'business' | 'network' | 'timeout' | 'http' | 'canceled' | 'unknown'
+export type NormalizedErrorKind = 'business' | 'network' | 'timeout' | 'http' | 'canceled' | 'unknown'
 
-export interface RequestError {
-  kind: RequestErrorKind
+export interface NormalizedError {
+  kind: NormalizedErrorKind
   message: string
   messageShown?: boolean
   status?: number

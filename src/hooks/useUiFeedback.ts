@@ -1,5 +1,5 @@
 import { useMessage } from 'naive-ui'
-import { canShowRequestError, markRequestErrorShown, normalizeRequestError } from '@/api/http'
+import { canShowNormalizedError, markNormalizedErrorShown, normalizeNormalizeError } from '@/api/http'
 
 type MessageKind = 'success' | 'error' | 'warning' | 'info'
 
@@ -47,13 +47,13 @@ export const useUiFeedback = () => {
    * 基于 unknown 错误对象显示错误提示，并返回最终文案。
    */
   const msgErrorFromUnknown = (error: unknown, fallbackMessage = defaultFallbackErrorMessage): string => {
-    const requestError = normalizeRequestError(error, fallbackMessage)
-    if (!canShowRequestError(requestError)) {
-      return requestError.message
+    const normalizedError = normalizeNormalizeError(error, fallbackMessage)
+    if (!canShowNormalizedError(normalizedError)) {
+      return normalizedError.message
     }
 
-    markRequestErrorShown(requestError)
-    return message('error', requestError.message)
+    markNormalizedErrorShown(normalizedError)
+    return message('error', normalizedError.message)
   }
 
   return {

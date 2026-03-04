@@ -3,8 +3,8 @@ import { StatusCodeEnum } from '@/enums/httpEnum'
 import { useAuthStore } from '@/store'
 import type { ResData } from '@/api/common.types'
 import { addPendingRequest, clearAllPendingRequests, removePendingRequest } from './cancel'
-import { canShowRequestError, isRequestError, markRequestErrorShown, normalizeRequestError } from './error'
-import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, RequestError, RequestOptions } from './types'
+import { canShowNormalizedError, isNormalizedError, markNormalizedErrorShown, normalizeNormalizeError } from './error'
+import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, NormalizedError, RequestOptions } from './types'
 
 const defaultConfig: CreateAxiosDefaults = {
   timeout: 10 * 1000,
@@ -19,7 +19,7 @@ const shouldShowErrorMessage = (config?: RequestConfig): boolean => {
   return config?.showErrorMessage !== false
 }
 
-const showRequestErrorMessage = (messageText: string): void => {
+const showNormalizedErrorMessage = (messageText: string): void => {
   if (window.$message) {
     window.$message.error(messageText)
   }
@@ -40,7 +40,7 @@ service.interceptors.request.use(
     requestConfig.cancel ??= true
     return addPendingRequest(requestConfig)
   },
-  (error: unknown) => Promise.reject(normalizeRequestError(error))
+  (error: unknown) => Promise.reject(normalizeNormalizeError(error))
 )
 
 service.interceptors.response.use(
@@ -51,18 +51,18 @@ service.interceptors.response.use(
     const responseData = response.data
     const statusCode = responseData?.code ?? StatusCodeEnum.INTERNAL_SERVER_ERROR
     if (statusCode !== StatusCodeEnum.SUCCESS) {
-      const requestError: RequestError = {
+      const normalizedError: NormalizedError = {
         kind: 'business',
         code: statusCode,
         message: responseData?.msg || '业务处理失败，请稍后重试',
         raw: responseData
       }
 
-      if (canShowRequestError(requestError, shouldShowErrorMessage(responseConfig))) {
-        showRequestErrorMessage(requestError.message)
-        markRequestErrorShown(requestError)
+      if (canShowNormalizedError(normalizedError, shouldShowErrorMessage(responseConfig))) {
+        showNormalizedErrorMessage(normalizedError.message)
+        markNormalizedErrorShown(normalizedError)
       }
-      return Promise.reject(requestError)
+      return Promise.reject(normalizedError)
     }
 
     return response
@@ -73,13 +73,13 @@ service.interceptors.response.use(
       removePendingRequest(requestConfig)
     }
 
-    const requestError = normalizeRequestError(error)
+    const normalizedError = normalizeNormalizeError(error)
     const shouldDisplayMessage = !requestConfig || shouldShowErrorMessage(requestConfig)
-    if (canShowRequestError(requestError, shouldDisplayMessage)) {
-      showRequestErrorMessage(requestError.message)
-      markRequestErrorShown(requestError)
+    if (canShowNormalizedError(normalizedError, shouldDisplayMessage)) {
+      showNormalizedErrorMessage(normalizedError.message)
+      markNormalizedErrorShown(normalizedError)
     }
-    return Promise.reject(requestError)
+    return Promise.reject(normalizedError)
   }
 )
 
@@ -127,5 +127,11 @@ const request: HttpRequestMethods = {
 
 export default request
 
-export { canShowRequestError, clearAllPendingRequests, isRequestError, markRequestErrorShown, normalizeRequestError }
-export type { RequestConfig, RequestError, RequestErrorKind, RequestOptions } from './types'
+export {
+  canShowNormalizedError,
+  clearAllPendingRequests,
+  isNormalizedError,
+  markNormalizedErrorShown,
+  normalizeNormalizeError
+}
+export type { RequestConfig, NormalizedError, NormalizedErrorKind, RequestOptions } from './types'

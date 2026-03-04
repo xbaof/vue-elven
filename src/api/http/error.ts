@@ -1,11 +1,11 @@
 import axios, { type AxiosError } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
-import type { RequestError } from './types'
+import type { NormalizedError } from './types'
 
-const defaultUnknownErrorMessage = '未知错误，请稍后重试'
+const defaultNormalizeErrorMessage = '未知错误，请稍后重试'
 const defaultRequestFailedMessage = '请求失败，请稍后重试'
 
-export const isRequestError = (error: unknown): error is RequestError => {
+export const isNormalizedError = (error: unknown): error is NormalizedError => {
   return (
     typeof error === 'object' &&
     error !== null &&
@@ -30,7 +30,7 @@ const getHttpStatusMessage = (status: number): string => {
   }
 }
 
-const normalizeAxiosError = (error: AxiosError): RequestError => {
+const normalizeAxiosError = (error: AxiosError): NormalizedError => {
   const messageText = error.message || ''
   const lowerMessageText = messageText.toLowerCase()
 
@@ -77,38 +77,38 @@ const normalizeAxiosError = (error: AxiosError): RequestError => {
 /**
  * 是否允许展示请求错误消息。
  */
-export const canShowRequestError = (requestError: RequestError, showErrorMessage: boolean = true): boolean => {
+export const canShowNormalizedError = (normalizedError: NormalizedError, showErrorMessage: boolean = true): boolean => {
   if (!showErrorMessage) {
     return false
   }
-  if (requestError.kind === 'canceled') {
+  if (normalizedError.kind === 'canceled') {
     return false
   }
-  return requestError.messageShown !== true
+  return normalizedError.messageShown !== true
 }
 
 /**
  * 标记错误消息已展示，避免重复弹窗。
  */
-export const markRequestErrorShown = (requestError: RequestError): RequestError => {
-  requestError.messageShown = true
-  return requestError
+export const markNormalizedErrorShown = (normalizedError: NormalizedError): NormalizedError => {
+  normalizedError.messageShown = true
+  return normalizedError
 }
 
-export const normalizeRequestError = (error: unknown, fallbackMessage?: string): RequestError => {
-  if (isRequestError(error)) {
+export const normalizeNormalizeError = (error: unknown, fallbackMessage?: string): NormalizedError => {
+  if (isNormalizedError(error)) {
     return error
   }
 
   if (axios.isAxiosError(error)) {
-    const requestError = normalizeAxiosError(error)
-    if (fallbackMessage && requestError.kind === 'unknown') {
+    const normalizedError = normalizeAxiosError(error)
+    if (fallbackMessage && normalizedError.kind === 'unknown') {
       return {
-        ...requestError,
+        ...normalizedError,
         message: fallbackMessage
       }
     }
-    return requestError
+    return normalizedError
   }
 
   if (error instanceof Error && error.message) {
@@ -129,7 +129,7 @@ export const normalizeRequestError = (error: unknown, fallbackMessage?: string):
 
   return {
     kind: 'unknown',
-    message: defaultUnknownErrorMessage,
+    message: defaultNormalizeErrorMessage,
     raw: error
   }
 }
