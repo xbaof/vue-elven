@@ -5,7 +5,7 @@
         <n-thing title="图片裁剪" description="基于 cropperjs 2.x 二次封装" />
       </n-list-item>
       <n-list-item>
-        <cropper ref="cropper" :src="imgSrc" style="max-width: 660px" :mode="mode" />
+        <cropper ref="cropperRef" :src="imgSrc" style="max-width: 660px" :mode="mode" />
         <n-radio-group v-model:value="mode" size="small" class="mt-15">
           <n-radio-button value="rectangle"> 矩形 </n-radio-button>
           <n-radio-button value="circle"> 圆形 </n-radio-button>
@@ -28,21 +28,20 @@ import { type ImageRenderToolbarProps } from 'naive-ui'
 import { downloadByData } from '@/utils/index'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 import type CropperComponent from '@/components/Cropper/index.vue'
-import CropperImage from './cropper_image.png'
 
 const Cropper = defineAsyncComponent(() => import('@/components/Cropper/index.vue'))
 
-const imgSrc = ref(CropperImage)
+const imgSrc = ref('https://picsum.photos/360/260')
 const uiFeedback = useUiFeedback()
 
 const cropImage = ref<string>('')
 const mode = ref<'rectangle' | 'circle'>('rectangle')
-const cropper = ref<InstanceType<typeof CropperComponent> | null>(null)
+const cropperRef = ref<InstanceType<typeof CropperComponent> | null>(null)
 const handleCropImage = async (): Promise<void> => {
-  if (!cropper.value) return
+  if (!cropperRef.value) return
 
   try {
-    const cropImgInfo = await cropper.value.confirmCropImage()
+    const cropImgInfo = await cropperRef.value.confirmCropImage()
     cropImage.value = cropImgInfo.base64 || ''
   } catch (error) {
     uiFeedback.msgErrorFromUnknown(error, '裁剪图片失败，请稍后重试')
@@ -52,10 +51,10 @@ const handleCropImage = async (): Promise<void> => {
 const renderToolbar = ({ nodes }: ImageRenderToolbarProps) => {
   if (nodes.download?.props) {
     nodes.download.props.onClick = async () => {
-      if (!cropper.value) return
+      if (!cropperRef.value) return
 
       try {
-        const cropImgInfo = await cropper.value.confirmCropImage()
+        const cropImgInfo = await cropperRef.value.confirmCropImage()
         if (cropImgInfo.blob) {
           downloadByData(cropImgInfo.blob, 'cropped-image.png')
         }
