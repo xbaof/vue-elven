@@ -83,6 +83,10 @@ export function isArray<T = unknown>(val: unknown): val is T[] {
   return Array.isArray(val)
 }
 
+export function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+}
+
 /**
  * 是否为客户端环境
  */
