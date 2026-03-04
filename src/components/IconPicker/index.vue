@@ -1,82 +1,324 @@
-﻿<template>
+<template>
   <n-select
-    :value="modelValue"
-    :options="iconOptions"
-    :clearable="clearable"
-    :placeholder="placeholder"
+    ref="selectRef"
+    v-model:value="selectedIcon"
     filterable
-    :render-label="renderOptionLabel"
-    @update:value="handleUpdateValue"
+    placeholder="选择图标"
+    :options="[]"
+    :on-update:show="onUpdateShow"
+    :on-search="onSearch"
+    :render-tag="renderSelectTag"
+    :menu-props="{ class: 'icon-picker_menu' }"
   >
     <template #empty>
-      <n-empty size="small" description="暂无匹配图标" />
+      <n-tabs ref="tabsRef" v-model:value="currentActive" type="line" animated @update:value="handleUpdateValue">
+        <n-tab-pane v-for="(pane, paneIndex) in tabsData" :key="paneIndex" :name="pane.name" :tab="pane.tab">
+          <n-virtual-list
+            v-if="iconData[pane.name].virtualIcons.length > 0"
+            :ref="'dynamicList' + pane.name"
+            :style="{ 'max-height': `calc(var(--n-height) - ${tabsNavHeight}px - 0.75rem)` }"
+            :item-size="iconSelectSize + 8"
+            :items="iconData[pane.name].virtualIcons"
+          >
+            <template #default="{ item }">
+              <div :key="item.key" class="list-row">
+                <div
+                  v-for="(icon, iconIndex) in item.icons"
+                  :key="iconIndex"
+                  class="icon-item"
+                  :class="{ 'is-selected': `${iconData[pane.name].prefix}:${icon}` === selectedIcon }"
+                  :style="{ width: `${iconSelectSize}px`, height: `${iconSelectSize}px` }"
+                  @click="handleIconClick(`${iconData[pane.name].prefix}:${icon}`)"
+                >
+                  <svg-icon :icon="`${iconData[pane.name].prefix}:${icon}`" :size="iconSize" />
+                </div>
+              </div>
+            </template>
+          </n-virtual-list>
+
+          <n-empty v-else />
+        </n-tab-pane>
+      </n-tabs>
     </template>
   </n-select>
 </template>
 
 <script lang="ts" setup>
-import { computed, h } from 'vue'
-import type { SelectOption } from 'naive-ui'
-import SvgIcon from '@/components/SvgIcon/index.vue'
-import { iconParkPickerList, type IconOptionItem } from '@/constants/iconPark'
-
 defineOptions({
   name: 'IconPicker'
 })
+import { h, reactive, ref, computed, onMounted, nextTick, getCurrentInstance } from 'vue'
+import type { VirtualListInst, SelectRenderTag } from 'naive-ui'
+import { useResizeObserver, useSessionStorage, useDebounceFn } from '@vueuse/core'
+import { ICON_PARK_OUTLINE_KEY } from '@/enums/cacheEnum'
+import SvgIcon from '../SvgIcon/index.vue'
 
-interface IconPickerProps {
-  modelValue?: string | null
-  placeholder?: string
-  clearable?: boolean
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | null
+    iconSize?: number
+  }>(),
+  {
+    modelValue: null,
+    iconSize: 20
+  }
+)
+interface virtualDataRow {
+  key: number
+  icons: string[]
 }
 
-type IconPickerOption = SelectOption & {
-  iconData: IconOptionItem['iconData']
-}
-
-const props = withDefaults(defineProps<IconPickerProps>(), {
-  modelValue: null,
-  placeholder: '请选择图标',
-  clearable: true
-})
-
+// modelValue
 const emit = defineEmits<{
   (eventName: 'update:modelValue', value: string | null): void
 }>()
+const selectedIcon = computed<string | null>({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
+})
+const renderSelectTag: SelectRenderTag = ({ option }) => {
+  return h(
+    'div',
+    {
+      class: 'flex-align-center'
+    },
+    [
+      h(SvgIcon, {
+        icon: option.value as string,
+        size: 18
+      }),
+      h('span', { class: 'pl-5' }, [option.label as string])
+    ]
+  )
+}
+const getCurrentVirtualList = (): Nullable<VirtualListInst> => {
+  if (!instance) return null
+  const dynamicListRef = instance.refs['dynamicList' + currentActive.value]
+  const virtualListInst = Array.isArray(dynamicListRef) ? dynamicListRef[0] : dynamicListRef
+  return (virtualListInst as Nullable<VirtualListInst>) ?? null
+}
+const handleUpdateValue = (value: string) => {
+  const iconDataKey = value as keyof typeof iconData
+  if (selectedIcon.value && selectedIcon.value.startsWith(iconData[iconDataKey].prefix)) {
+    nextTick(() => {
+      getCurrentVirtualList()?.scrollTo({ key: selectedIconKey.value })
+    })
+  }
+}
+const handleSearch = (value: string) => {
+  ;(Object.keys(iconData) as Array<keyof typeof iconData>).forEach((key) => {
+    const filterIcons = iconData[key].icons.filter((icon) => icon.toLowerCase().includes(value.trim().toLowerCase()))
+    iconData[key].virtualIcons = groupArray(filterIcons, rowMaxIcon.value)
+  })
+}
+const onSearch = useDebounceFn(handleSearch, 300)
+const onUpdateShow = (show: boolean) => {
+  if (!show) {
+    setTimeout(() => {
+      initCurrentActive()
+      ;(Object.keys(iconData) as Array<keyof typeof iconData>).forEach((key) => {
+        iconData[key].virtualIcons = groupArray(iconData[key].icons, rowMaxIcon.value)
+        nextTick(() => {
+          getCurrentVirtualList()?.scrollTo({ key: selectedIconKey.value })
+        })
+      })
+    }, 300)
+  }
+}
 
-const iconOptionList: IconOptionItem[] = iconParkPickerList
+const handleIconClick = (value: string) => {
+  selectedIcon.value = value
+  selectRef.value?.handleMenuTabOut?.()
+}
+const drawVirtualIcons = () => {
+  if (tabsNavHeight.value <= 0) {
+    tabsNavHeight.value = tabsRef.value?.scrollWrapperElRef?.offsetHeight || 0
+  }
+  const width = tabsRef.value?.tabsPaneWrapperRef?.offsetWidth
+  if (width && virtualListWidth.value !== width) {
+    virtualListWidth.value = width
+    ;(Object.keys(iconData) as Array<keyof typeof iconData>).forEach((key) => {
+      iconData[key].virtualIcons = groupArray(iconData[key].icons, rowMaxIcon.value)
+    })
+    nextTick(() => {
+      getCurrentVirtualList()?.scrollTo({ key: selectedIconKey.value })
+    })
+  }
+}
+const groupArray = (arr: string[], groupLength: number): virtualDataRow[] => {
+  const result: virtualDataRow[] = []
+  for (let i = 0; i < arr.length; i += groupLength) {
+    result[result.length] = { icons: arr.slice(i, i + groupLength), key: result.length }
+  }
+  return result
+}
+const modules = computed(() => {
+  return import.meta.glob('@/assets/svg/*.svg', {
+    query: '?component'
+  })
+})
+// 获取icon-park-outline图标库信息
+const getParkIconOutlineData = async (): Promise<(typeof iconData)['IconParkOutline']> => {
+  const icons = useSessionStorage<(typeof iconData)['IconParkOutline']>(ICON_PARK_OUTLINE_KEY, {
+    prefix: 'icon-park-outline',
+    title: 'IconPark Outline',
+    icons: [],
+    virtualIcons: []
+  })
+  if (icons.value.icons.length === 0) {
+    const result = await fetch(`https://api.iconify.design/collection?prefix=icon-park-outline`).then((res) =>
+      res.json()
+    )
+    icons.value = {
+      prefix: result.prefix,
+      title: result.title,
+      icons: Object.values(result.categories).flat(Infinity) as string[],
+      virtualIcons: []
+    }
+  }
+  return icons.value
+}
+const initCurrentActive = () => {
+  const iconDataKeys: Array<keyof typeof iconData> = Object.keys(iconData) as Array<keyof typeof iconData>
+  const modelValue = props.modelValue
+  if (!modelValue) return
+  const activeKey = iconDataKeys.find((o) => modelValue.startsWith(iconData[o].prefix))
+  if (activeKey) currentActive.value = activeKey
+}
 
-const iconOptions = computed<SelectOption[]>(() => {
-  return iconOptionList.map((iconOption) => ({
-    label: iconOption.iconValue,
-    value: iconOption.iconValue,
-    iconData: iconOption.iconData
-  }))
+const iconData = reactive<{
+  IconParkOutline: {
+    prefix: string
+    title: string
+    icons: string[]
+    virtualIcons: virtualDataRow[]
+  }
+  localSvg: {
+    prefix: string
+    title: string
+    icons: string[]
+    virtualIcons: virtualDataRow[]
+  }
+}>({
+  IconParkOutline: {
+    prefix: 'icon-park-outline',
+    title: 'IconPark Outline',
+    icons: [],
+    virtualIcons: []
+  },
+  localSvg: {
+    prefix: 'local',
+    title: 'local Svg',
+    icons: Object.keys(modules.value).map((o) => {
+      const fileName = o.split('/').pop() ?? ''
+      return fileName.substring(0, fileName.lastIndexOf('.svg'))
+    }),
+    virtualIcons: []
+  }
+})
+const instance = getCurrentInstance() as Nullable<{ refs: Recordable<unknown> }>
+// select
+const selectRef = ref<Nullable<{ handleMenuTabOut?: Noop }>>(null)
+// tab
+const tabsRef = ref<
+  Nullable<{
+    scrollWrapperElRef?: Nullable<HTMLElement>
+    tabsPaneWrapperRef?: Nullable<HTMLElement>
+  }>
+>(null)
+// tab的有效高度
+const tabsNavHeight = ref<number>(0)
+// 虚拟列表的有效宽度
+const virtualListWidth = ref<number>(0)
+// 默认激活的Tab
+const currentActive = ref<keyof typeof iconData>('localSvg')
+// tabs数据源
+const tabsData = computed<Array<{ tab: string; name: keyof typeof iconData }>>(() => {
+  return (Object.keys(iconData) as Array<keyof typeof iconData>).map((o) => {
+    return {
+      tab: iconData[o].title,
+      name: o
+    }
+  })
+})
+const iconSelectSize = computed(() => {
+  return props.iconSize + 16
+})
+const rowMaxIcon = computed(() => {
+  return Math.floor(virtualListWidth.value / (iconSelectSize.value + 8))
+})
+// 所选图标在列表中的key
+const selectedIconKey = computed(() => {
+  if (!selectedIcon.value) return 0
+  const prefix = iconData[currentActive.value].prefix
+  const iconName = selectedIcon.value.replace(`${prefix}:`, '')
+  const data = iconData[currentActive.value].virtualIcons.find((o) => o.icons.includes(iconName))
+  return data?.key || 0
 })
 
-const renderOptionLabel = (option: SelectOption) => {
-  const selectedOption = option as IconPickerOption
-  const iconValue = typeof option.value === 'string' ? option.value : ''
-
-  return h('div', { class: 'icon-picker-option' }, [
-    h(SvgIcon, { icon: selectedOption.iconData ?? iconValue, size: 16 }),
-    h('span', { class: 'icon-picker-option__text' }, iconValue)
-  ])
-}
-
-const handleUpdateValue = (value: string | null) => {
-  emit('update:modelValue', value)
-}
+onMounted(async () => {
+  iconData.IconParkOutline = await getParkIconOutlineData()
+  initCurrentActive()
+  drawVirtualIcons()
+  useResizeObserver(
+    () => tabsRef.value?.tabsPaneWrapperRef,
+    useDebounceFn(() => {
+      drawVirtualIcons()
+    }, 200)
+  )
+})
 </script>
 
 <style scoped lang="scss">
-.icon-picker-option {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
+:deep(.n-tabs-tab) {
+  padding: 0.25rem 0;
 }
+</style>
 
-.icon-picker-option__text {
-  font-size: 12px;
+<style lang="scss">
+.icon-picker_menu {
+  .n-base-select-menu__empty {
+    max-height: var(--n-height);
+    padding: 0.25rem 1rem;
+
+    .n-tabs-pane-wrapper {
+      transition: none;
+
+      .n-tab-pane {
+        padding: 0.25rem 0;
+      }
+    }
+
+    .list-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0.25rem 0;
+
+      .icon-item {
+        padding: 0.5em;
+        margin-right: 8px;
+        line-height: initial;
+        color: var(--n-option-text-color);
+        cursor: pointer;
+        border: 1px solid rgb(229 231 235);
+        transition: all 0.3s;
+
+        &:hover {
+          background-color: var(--n-option-color-pending);
+        }
+
+        &.is-selected {
+          color: var(--n-option-text-color-active);
+          background-color: transparent;
+          border-color: var(--n-option-text-color-active);
+        }
+      }
+    }
+  }
 }
 </style>
