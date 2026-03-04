@@ -28,7 +28,7 @@ const dialog = useDialog()
 const { replace } = useSafeNavigation()
 const uiFeedback = useUiFeedback()
 const route = useRoute()
-const avatarSrc = computed(() => userStore.getAvatar ?? '/src/assets/images/default_avatar.png')
+const avatarSrc = computed(() => userStore.getAvatar ?? '/src/assets/images/default_avatar.jpeg')
 const sleep = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 150))
 
 const options = reactive([
