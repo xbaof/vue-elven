@@ -3,7 +3,8 @@ import { StatusCodeEnum } from '@/enums/httpEnum'
 import { useAuthStore } from '@/store'
 import type { ResData } from '@/api/common.types'
 import { addPendingRequest, clearAllPendingRequests, removePendingRequest } from './cancel'
-import { canShowNormalizedError, isNormalizedError, markNormalizedErrorShown, normalizeNormalizeError } from './error'
+import { normalizeUnknownError } from './error'
+import { canShowNormalizedError, isNormalizedError, markNormalizedErrorShown } from '@/utils/error'
 import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, NormalizedError, RequestOptions } from './types'
 
 const defaultConfig: CreateAxiosDefaults = {
@@ -17,12 +18,6 @@ const defaultConfig: CreateAxiosDefaults = {
 
 const shouldShowErrorMessage = (config?: RequestConfig): boolean => {
   return config?.showErrorMessage !== false
-}
-
-const showNormalizedErrorMessage = (messageText: string): void => {
-  if (window.$message) {
-    window.$message.error(messageText)
-  }
 }
 
 const service = axios.create(defaultConfig)
@@ -40,7 +35,7 @@ service.interceptors.request.use(
     requestConfig.cancel ??= true
     return addPendingRequest(requestConfig)
   },
-  (error: unknown) => Promise.reject(normalizeNormalizeError(error))
+  (error: unknown) => Promise.reject(normalizeUnknownError(error))
 )
 
 service.interceptors.response.use(
@@ -59,7 +54,7 @@ service.interceptors.response.use(
       }
 
       if (canShowNormalizedError(normalizedError, shouldShowErrorMessage(responseConfig))) {
-        showNormalizedErrorMessage(normalizedError.message)
+        window.$message.error(normalizedError.message)
         markNormalizedErrorShown(normalizedError)
       }
       return Promise.reject(normalizedError)
@@ -73,10 +68,10 @@ service.interceptors.response.use(
       removePendingRequest(requestConfig)
     }
 
-    const normalizedError = normalizeNormalizeError(error)
+    const normalizedError = normalizeUnknownError(error)
     const shouldDisplayMessage = !requestConfig || shouldShowErrorMessage(requestConfig)
     if (canShowNormalizedError(normalizedError, shouldDisplayMessage)) {
-      showNormalizedErrorMessage(normalizedError.message)
+      window.$message.error(normalizedError.message)
       markNormalizedErrorShown(normalizedError)
     }
     return Promise.reject(normalizedError)
@@ -132,6 +127,6 @@ export {
   clearAllPendingRequests,
   isNormalizedError,
   markNormalizedErrorShown,
-  normalizeNormalizeError
+  normalizeUnknownError
 }
 export type { RequestConfig, NormalizedError, NormalizedErrorKind, RequestOptions } from './types'
