@@ -1,16 +1,6 @@
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import type { ResData } from '@/api/common.types'
-
-export type NormalizedErrorKind = 'business' | 'network' | 'timeout' | 'http' | 'canceled' | 'unknown'
-
-export interface NormalizedError {
-  kind: NormalizedErrorKind
-  message: string
-  messageShown?: boolean
-  status?: number
-  code?: number
-  raw?: unknown
-}
+export type { NormalizedErrorKind, NormalizedError } from '@/utils/error'
 
 export interface RequestOptions extends Omit<AxiosRequestConfig, 'url' | 'method' | 'params' | 'data' | 'signal'> {
   showErrorMessage?: boolean

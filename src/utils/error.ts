@@ -1,4 +1,13 @@
-import type { NormalizedError } from '@/api/http/types'
+export type NormalizedErrorKind = 'business' | 'network' | 'timeout' | 'http' | 'canceled' | 'unknown'
+
+export interface NormalizedError {
+  kind: NormalizedErrorKind
+  message: string
+  messageShown?: boolean
+  status?: number
+  code?: number
+  raw?: unknown
+}
 
 const defaultUnknownErrorMessage = '未知错误，请稍后重试'
 
