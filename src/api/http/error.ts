@@ -1,19 +1,9 @@
-import axios, { type AxiosError } from 'axios'
+﻿import axios, { type AxiosError } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
+import { normalizeUnknownError as normalizeBaseUnknownError } from '@/utils/error'
 import type { NormalizedError } from './types'
 
-const defaultNormalizeErrorMessage = '未知错误，请稍后重试'
 const defaultRequestFailedMessage = '请求失败，请稍后重试'
-
-export const isNormalizedError = (error: unknown): error is NormalizedError => {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'kind' in error &&
-    'message' in error &&
-    typeof (error as { message: unknown }).message === 'string'
-  )
-}
 
 const getHttpStatusMessage = (status: number): string => {
   switch (status) {
@@ -74,32 +64,7 @@ const normalizeAxiosError = (error: AxiosError): NormalizedError => {
   }
 }
 
-/**
- * 是否允许展示请求错误消息。
- */
-export const canShowNormalizedError = (normalizedError: NormalizedError, showErrorMessage: boolean = true): boolean => {
-  if (!showErrorMessage) {
-    return false
-  }
-  if (normalizedError.kind === 'canceled') {
-    return false
-  }
-  return normalizedError.messageShown !== true
-}
-
-/**
- * 标记错误消息已展示，避免重复弹窗。
- */
-export const markNormalizedErrorShown = (normalizedError: NormalizedError): NormalizedError => {
-  normalizedError.messageShown = true
-  return normalizedError
-}
-
-export const normalizeNormalizeError = (error: unknown, fallbackMessage?: string): NormalizedError => {
-  if (isNormalizedError(error)) {
-    return error
-  }
-
+export const normalizeUnknownError = (error: unknown, fallbackMessage?: string): NormalizedError => {
   if (axios.isAxiosError(error)) {
     const normalizedError = normalizeAxiosError(error)
     if (fallbackMessage && normalizedError.kind === 'unknown') {
@@ -111,25 +76,5 @@ export const normalizeNormalizeError = (error: unknown, fallbackMessage?: string
     return normalizedError
   }
 
-  if (error instanceof Error && error.message) {
-    return {
-      kind: 'unknown',
-      message: error.message,
-      raw: error
-    }
-  }
-
-  if (fallbackMessage) {
-    return {
-      kind: 'unknown',
-      message: fallbackMessage,
-      raw: error
-    }
-  }
-
-  return {
-    kind: 'unknown',
-    message: defaultNormalizeErrorMessage,
-    raw: error
-  }
+  return normalizeBaseUnknownError(error, fallbackMessage)
 }
