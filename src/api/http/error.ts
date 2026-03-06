@@ -1,7 +1,6 @@
-﻿import axios, { type AxiosError } from 'axios'
+import axios, { type AxiosError } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
-import { normalizeUnknownError as normalizeBaseUnknownError } from '@/utils/error'
-import type { NormalizedError } from './types'
+import { normalizeUnknownError as normalizeBaseUnknownError, type NormalizedError } from '@/utils/error'
 
 const defaultRequestFailedMessage = '请求失败，请稍后重试'
 
