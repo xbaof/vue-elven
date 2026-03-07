@@ -1,5 +1,5 @@
 import type { Directive, DirectiveBinding } from 'vue'
-import { usePermissionStore } from '@/store'
+import { usePermissionStore } from '@/store/modules/permission'
 import { isArray, isString } from '@/utils/is'
 
 /**

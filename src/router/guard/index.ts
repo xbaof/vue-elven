@@ -1,4 +1,6 @@
-import { useAuthStore, usePermissionStore, useUserStore } from '@/store'
+import { useAuthStore } from '@/store/modules/auth'
+import { usePermissionStore } from '@/store/modules/permission'
+import { useUserStore } from '@/store/modules/user'
 import type { RouteLocationNormalized, Router } from 'vue-router'
 
 // 白名单路由

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/store'
+import { useAuthStore } from '@/store/modules/auth'
 import { useRoute } from 'vue-router'
 import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 import { useUiFeedback } from '@/hooks/useUiFeedback'

@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia'
 import closeIcon from '@iconify-icons/icon-park-outline/close'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
   name: 'CloseFull'
