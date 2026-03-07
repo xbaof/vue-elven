@@ -22,7 +22,7 @@ import { useRoute, type RouteRecordNormalized } from 'vue-router'
 import type { MenuOption } from 'naive-ui'
 import { storeToRefs } from 'pinia'
 import { getTagViewTitle, toTagView } from '@/store/modules/tagsView'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useMenuNavigate } from '@/hooks/useMenuNavigate'
 

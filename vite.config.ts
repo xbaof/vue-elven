@@ -14,18 +14,6 @@ import { darkTheme, lightTheme } from 'naive-ui'
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
 
-  const parseBoolean = (value?: string): boolean => {
-    return typeof value === 'string' && value.trim().toLowerCase() === 'true'
-  }
-
-  const parsePort = (value?: string): number => {
-    const port = Number(value)
-    if (!Number.isInteger(port) || port <= 0 || port > 65535) {
-      return 7956
-    }
-    return port
-  }
-
   return {
     base: env.VITE_PUBLIC_PATH || '/',
     resolve: {
@@ -34,62 +22,55 @@ export default defineConfig(({ command, mode }) => {
       }
     },
     define: {},
-    plugins: (() => {
-      const plugins = [
-        vue({
-          template: {
-            compilerOptions: {
-              isCustomElement: (tag) => tag.startsWith('cropper-')
-            }
+    plugins: [
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith('cropper-')
           }
-        }),
-        viteCompression({
-          // 在控制台输出压缩结果
-          verbose: true,
-          threshold: 10240,
-          algorithm: 'gzip',
-          ext: '.gz',
-          // 压缩后删除原始文件
-          deleteOriginFile: true
-        }),
-        createHtmlPlugin({
-          minify: mode === 'production',
-          inject: {
-            data: {
-              AppStorageKey: ELV_APP,
-              DarkBgColor: darkTheme.common.bodyColor,
-              LightBgColor: lightTheme.common.bodyColor,
-              DefaultPrimary: defaultState().overrideColor.primary
-            }
-          }
-        }),
-        viteSvgLoader({
-          svgoConfig: {
-            plugins: ['preset-default', { name: 'prefixIds' }]
-          }
-        }),
-        viteMockServe({
-          enable: command === 'serve',
-          logger: false
-        })
-      ]
+        }
+      }),
 
-      if (parseBoolean(env.VITE_OPEN_VISUALIZER)) {
-        plugins.push(
-          visualizer({
+      viteCompression({
+        // 在控制台输出压缩结果
+        verbose: true,
+        threshold: 10240,
+        algorithm: 'gzip',
+        ext: '.gz',
+        // 压缩后删除原始文件
+        deleteOriginFile: true
+      }),
+      createHtmlPlugin({
+        minify: mode === 'production',
+        inject: {
+          data: {
+            AppStorageKey: ELV_APP,
+            DarkBgColor: darkTheme.common.bodyColor,
+            LightBgColor: lightTheme.common.bodyColor,
+            DefaultPrimary: defaultState().overrideColor.primary
+          }
+        }
+      }),
+      viteSvgLoader({
+        svgoConfig: {
+          plugins: ['preset-default', { name: 'prefixIds' }]
+        }
+      }),
+      viteMockServe({
+        enable: command === 'serve',
+        logger: false
+      }),
+      JSON.parse(env.VITE_OPEN_VISUALIZER)
+        ? visualizer({
             gzipSize: true,
             brotliSize: true
           })
-        )
-      }
-
-      return plugins
-    })(),
-
+        : null
+    ],
     server: {
       host: '0.0.0.0',
-      port: parsePort(env.VITE_PORT),
-      open: parseBoolean(env.VITE_OPEN),
+      port: Number(env.VITE_PORT),
+      open: JSON.parse(env.VITE_OPEN),
       // 端口占用时自动尝试下一个可用端口
       strictPort: false,
       cors: true,
@@ -109,7 +90,7 @@ export default defineConfig(({ command, mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: parseBoolean(env.VITE_DROP_CONSOLE),
+          drop_console: JSON.parse(env.VITE_DROP_CONSOLE),
           drop_debugger: true
         }
       },

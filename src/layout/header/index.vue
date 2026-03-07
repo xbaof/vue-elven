@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import { defineComponent, h, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 import Logo from '../sidebar/logo.vue'
 import Collapse from '../sidebar/collapse.vue'
 import Horizontal from '../sidebar/horizontal.vue'

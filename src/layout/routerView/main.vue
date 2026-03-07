@@ -8,7 +8,7 @@
   </router-view>
 </template>
 <script lang="ts" setup>
-import { useTagsViewStore } from '@/store'
+import { useTagsViewStore } from '@/store/modules/tagsView'
 
 defineOptions({
   name: 'LayoutMain'

@@ -8,7 +8,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import menuUnfoldOneIcon from '@iconify-icons/icon-park-outline/menu-unfold-one'
 import menuFoldOneIcon from '@iconify-icons/icon-park-outline/menu-fold-one'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
   name: 'SidebarCollapse'
