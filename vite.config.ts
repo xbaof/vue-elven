@@ -38,7 +38,7 @@ export default defineConfig(({ command, mode }) => {
         algorithm: 'gzip',
         ext: '.gz',
         // 压缩后删除原始文件
-        deleteOriginFile: true
+        deleteOriginFile: false
       }),
       createHtmlPlugin({
         minify: mode === 'production',
