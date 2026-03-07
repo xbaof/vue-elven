@@ -1,5 +1,13 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/login", "destination": "/api/login" },
+    { "source": "/getUser", "destination": "/api/getUser" },
+    { "source": "/getPermission", "destination": "/api/getPermission" },
+    { "source": "/file/upload/img", "destination": "/api/file/upload/img" },
+    { "source": "/file/upload/video", "destination": "/api/file/upload/video" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/index.html",
