@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { darkTheme, lightTheme, zhCN, GlobalThemeOverrides, type WatermarkProps } from 'naive-ui'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 const app = useAppStore()
 const naiveTheme = computed(() => (app.isDark ? darkTheme : lightTheme))
 const themeOverrides = computed(() => {

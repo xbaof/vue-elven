@@ -1,9 +1,9 @@
 import axios, { type AxiosResponse, type CreateAxiosDefaults } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
-import { useAuthStore } from '@/store'
 import type { ResData } from '@/api/common.types'
 import { addPendingRequest, clearAllPendingRequests, removePendingRequest } from './cancel'
 import { normalizeUnknownError } from './error'
+import { getToken } from './tokenProvider'
 import { canShowNormalizedError, isNormalizedError, markNormalizedErrorShown } from '@/utils/error'
 import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, NormalizedError, RequestOptions } from './types'
 
@@ -25,8 +25,7 @@ const service = axios.create(defaultConfig)
 service.interceptors.request.use(
   (config) => {
     const requestConfig = config as InternalRequestConfig
-    const authStore = useAuthStore()
-    const token = authStore.token
+    const token = getToken()
 
     if (token && requestConfig.headers) {
       requestConfig.headers.Authorization = `Bearer ${token}`
