@@ -8,6 +8,7 @@ import { useTagsViewStore } from './tagsView'
 import { useUserStore } from './user'
 import { createFullEncryptSerializer } from '@/utils/pinia-persist.serializer'
 import router from '@/router'
+import { clearAllPendingRequests } from '@/api/http/cancel'
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -31,17 +32,18 @@ export const useAuthStore = defineStore('auth', {
     /**
      * 前端登出并重置相关状态。
      */
-    logOut(): void {
+    logOut() {
       const userStore = useUserStore()
       const permissionStore = usePermissionStore()
       const tagsViewStore = useTagsViewStore()
 
+      clearAllPendingRequests()
       userStore.resetUser()
       permissionStore.resetPermission(router)
       tagsViewStore.resetTagsView()
       this.resetAuth()
     },
-    resetAuth(): void {
+    resetAuth() {
       this.$reset()
     }
   },

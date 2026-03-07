@@ -9,7 +9,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import sunOneIcon from '@iconify-icons/icon-park-outline/sun-one'
 import moonIcon from '@iconify-icons/icon-park-outline/moon'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
   name: 'ThemeMode'

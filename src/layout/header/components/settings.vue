@@ -137,7 +137,7 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import themeIcon from '@iconify-icons/icon-park-outline/theme'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
   name: 'Settings'

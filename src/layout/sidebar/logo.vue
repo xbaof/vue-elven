@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
   name: 'SidebarLogo'

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { createDiscreteApi, darkTheme, type ConfigProviderProps } from 'naive-ui'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 export function setupNaiveDiscreteApi() {
   const app = useAppStore()

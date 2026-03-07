@@ -35,7 +35,7 @@ import CloseFull from './header/components/closeFull.vue'
 import Footer from './footer/index.vue'
 import Vertical from './sidebar/vertical.vue'
 import { NLayoutSider, NDrawer, NLayout, type LayoutSiderProps } from 'naive-ui'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
   name: 'Layout'
