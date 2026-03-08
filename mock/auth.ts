@@ -1,5 +1,25 @@
-import type { Recordable, MockMethod } from 'vite-plugin-mock'
-import { createUserList } from './user'
+﻿import type { Recordable, MockMethod } from 'vite-plugin-mock'
+
+const createUserList = () => {
+  return [
+    {
+      id: 1,
+      avatar: null,
+      userName: 'admin',
+      password: '123456',
+      nickName: '平台管理员',
+      token: 'Admin Token'
+    },
+    {
+      id: 2,
+      avatar: null,
+      userName: 'system',
+      password: '123456',
+      nickName: '系统管理员',
+      token: 'System Token'
+    }
+  ]
+}
 
 export default [
   {
@@ -60,7 +80,7 @@ export default [
               orderSort: 1,
               name: 'Test',
               path: '/test',
-              component: 'test',
+              component: 'test/index',
               isKeepAlive: false,
               isHidden: false,
               linkUrl: '',
@@ -122,7 +142,7 @@ export default [
                       orderSort: 9,
                       name: 'menu11',
                       path: '/menu/menu1/menu11',
-                      component: 'menu/menu1/menu1-1/index',
+                      component: 'menu/index',
                       isKeepAlive: true,
                       isHidden: false,
                       menuType: '0',
@@ -146,7 +166,7 @@ export default [
                           orderSort: 9,
                           name: 'menu121',
                           path: '/menu/menu1/menu12/menu121',
-                          component: 'menu/menu1/menu1-2/index',
+                          component: 'menu/index',
                           isKeepAlive: true,
                           isHidden: false,
                           menuType: '0',
@@ -162,7 +182,7 @@ export default [
                   orderSort: 9,
                   name: 'menu2',
                   path: '/menu/menu2',
-                  component: 'menu/menu2/index',
+                  component: 'menu/index',
                   isKeepAlive: true,
                   isHidden: false,
                   menuType: '0',
@@ -263,9 +283,9 @@ export default [
                 {
                   menuName: '富文本编辑器',
                   orderSort: 2,
-                  name: 'wangeditor',
-                  path: '/fun/wangeditor',
-                  component: 'fun/wangeditor/index',
+                  name: 'richTextEditor',
+                  path: '/fun/richTextEditor',
+                  component: 'fun/richTextEditor/index',
                   isKeepAlive: true,
                   isHidden: false,
                   menuType: '0',

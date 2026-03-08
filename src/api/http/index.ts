@@ -8,6 +8,7 @@ import { canShowNormalizedError, isNormalizedError, markNormalizedErrorShown } f
 import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, NormalizedError, RequestOptions } from './types'
 
 const defaultConfig: CreateAxiosDefaults = {
+  baseURL: import.meta.env.VITE_API_BASE_URL || undefined,
   timeout: 10 * 1000,
   headers: {
     Accept: 'application/json, text/plain, */*',

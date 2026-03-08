@@ -26,14 +26,14 @@ const defaultState = (): AppState => ({
     inverted: false
   },
   // 显示Footer
-  showFooter: false,
+  showFooter: true,
   // 标签页
   tagsView: {
     show: true,
     fullScreen: false
   },
   watermark: {
-    show: false,
+    show: true,
     content: 'vue-elven'
   },
   breadcrumb: {
