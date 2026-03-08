@@ -79,6 +79,7 @@ import {
   NWatermark,
   NGlobalStyle,
   NText,
+  NStatistic,
   NFlex,
   NImage
 } from 'naive-ui'
@@ -163,6 +164,7 @@ const naive = create({
     NWatermark,
     NGlobalStyle,
     NText,
+    NStatistic,
     NFlex,
     NImage
   ]

@@ -17,6 +17,7 @@ import { useAuthStore } from '@/store/modules/auth'
 import { useUserStore } from '@/store/modules/user'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 import { useSafeNavigation } from '@/hooks/useSafeNavigation'
+import defaultAvatarUrl from '@/assets/images/default_avatar.jpeg'
 
 defineOptions({
   name: 'HeaderAvatar'
@@ -28,7 +29,7 @@ const dialog = useDialog()
 const { replace } = useSafeNavigation()
 const uiFeedback = useUiFeedback()
 const route = useRoute()
-const avatarSrc = computed(() => userStore.getAvatar ?? '/src/assets/images/default_avatar.jpeg')
+const avatarSrc = computed(() => userStore.getAvatar ?? defaultAvatarUrl)
 const sleep = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 150))
 
 const options = reactive([
