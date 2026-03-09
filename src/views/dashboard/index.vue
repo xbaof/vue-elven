@@ -12,6 +12,20 @@
               主题：{{ appStore.isDark ? '深色' : '浅色' }}
             </n-tag>
           </n-flex>
+          <n-button
+            class="githubEntryButton"
+            tag="a"
+            :href="repositoryUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            type="primary"
+            strong
+          >
+            <template #icon>
+              <svg-icon :icon="githubIcon" />
+            </template>
+            查看 GitHub 仓库
+          </n-button>
         </n-flex>
         <n-avatar round :size="56" :src="avatarSrc" />
       </n-flex>
@@ -96,6 +110,7 @@ import { usePermissionStore } from '@/store/modules/permission'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 import { useTagsActions } from '@/hooks/useTagsActions'
+import githubIcon from '@iconify-icons/icon-park-outline/github'
 import defaultAvatarUrl from '@/assets/images/default_avatar.jpeg'
 
 defineOptions({
@@ -133,6 +148,8 @@ const avatarSrc = computed(() => userStore.getAvatar ?? defaultAvatarUrl)
 const welcomeText = computed(() => {
   return `欢迎回来，${userDisplayName.value}`
 })
+
+const repositoryUrl = 'https://github.com/xbaof/vue-elven'
 
 const statList = computed(() => {
   return [
@@ -206,6 +223,10 @@ const recentTagList = computed(() => {
       font-size: 22px;
       font-weight: 600;
       line-height: 1.2;
+    }
+
+    .githubEntryButton {
+      width: fit-content;
     }
   }
 }

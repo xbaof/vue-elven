@@ -16,6 +16,8 @@
       <settings class="navbar-right-item" />
       <!-- 全屏 -->
       <full-screen class="navbar-right-item" />
+      <!-- GitHub 链接 -->
+      <github-link class="navbar-right-item" />
       <!-- 头像菜单 -->
       <Avatar />
     </div>
@@ -30,6 +32,7 @@ import Logo from '../sidebar/logo.vue'
 import Collapse from '../sidebar/collapse.vue'
 import Horizontal from '../sidebar/horizontal.vue'
 import FullScreen from './components/fullScreen.vue'
+import GithubLink from './components/githubLink.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import Settings from './components/settings.vue'
 import Avatar from './components/avatar.vue'
