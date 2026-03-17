@@ -9,9 +9,9 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+    box-shadow: 0 1px 4px rgb(46 51 56 / 9%);
 
-    --item-hover-bg-color: var(--button-color-2);
+    --item-hover-bg-color: rgb(46 51 56 / 5%);
 
     &.isInverted {
       --item-hover-bg-color: hsl(0deg 0% 100% / 8%);
