@@ -375,6 +375,12 @@ onMounted(() => {
   }
 }
 
+html.dark .tags-view {
+  box-shadow:
+    0 1px 3px 0 rgb(255 255 255 / 12%),
+    0 0 3px 0 rgb(255 255 255 / 4%);
+}
+
 .tool {
   &-prev,
   &-next {
