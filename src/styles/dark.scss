@@ -1,4 +1,21 @@
 html.dark {
+  /* layout */
+  .n-layout-header {
+    .navbar-container {
+      --item-hover-bg-color: rgb(255 255 255 / 8%);
+
+      box-shadow: 0 1px 4px rgb(255 255 255 / 12%);
+    }
+  }
+
+  .n-layout-sider {
+    box-shadow: 10px 0 10px -10px rgb(255 255 255 / 12%);
+  }
+
+  .n-layout-footer {
+    background-color: rgb(16 16 20);
+  }
+
   /* wangEditor */
   --w-e-toolbar-color: rgb(255 255 255 / 82%);
   --w-e-toolbar-bg-color: rgb(24 24 28);
