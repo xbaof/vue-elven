@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="loginPage">
+  <div class="loginPage flex-center">
     <n-card class="loginCard pb-15" :bordered="false" size="large">
       <n-flex vertical :size="18">
         <n-flex vertical :size="6">
@@ -87,9 +87,6 @@ const handleLogin = async (): Promise<void> => {
 
 <style scoped lang="scss">
 .loginPage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100%;
   padding: 24px;
   background-color: #f3f5f8;

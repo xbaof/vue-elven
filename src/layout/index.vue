@@ -9,6 +9,7 @@
         <LayoutHeader />
       </n-layout-header>
       <n-layout-content
+        ref="layoutContentRef"
         :class="{ 'layout-content-fullScreen': tagsView.fullScreen }"
         content-class="layout-content-scrollbar"
         embedded
@@ -25,7 +26,7 @@
   </n-layout>
 </template>
 <script setup lang="ts">
-import { ref, computed, watchEffect, defineComponent, h } from 'vue'
+import { ref, computed, watchEffect, defineComponent, h, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useResizeObserver } from '@vueuse/core'
@@ -34,7 +35,7 @@ import LayoutHeader from './header/index.vue'
 import CloseFull from './header/components/closeFull.vue'
 import Footer from './footer/index.vue'
 import Vertical from './sidebar/vertical.vue'
-import { NLayoutSider, NDrawer, NLayout, type LayoutSiderProps } from 'naive-ui'
+import { NLayoutSider, NDrawer, NLayout, type LayoutSiderProps, LayoutInst } from 'naive-ui'
 import { useAppStore } from '@/store/modules/app'
 
 defineOptions({
@@ -47,6 +48,22 @@ const route = useRoute()
 
 const hasSider = computed(() => layout.value !== 'horizontal' && device.value === 'desktop')
 const isShowFooter = computed(() => showFooter.value && !route.meta?.isIframe)
+
+const layoutContentRef = ref<LayoutInst | null>()
+
+/**
+ * 监听路由变化，等待页面切换完成后重置滚动位置
+ */
+watch(
+  () => route.fullPath,
+  async () => {
+    await nextTick()
+    layoutContentRef.value?.scrollTo({ top: 0, left: 0 })
+  },
+  {
+    immediate: true
+  }
+)
 
 // 侧边栏折叠后的默认宽度
 const sideBarCollapsedWidth = 58

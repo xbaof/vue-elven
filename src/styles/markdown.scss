@@ -1,0 +1,59 @@
+.markdownDoc {
+  line-height: 1.7;
+  color: var(--text-color-2);
+
+  h1,
+  h2,
+  h3 {
+    color: var(--text-color-1);
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: 22px;
+  }
+
+  h2 {
+    margin: 18px 0 10px;
+    font-size: 18px;
+  }
+
+  h3 {
+    margin: 12px 0 8px;
+    font-size: 15px;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  table {
+    width: 100%;
+    margin: 10px 0 16px;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 8px 10px;
+    vertical-align: top;
+    text-align: left;
+    border: 1px solid var(--border-color);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--text-color-1);
+    background: var(--button-color-2);
+  }
+
+  code {
+    padding: 2px 6px;
+    font-family: Consolas, Monaco, 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--text-color-1);
+    background: var(--button-color-2);
+    border-radius: 4px;
+  }
+}

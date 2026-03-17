@@ -283,9 +283,9 @@ export default [
                 {
                   menuName: '富文本编辑器',
                   orderSort: 2,
-                  name: 'richTextEditor',
-                  path: '/fun/richTextEditor',
-                  component: 'fun/richTextEditor/index',
+                  name: 'editorDemo',
+                  path: '/fun/editor',
+                  component: 'fun/editor/index',
                   isKeepAlive: true,
                   isHidden: false,
                   menuType: '0',

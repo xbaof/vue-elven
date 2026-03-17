@@ -18,7 +18,8 @@ export default defineConfig(({ command, mode }) => {
     base: env.VITE_PUBLIC_PATH || '/',
     resolve: {
       alias: {
-        '@': resolve(__dirname, 'src')
+        '@': resolve(__dirname, 'src'),
+        '@docs': resolve(__dirname, 'docs')
       }
     },
     define: {},
