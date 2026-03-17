@@ -98,6 +98,7 @@ export default [
         }
       ],
       'no-useless-escape': 'off',
+      'vue/no-v-html': 'off',
       'no-var': 'error',
       // 禁用debugger
       'no-debugger': 'warn',

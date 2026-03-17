@@ -20,7 +20,8 @@
     "noEmit": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@/types/*": ["./types/*"]
+      "@/types/*": ["./types/*"],
+      "@docs/*": ["./docs/*"]
     },
     "types": ["node"],
     "typeRoots": ["./node_modules/@types/", "./types"]

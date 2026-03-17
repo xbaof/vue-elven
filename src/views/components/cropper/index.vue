@@ -16,29 +16,44 @@
         </n-flex>
       </n-list-item>
     </n-list>
+
+    <n-list bordered>
+      <n-list-item>
+        <n-thing title="组件参数说明" description="文档内容来自 docs/component-api/cropper.md" />
+      </n-list-item>
+      <n-list-item>
+        <div class="markdownDoc" v-html="docHtml" />
+      </n-list-item>
+    </n-list>
   </n-flex>
 </template>
+
 <script lang="ts" setup>
 defineOptions({
   name: 'CropperDemo'
 })
 
-import { ref, defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 import { type ImageRenderToolbarProps } from 'naive-ui'
-import { downloadByData } from '@/utils/index'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
+import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
+import { downloadByData } from '@/utils/index'
 import type CropperComponent from '@/components/Cropper/index.vue'
+import cropperDocRaw from '@docs/component-api/cropper.md?raw'
 
 const Cropper = defineAsyncComponent(() => import('@/components/Cropper/index.vue'))
 
 const imgSrc = ref('https://picsum.photos/360/260')
-const uiFeedback = useUiFeedback()
-
 const cropImage = ref<string>('')
 const mode = ref<'rectangle' | 'circle'>('rectangle')
 const cropperRef = ref<InstanceType<typeof CropperComponent> | null>(null)
+const uiFeedback = useUiFeedback()
+const { docHtml } = useMarkdownDoc(cropperDocRaw)
+
 const handleCropImage = async (): Promise<void> => {
-  if (!cropperRef.value) return
+  if (!cropperRef.value) {
+    return
+  }
 
   try {
     const cropImgInfo = await cropperRef.value.confirmCropImage()
@@ -51,7 +66,9 @@ const handleCropImage = async (): Promise<void> => {
 const renderToolbar = ({ nodes }: ImageRenderToolbarProps) => {
   if (nodes.download?.props) {
     nodes.download.props.onClick = async () => {
-      if (!cropperRef.value) return
+      if (!cropperRef.value) {
+        return
+      }
 
       try {
         const cropImgInfo = await cropperRef.value.confirmCropImage()
