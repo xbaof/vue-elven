@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <n-flex vertical :size="15" class="main-content">
     <n-list bordered>
       <n-list-item>
@@ -8,6 +8,7 @@
         <IconPicker v-model="val" clearable placeholder="输入关键词搜索" />
       </n-list-item>
     </n-list>
+
     <n-list bordered>
       <n-list-item>
         <n-thing title="IconPark 示例">
@@ -19,7 +20,7 @@
           <n-grid-item
             v-for="demoIcon in demoIconList"
             :key="demoIcon.iconValue"
-            class="item-icon"
+            class="itemIcon flex-center"
             @click="handleCopy(demoIcon.iconValue)"
           >
             <svg-icon :size="30" :icon="demoIcon.iconData" />
@@ -27,20 +28,31 @@
         </n-grid>
       </n-list-item>
     </n-list>
+
     <n-list bordered>
       <n-list-item>
-        <n-thing title="SVG 图标示例" description="svg文件存放在src/assets/svg文件夹下" />
+        <n-thing title="SVG 图标示例" description="svg 文件存放在 src/assets/svg 文件夹下" />
       </n-list-item>
       <n-list-item>
         <n-grid cols="2 s:4 m:6 l:8 xl:12" item-responsive responsive="screen">
-          <n-grid-item class="item-icon" @click="handleCopy('local:vite')">
+          <n-grid-item class="itemIcon flex-center" @click="handleCopy('local:vite')">
             <svg-icon :size="30" icon="local:vite" />
           </n-grid-item>
         </n-grid>
       </n-list-item>
     </n-list>
+
+    <n-list bordered>
+      <n-list-item>
+        <n-thing title="组件参数说明" description="文档内容来自 docs/component-api/icon.md" />
+      </n-list-item>
+      <n-list-item>
+        <div class="markdownDoc" v-html="docHtml" />
+      </n-list-item>
+    </n-list>
   </n-flex>
 </template>
+
 <script lang="ts" setup>
 defineOptions({
   name: 'Icon'
@@ -49,6 +61,8 @@ defineOptions({
 import { defineAsyncComponent, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
+import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
+import iconDocRaw from '@docs/component-api/icon.md?raw'
 import adProductIcon from '@iconify-icons/icon-park-outline/ad-product'
 import apiAppIcon from '@iconify-icons/icon-park-outline/api-app'
 import appSwitchIcon from '@iconify-icons/icon-park-outline/app-switch'
@@ -128,6 +142,7 @@ const demoIconList = [
 
 const { copy, isSupported } = useClipboard()
 const uiFeedback = useUiFeedback()
+const { docHtml } = useMarkdownDoc(iconDocRaw)
 
 const handleCopy = async (iconValue: string): Promise<void> => {
   if (!isSupported.value) {
@@ -142,11 +157,9 @@ const handleCopy = async (iconValue: string): Promise<void> => {
 
 const val = ref<string | null>('icon-park-outline:mask')
 </script>
-<style scoped>
-.item-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+<style scoped lang="scss">
+.itemIcon {
   height: 40px;
   cursor: pointer;
 }
