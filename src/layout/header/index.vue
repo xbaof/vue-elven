@@ -10,6 +10,8 @@
     <div class="navbar-right">
       <!-- 菜单搜索 -->
       <search-menu class="navbar-right-item" />
+      <!-- 系统消息 -->
+      <notify-center class="navbar-right-item" />
       <!-- 布局配置 -->
       <theme-mode class="navbar-right-item" />
       <!-- 布局配置 -->
@@ -33,6 +35,7 @@ import Collapse from '../sidebar/collapse.vue'
 import Horizontal from '../sidebar/horizontal.vue'
 import FullScreen from './components/fullScreen.vue'
 import GithubLink from './components/githubLink.vue'
+import NotifyCenter from './components/notifyCenter.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import Settings from './components/settings.vue'
 import Avatar from './components/avatar.vue'

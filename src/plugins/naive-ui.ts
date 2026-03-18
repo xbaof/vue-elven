@@ -81,7 +81,8 @@ import {
   NText,
   NStatistic,
   NFlex,
-  NImage
+  NImage,
+  NEllipsis
 } from 'naive-ui'
 
 const naive = create({
@@ -166,7 +167,8 @@ const naive = create({
     NText,
     NStatistic,
     NFlex,
-    NImage
+    NImage,
+    NEllipsis
   ]
 })
 
