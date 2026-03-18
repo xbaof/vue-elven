@@ -37,6 +37,11 @@ export const functionalRoutes: RouteRecordRaw[] = [
     meta: { title: '404' }
   },
   {
+    path: '/403',
+    component: () => import('@/views/error/403.vue'),
+    meta: { title: '403' }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     redirect: '/404'

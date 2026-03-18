@@ -1,7 +1,7 @@
 <template>
-  <div class="main-content flex-center notFoundPage">
-    <n-card class="notFoundCard" :bordered="false" size="large">
-      <n-result status="404" title="页面不存在" description="你访问的地址可能已变更、删除，或暂时不可用。">
+  <div class="main-content flex-center forbiddenPage">
+    <n-card class="forbiddenCard" :bordered="false" size="large">
+      <n-result status="403" title="无权限访问" description="你没有访问当前资源的权限，请联系管理员授权。">
         <template #footer>
           <n-flex justify="center" :size="12">
             <n-button type="primary" @click="goHome">返回首页</n-button>
@@ -18,7 +18,7 @@ import { useRouter } from 'vue-router'
 import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 
 defineOptions({
-  name: 'NotFound'
+  name: 'Forbidden'
 })
 
 const router = useRouter()
@@ -39,11 +39,11 @@ const goBack = async (): Promise<void> => {
 </script>
 
 <style scoped lang="scss">
-.notFoundPage {
+.forbiddenPage {
   min-height: calc(100vh - var(--header-height) - 30px);
 }
 
-.notFoundCard {
+.forbiddenCard {
   width: min(640px, 100%);
 }
 </style>
