@@ -24,11 +24,11 @@ defineOptions({
 const router = useRouter()
 const { push } = useSafeNavigation()
 
-const goHome = async (): Promise<void> => {
+const goHome = async () => {
   await push('/index')
 }
 
-const goBack = async (): Promise<void> => {
+const goBack = async () => {
   if (window.history.length > 1) {
     router.back()
     return
@@ -40,7 +40,7 @@ const goBack = async (): Promise<void> => {
 
 <style scoped lang="scss">
 .notFoundPage {
-  min-height: calc(100vh - var(--header-height) - 30px);
+  min-height: calc(100vh - var(--header-height, 81px) - 30px);
 }
 
 .notFoundCard {
