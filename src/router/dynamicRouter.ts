@@ -59,7 +59,10 @@ const transformMenusToRoutes = (menus: Menu[]): Array<RouteRecordRaw> => {
       isHidden,
       isKeepAlive,
       linkUrl,
-      isTagsView
+      isTagsView,
+      extraText,
+      extraType,
+      query
     } = menu
 
     const route: Partial<RouteRecordRaw> = {
@@ -67,7 +70,10 @@ const transformMenusToRoutes = (menus: Menu[]): Array<RouteRecordRaw> => {
       meta: {
         title: menuName,
         icon,
-        sort: orderSort
+        sort: orderSort,
+        extraText,
+        extraType,
+        query
       }
     }
 
@@ -91,7 +97,10 @@ const transformMenusToRoutes = (menus: Menu[]): Array<RouteRecordRaw> => {
         isAffix,
         isLink,
         linkUrl,
-        isIframe
+        isIframe,
+        extraText,
+        extraType,
+        query
       }
     }
 
