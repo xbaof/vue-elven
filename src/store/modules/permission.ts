@@ -1,8 +1,10 @@
-import { defineStore } from 'pinia'
+﻿import { defineStore } from 'pinia'
 import type { PermissionState } from '../types'
 import { getPermission } from '@/api/system/auth'
 import { basicLayoutRoutes } from '@/router/staticRoutes'
 import generatorDynamicRouter from '@/router/dynamicRouter'
+import { collectRouteBadgeMap } from '@/utils/menu'
+import { useMenuBadgeStore } from './menuBadge'
 import type { RouteRecordRaw, Router } from 'vue-router'
 
 let buildingRoutesPromise: Promise<RouteRecordRaw[]> | null = null
@@ -30,12 +32,16 @@ export const usePermissionStore = defineStore('permission', {
       buildingRoutesPromise = (async (): Promise<RouteRecordRaw[]> => {
         const permissionResponse = await getPermission()
         const { perms, menus, roles } = permissionResponse.data
+        const menuBadgeStore = useMenuBadgeStore()
+
         this.perms = perms
         if (roles && roles.length) {
           this.roles = roles
         }
 
         const asyncRoutes = generatorDynamicRouter(menus, basicLayoutRoutes)
+        menuBadgeStore.clearLocalBadges()
+        menuBadgeStore.hydrateServerBadges(collectRouteBadgeMap(asyncRoutes))
         this.routes = asyncRoutes
         this.isDynamicRouteAdded = true
         return asyncRoutes

@@ -152,3 +152,10 @@ export function isEmpty(val: unknown): boolean {
 
   return false
 }
+
+/**
+ * 是否为数字字符串
+ */
+export function isNumericText(value: string): boolean {
+  return /^\d+$/.test(value.trim())
+}

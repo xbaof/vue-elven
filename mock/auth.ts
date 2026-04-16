@@ -81,11 +81,6 @@ export default [
               name: 'Test',
               path: '/test',
               component: 'test/index',
-              extraText: 'NEW',
-              extraType: 'success',
-              query: {
-                source: 'menu'
-              },
               isKeepAlive: false,
               isHidden: false,
               linkUrl: '',
@@ -100,12 +95,6 @@ export default [
               name: 'Baidu',
               path: '/baidu',
               component: null,
-              extraText: '9',
-              extraType: 'error',
-              query: {
-                from: 'elven',
-                type: 'external'
-              },
               isKeepAlive: false,
               isHidden: false,
               linkUrl: 'https://www.baidu.com',
@@ -116,7 +105,7 @@ export default [
             },
             {
               menuName: 'vite',
-              orderSort: 3,
+              orderSort: 4,
               name: 'Vitejs',
               path: '/vitejs',
               component: null,
@@ -130,7 +119,7 @@ export default [
             },
             {
               menuName: '菜单嵌套',
-              orderSort: 4,
+              orderSort: 5,
               menuType: '0',
               name: 'menu',
               path: '/menu',
@@ -158,7 +147,11 @@ export default [
                       isHidden: false,
                       menuType: '0',
                       isTagsView: true,
-                      isAffix: false
+                      isAffix: false,
+                      query: {
+                        id: '1',
+                        type: '1'
+                      }
                     },
                     {
                       menuName: '菜单1-2',
@@ -182,7 +175,11 @@ export default [
                           isHidden: false,
                           menuType: '0',
                           isTagsView: true,
-                          isAffix: false
+                          isAffix: false,
+                          query: {
+                            id: '2',
+                            type: '2'
+                          }
                         }
                       ]
                     }
@@ -204,7 +201,7 @@ export default [
             },
             {
               menuName: '组件',
-              orderSort: 5,
+              orderSort: 6,
               path: 'components',
               icon: 'icon-park-outline:components',
               children: [
@@ -274,7 +271,7 @@ export default [
             },
             {
               menuName: '功能',
-              orderSort: 6,
+              orderSort: 7,
               path: 'fun',
               name: '/fun',
               icon: 'icon-park-outline:bytedance-mini-app',
@@ -299,6 +296,21 @@ export default [
                   component: 'fun/editor/index',
                   isKeepAlive: true,
                   isHidden: false,
+                  menuType: '0',
+                  isTagsView: true,
+                  isAffix: false
+                },
+                {
+                  menuName: '菜单标记演示',
+                  orderSort: 3,
+                  name: 'MenuBadgeDemo',
+                  path: '/fun/menuBadge',
+                  component: 'fun/menuBadge/index',
+                  extraText: '7',
+                  extraType: 'warning',
+                  isKeepAlive: false,
+                  isHidden: false,
+                  linkUrl: '',
                   menuType: '0',
                   isTagsView: true,
                   isAffix: false

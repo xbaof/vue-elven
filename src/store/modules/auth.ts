@@ -6,6 +6,7 @@ import { ELV_AUTH } from '@/enums/cacheEnum'
 import { usePermissionStore } from './permission'
 import { useTagsViewStore } from './tagsView'
 import { useUserStore } from './user'
+import { useMenuBadgeStore } from './menuBadge'
 import { createFullEncryptSerializer } from '@/utils/pinia-persist.serializer'
 import router from '@/router'
 import { clearAllPendingRequests } from '@/api/http/cancel'
@@ -36,11 +37,13 @@ export const useAuthStore = defineStore('auth', {
       const userStore = useUserStore()
       const permissionStore = usePermissionStore()
       const tagsViewStore = useTagsViewStore()
+      const menuBadgeStore = useMenuBadgeStore()
 
       clearAllPendingRequests()
       userStore.resetUser()
       permissionStore.resetPermission(router)
       tagsViewStore.resetTagsView()
+      menuBadgeStore.resetAllBadges()
       this.resetAuth()
     },
     resetAuth() {
