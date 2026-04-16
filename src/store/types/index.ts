@@ -1,4 +1,5 @@
 import type { RouteRecordRaw, RouteMeta, LocationQuery, RouteParamsRawGeneric } from 'vue-router'
+import type { BadgeProps } from 'naive-ui'
 
 export interface AppState {
   layout: 'vertical' | 'horizontal' | 'mix'
@@ -66,4 +67,14 @@ export interface TagView {
 export interface TagsViewState {
   visitedViews: TagView[]
   cachedViews: string[]
+}
+
+export interface MenuBadge {
+  extraText?: string
+  extraType?: BadgeProps['type']
+}
+
+export interface MenuBadgeState {
+  serverMap: Recordable<MenuBadge>
+  localMap: Recordable<MenuBadge>
 }
