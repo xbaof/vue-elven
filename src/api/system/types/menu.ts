@@ -29,6 +29,12 @@ interface MenuBase {
   status: '0' | '1'
   /** 激活路径 */
   activePath?: string
+  /** 菜单右侧额外标记文本 */
+  extraText?: string
+  /** 菜单右侧额外标记类型 */
+  extraType?: 'default' | 'success' | 'error' | 'warning' | 'info'
+  /** 菜单导航附带的 URL 参数 */
+  query?: AnyObject
   /** 子菜单 */
   children?: Menu[]
 }
