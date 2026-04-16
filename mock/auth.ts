@@ -81,6 +81,11 @@ export default [
               name: 'Test',
               path: '/test',
               component: 'test/index',
+              extraText: 'NEW',
+              extraType: 'success',
+              query: {
+                source: 'menu'
+              },
               isKeepAlive: false,
               isHidden: false,
               linkUrl: '',
@@ -95,6 +100,12 @@ export default [
               name: 'Baidu',
               path: '/baidu',
               component: null,
+              extraText: '9',
+              extraType: 'error',
+              query: {
+                from: 'elven',
+                type: 'external'
+              },
               isKeepAlive: false,
               isHidden: false,
               linkUrl: 'https://www.baidu.com',

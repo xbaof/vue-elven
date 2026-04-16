@@ -42,6 +42,7 @@ interface BreadcrumbItem {
   icon: (() => ReturnType<typeof h>) | null
   isLink?: boolean
   linkUrl?: string
+  query?: AnyObject
   children?: BreadcrumbItem[]
 }
 
@@ -58,6 +59,7 @@ const generator = (routerMaps: RouteRecordNormalized[]): BreadcrumbItem[] => {
         o.meta?.icon && breadcrumb.value.showIcon ? () => h(SvgIcon, { icon: o.meta?.icon as string, size: 16 }) : null,
       isLink: o.meta?.isLink,
       linkUrl: o.meta?.linkUrl,
+      query: o.meta?.query,
       children: undefined
     }
 
