@@ -1,13 +1,10 @@
 ﻿<template>
   <n-flex vertical :size="15" class="main-content">
-    <n-alert type="info" :show-icon="false">
-      当前为通用菜单占位页。菜单、子菜单、子子菜单可复用此页面，后续按业务逐步替换为真实功能页面。
-    </n-alert>
-
-    <n-card>
-      <n-flex vertical :size="12">
+    <n-list bordered>
+      <n-list-item>
         <n-thing :title="pageTitle" description="菜单占位页面（支持多级菜单复用）" />
-
+      </n-list-item>
+      <n-list-item>
         <n-descriptions bordered :column="1" size="small" label-placement="left">
           <n-descriptions-item label="当前路径">{{ route.path }}</n-descriptions-item>
           <n-descriptions-item label="完整路径">{{ route.fullPath }}</n-descriptions-item>
@@ -15,8 +12,8 @@
           <n-descriptions-item label="层级链路">{{ menuTrailText }}</n-descriptions-item>
           <n-descriptions-item label="匹配路由链">{{ routePathTrailText }}</n-descriptions-item>
         </n-descriptions>
-      </n-flex>
-    </n-card>
+      </n-list-item>
+    </n-list>
 
     <n-grid :cols="2" :x-gap="12" :y-gap="12" item-responsive responsive="screen">
       <n-grid-item span="2 m:1">

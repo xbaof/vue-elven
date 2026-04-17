@@ -1,12 +1,10 @@
 ﻿<template>
   <n-flex vertical :size="15" class="main-content">
-    <n-alert type="info" :show-icon="false">
-      当前页面用于验证“固定标签页（isAffix）”行为，便于测试标签页在跳转、刷新、多参数场景下的表现。
-    </n-alert>
-
-    <n-card>
-      <n-flex vertical :size="12">
+    <n-list bordered>
+      <n-list-item>
         <n-thing :title="pageMeta.title" description="测试页面（标签页固定）" />
+      </n-list-item>
+      <n-list-item>
         <n-descriptions bordered :column="1" size="small" label-placement="left">
           <n-descriptions-item label="当前路径">{{ route.path }}</n-descriptions-item>
           <n-descriptions-item label="完整路径">{{ route.fullPath }}</n-descriptions-item>
@@ -18,17 +16,22 @@
           <n-descriptions-item label="已打开标签数">{{ visitedTagCount }}</n-descriptions-item>
           <n-descriptions-item label="缓存标签数">{{ cachedTagCount }}</n-descriptions-item>
         </n-descriptions>
-      </n-flex>
-    </n-card>
+      </n-list-item>
+    </n-list>
 
-    <n-card title="测试操作">
-      <n-flex wrap :size="12">
-        <n-button type="primary" @click="refreshCurrentTag">刷新当前标签</n-button>
-        <n-button @click="openCurrentWithNewQuery">以新 Query 打开当前页</n-button>
-        <n-button @click="goDashboard">跳转到首页</n-button>
-        <n-button @click="backToTest">返回测试页</n-button>
-      </n-flex>
-    </n-card>
+    <n-list bordered>
+      <n-list-item>
+        <n-thing title="测试操作" />
+      </n-list-item>
+      <n-list-item>
+        <n-flex wrap :size="12">
+          <n-button type="primary" @click="refreshCurrentTag">刷新当前标签</n-button>
+          <n-button @click="openCurrentWithNewQuery">以新 Query 打开当前页</n-button>
+          <n-button @click="goDashboard">跳转到首页</n-button>
+          <n-button @click="backToTest">返回测试页</n-button>
+        </n-flex>
+      </n-list-item>
+    </n-list>
 
     <n-grid :cols="2" :x-gap="12" :y-gap="12" item-responsive responsive="screen">
       <n-grid-item span="2 m:1">
@@ -43,37 +46,42 @@
       </n-grid-item>
     </n-grid>
 
-    <n-card title="已打开标签列表">
-      <n-table striped :single-line="false" size="small">
-        <thead>
-          <tr>
-            <th>标题</th>
-            <th>路径</th>
-            <th>状态</th>
-            <th>Query</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="tagItem in visitedViews" :key="getTagKey(tagItem)">
-            <td>{{ tagItem.title || '-' }}</td>
-            <td>{{ tagItem.path }}</td>
-            <td>
-              <n-flex :size="6" wrap>
-                <n-tag v-if="tagItem.meta?.isAffix" type="success" size="small">固定</n-tag>
-                <n-tag v-if="isCachedTag(tagItem)" type="info" size="small">缓存</n-tag>
-                <n-tag v-if="isActiveTag(tagItem)" type="warning" size="small">当前</n-tag>
-              </n-flex>
-            </td>
-            <td>
-              <span class="queryText">{{ formatQueryText(tagItem.query) }}</span>
-            </td>
-          </tr>
-          <tr v-if="visitedViews.length === 0">
-            <td colspan="4" class="emptyRow">暂无标签数据</td>
-          </tr>
-        </tbody>
-      </n-table>
-    </n-card>
+    <n-list bordered>
+      <n-list-item>
+        <n-thing title="已打开标签列表" />
+      </n-list-item>
+      <n-list-item>
+        <n-table striped :single-line="false" size="small">
+          <thead>
+            <tr>
+              <th>标题</th>
+              <th>路径</th>
+              <th>状态</th>
+              <th>Query</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="tagItem in visitedViews" :key="getTagKey(tagItem)">
+              <td>{{ tagItem.title || '-' }}</td>
+              <td>{{ tagItem.path }}</td>
+              <td>
+                <n-flex :size="6" wrap>
+                  <n-tag v-if="tagItem.meta?.isAffix" type="success" size="small">固定</n-tag>
+                  <n-tag v-if="isCachedTag(tagItem)" type="info" size="small">缓存</n-tag>
+                  <n-tag v-if="isActiveTag(tagItem)" type="warning" size="small">当前</n-tag>
+                </n-flex>
+              </td>
+              <td>
+                <span class="queryText">{{ formatQueryText(tagItem.query) }}</span>
+              </td>
+            </tr>
+            <tr v-if="visitedViews.length === 0">
+              <td colspan="4" class="emptyRow">暂无标签数据</td>
+            </tr>
+          </tbody>
+        </n-table>
+      </n-list-item>
+    </n-list>
   </n-flex>
 </template>
 

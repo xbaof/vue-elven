@@ -1,17 +1,17 @@
 <template>
   <n-flex vertical :size="16" class="main-content">
-    <n-alert :show-icon="false">
-      此页面用于演示菜单标记的运行时更新能力。你可以设置文本/数字标记、对数字标记减 1，并观察左侧菜单实时变化。
-    </n-alert>
-
-    <n-card title="当前菜单标记">
-      <n-descriptions bordered :column="1" size="small" label-placement="left">
-        <n-descriptions-item label="当前路由">{{ route.path }}</n-descriptions-item>
-        <n-descriptions-item label="extraText">{{ currentBadge?.extraText || '-' }}</n-descriptions-item>
-        <n-descriptions-item label="extraType">{{ currentBadge?.extraType || '-' }}</n-descriptions-item>
-      </n-descriptions>
-    </n-card>
-
+    <n-list bordered>
+      <n-list-item>
+        <n-thing title="当前菜单标记" />
+      </n-list-item>
+      <n-list-item>
+        <n-descriptions bordered :column="1" size="small" label-placement="left">
+          <n-descriptions-item label="当前路由">{{ route.path }}</n-descriptions-item>
+          <n-descriptions-item label="extraText">{{ currentBadge?.extraText || '-' }}</n-descriptions-item>
+          <n-descriptions-item label="extraType">{{ currentBadge?.extraType || '-' }}</n-descriptions-item>
+        </n-descriptions>
+      </n-list-item>
+    </n-list>
     <n-grid :cols="2" :x-gap="12" :y-gap="12" item-responsive responsive="screen">
       <n-grid-item span="2 m:1">
         <n-card title="设置文本标记">
@@ -30,7 +30,6 @@
           </n-flex>
         </n-card>
       </n-grid-item>
-
       <n-grid-item span="2 m:1">
         <n-card title="设置数字标记">
           <n-flex vertical :size="10">
