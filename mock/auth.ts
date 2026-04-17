@@ -301,7 +301,7 @@ export default [
                   isAffix: false
                 },
                 {
-                  menuName: '菜单标记演示',
+                  menuName: '菜单标记',
                   orderSort: 3,
                   name: 'MenuBadgeDemo',
                   path: '/fun/menuBadge',
