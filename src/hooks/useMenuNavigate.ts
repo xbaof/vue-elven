@@ -36,14 +36,15 @@ export const useMenuNavigate = () => {
 
     const { query, isLink, linkUrl, key } = option
     const routeKey = key ?? fallbackKey
+    const routeQuery = query as LocationQueryRaw | undefined
 
     if (isLink && linkUrl) {
-      openLink(appendQueryToUrl(String(linkUrl), query as LocationQueryRaw))
+      openLink(appendQueryToUrl(String(linkUrl), routeQuery))
       return
     }
 
     if (routeKey != null) {
-      await push(query ? { path: String(routeKey), query: query as LocationQueryRaw } : String(routeKey))
+      await push(routeQuery ? { path: String(routeKey), query: routeQuery } : String(routeKey))
     }
   }
 

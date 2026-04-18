@@ -22,7 +22,7 @@ export const sortRoutesByMetaOrder = <T extends { meta?: { sort?: number | strin
 ) => {
   if (addDefaultSort) {
     routeList.forEach((routeItem, index) => {
-      if (routeItem?.meta && routeItem.meta.sort == null) {
+      if (routeItem.meta && routeItem.meta.sort == null) {
         routeItem.meta.sort = index + 2
       }
     })
@@ -77,7 +77,7 @@ const transformMenusToRoutes = (menus: Menu[]): Array<RouteRecordRaw> => {
       }
     }
 
-    if (menu.children && menu.children.length > 0) {
+    if (menu.children?.length) {
       route.children = transformMenusToRoutes(menu.children)
       route.redirect = route.children[0].path
     } else {
