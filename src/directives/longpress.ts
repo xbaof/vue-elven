@@ -19,16 +19,13 @@ export const longpress: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding<(evt: PointerEvent) => void>) {
     const { arg, value } = binding
 
-    if (isFunction(value)) {
-      const delay = parseLongpressDelay(arg)
-      onLongPress(el, value, {
-        delay,
-        modifiers: {
-          stop: true
-        }
-      })
-    } else {
+    if (!isFunction(value)) {
       throw new Error('Directive longpress: callback must be a function')
     }
+
+    onLongPress(el, value, {
+      delay: parseLongpressDelay(arg),
+      modifiers: { stop: true }
+    })
   }
 }

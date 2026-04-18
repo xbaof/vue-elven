@@ -79,11 +79,9 @@ const generator = (routerMaps: RouteRecordNormalized[]): BreadcrumbItem[] => {
 const breadcrumbs = computed(() => {
   const matcheds = route.matched.filter((o) => o.meta?.title)
   const breadcrumbList = generator(matcheds)
-  if (breadcrumbList.length > 0) {
-    const lastItem = breadcrumbList[breadcrumbList.length - 1]
-    if (lastItem) {
-      lastItem.label = getTagViewTitle(toTagView(route))
-    }
+  const lastItem = breadcrumbList.at(-1)
+  if (lastItem) {
+    lastItem.label = getTagViewTitle(toTagView(route))
   }
   return breadcrumbList
 })

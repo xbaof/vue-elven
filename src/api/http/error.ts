@@ -66,13 +66,12 @@ const normalizeAxiosError = (error: AxiosError): NormalizedError => {
 export const normalizeUnknownError = (error: unknown, fallbackMessage?: string): NormalizedError => {
   if (axios.isAxiosError(error)) {
     const normalizedError = normalizeAxiosError(error)
-    if (fallbackMessage && normalizedError.kind === 'unknown') {
-      return {
-        ...normalizedError,
-        message: fallbackMessage
-      }
-    }
-    return normalizedError
+    return fallbackMessage && normalizedError.kind === 'unknown'
+      ? {
+          ...normalizedError,
+          message: fallbackMessage
+        }
+      : normalizedError
   }
 
   return normalizeBaseUnknownError(error, fallbackMessage)

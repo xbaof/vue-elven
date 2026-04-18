@@ -13,21 +13,11 @@ export const permission: Directive = {
   mounted(el: HTMLElement, binding: DirectiveBinding<Arrayable<string>>) {
     const { value } = binding
     const permissionStore = usePermissionStore()
-    const userPerms = permissionStore.perms || []
-
-    let requiredPerms: string[] = []
-
-    if (isString(value)) {
-      requiredPerms = [value]
-    } else if (isArray(value)) {
-      requiredPerms = value
-    } else {
-      return
-    }
+    const userPerms = permissionStore.perms
+    const requiredPerms = isString(value) ? [value] : isArray(value) ? value : []
+    if (!requiredPerms.length) return
 
     const hasPermission = requiredPerms.some((perm) => userPerms.includes(perm))
-    if (!hasPermission) {
-      el.parentNode && el.parentNode.removeChild(el)
-    }
+    if (!hasPermission) el.parentNode?.removeChild(el)
   }
 }

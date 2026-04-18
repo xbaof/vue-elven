@@ -24,8 +24,7 @@ function createBeforeEachGuard(router: Router) {
         try {
           const userStore = useUserStore()
           await Promise.all([userStore.fetchUserInfo(), permissionStore.buildRoutes()])
-          const toName = to.name
-          if (!toName || !router.hasRoute(toName)) {
+          if (!to.name || !router.hasRoute(to.name)) {
             if (to.path === '/404' && to.redirectedFrom !== undefined) {
               return {
                 path: to.redirectedFrom?.fullPath,
@@ -48,10 +47,7 @@ function createBeforeEachGuard(router: Router) {
       return
     }
 
-    if (whiteList.includes(to.path)) {
-      return
-    }
-    return '/login'
+    return whiteList.includes(to.path) ? undefined : '/login'
   }
 }
 

@@ -194,8 +194,8 @@ const handleScroll = (): void => {
   const liItemElement = liRefs[0]
   const liItemOffsetTop = liItemElement.offsetTop
   const liItemOffsetHeight = liItemElement.offsetHeight
-  const scrollbarRefHeight = scrollbarRef.value ? scrollbarRef.value.offsetHeight : 0
-  const ulRefHeight = ulRef.value ? ulRef.value.offsetHeight : 0
+  const scrollbarRefHeight = scrollbarRef.value?.offsetHeight || 0
+  const ulRefHeight = ulRef.value?.offsetHeight || 0
 
   if (ulRefHeight <= scrollbarRefHeight || liItemOffsetTop === 0) {
     y.value = 0
@@ -251,13 +251,9 @@ const handleDown = (): void => {
 }
 
 const handleEnter = async (): Promise<void> => {
-  if (!searchResult.value.length) {
-    return
-  }
-
   const resultList = unref(searchResult)
   const currentIndex = unref(activeIndex)
-  if (resultList.length === 0 || currentIndex < 0 || currentIndex >= resultList.length) {
+  if (!resultList.length || currentIndex < 0 || currentIndex >= resultList.length) {
     return
   }
 

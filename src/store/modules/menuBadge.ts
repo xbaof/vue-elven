@@ -26,9 +26,7 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
         ...(this.localMap[path] || {}),
         ...badge
       }
-
-      const hasRenderableText = typeof mergedBadge.extraText === 'string' && mergedBadge.extraText.trim().length > 0
-      if (!hasRenderableText) {
+      if (!mergedBadge?.extraText?.trim()) {
         delete this.localMap[path]
         return
       }
@@ -63,7 +61,7 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
         ...(this.localMap[path] || {})
       }
 
-      if (typeof resolvedBadge.extraText !== 'string' || resolvedBadge.extraText.trim().length === 0) {
+      if (resolvedBadge?.extraText?.trim().length === 0) {
         return undefined
       }
 
@@ -78,9 +76,7 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
       }
 
       const currentBadge = this.resolveBadge(path)
-      if (typeof currentBadge?.extraText !== 'string' || !isNumericText(currentBadge?.extraText)) {
-        return
-      }
+      if (!isNumericText(currentBadge?.extraText ?? '')) return
 
       const normalizedStep = Number.isFinite(step) && step > 0 ? Math.floor(step) : 1
       const nextValue = Math.max(0, Number(currentBadge?.extraText) - normalizedStep)
