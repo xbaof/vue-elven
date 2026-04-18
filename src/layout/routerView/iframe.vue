@@ -30,11 +30,12 @@ const initIframeLoad = () => {
 }
 
 onMounted(() => {
-  if (linkUrl.value) {
-    initIframeLoad()
-  } else {
+  if (!linkUrl.value) {
     show.value = false
+    return
   }
+
+  initIframeLoad()
 })
 </script>
 

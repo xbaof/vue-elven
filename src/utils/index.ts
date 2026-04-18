@@ -4,13 +4,13 @@
  * @param target Target
  */
 export function openLink(href: string, target: '_blank' | '_self' | '_parent' | '_top' | 'framename' = '_blank') {
-  const n = document.createElement('a')
-  n.setAttribute('href', href)
-  n.setAttribute('target', target)
-  n.setAttribute('rel', 'noreferrer noopener')
-  document.body.appendChild(n)
-  n.click()
-  n.remove()
+  const linkEl = document.createElement('a')
+  linkEl.setAttribute('href', href)
+  linkEl.setAttribute('target', target)
+  linkEl.setAttribute('rel', 'noreferrer noopener')
+  document.body.appendChild(linkEl)
+  linkEl.click()
+  linkEl.remove()
 }
 
 /**

@@ -45,19 +45,17 @@ const SVG_COMPONENT_CACHE: Recordable<Component> = {}
  */
 const getSvgComponent = (icon: string): Nullable<Component> => {
   const iconName = icon.replace('local:', '')
-
   if (!iconName) return null
 
-  const cached = SVG_COMPONENT_CACHE[iconName]
-  if (cached) return cached
+  const cachedComponent = SVG_COMPONENT_CACHE[iconName]
+  if (cachedComponent) return cachedComponent
 
   const loader = SVG_COMPONENT_LOADERS[iconName]
   if (!loader) return null
 
-  const asyncComp = defineAsyncComponent(() => loader())
-  SVG_COMPONENT_CACHE[iconName] = asyncComp
-
-  return asyncComp
+  const asyncComponent = defineAsyncComponent(() => loader())
+  SVG_COMPONENT_CACHE[iconName] = asyncComponent
+  return asyncComponent
 }
 
 const iconComponent = defineComponent({

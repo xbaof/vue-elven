@@ -20,10 +20,7 @@ const DEFAULT_THROTTLE_TIMEOUT = 1000
  * 解析指令模式，非法值时回退为 debounce。
  */
 const parseOptimizeMode = (arg?: string): OptimizeMode => {
-  if (arg === 'debounce' || arg === 'throttle') {
-    return arg
-  }
-  return 'debounce'
+  return arg === 'throttle' ? 'throttle' : 'debounce'
 }
 
 /**

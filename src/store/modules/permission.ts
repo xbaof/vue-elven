@@ -35,9 +35,7 @@ export const usePermissionStore = defineStore('permission', {
         const menuBadgeStore = useMenuBadgeStore()
 
         this.perms = perms
-        if (roles && roles.length) {
-          this.roles = roles
-        }
+        this.roles = roles?.length ? roles : []
 
         const asyncRoutes = generatorDynamicRouter(menus, basicLayoutRoutes)
         menuBadgeStore.clearLocalBadges()
