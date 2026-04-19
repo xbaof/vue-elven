@@ -301,8 +301,20 @@ export default [
                   isAffix: false
                 },
                 {
-                  menuName: '菜单标记',
+                  menuName: 'Markdown 编辑器',
                   orderSort: 3,
+                  name: 'MarkdownDemo',
+                  path: '/fun/markdown',
+                  component: 'fun/markdown/index',
+                  isKeepAlive: true,
+                  isHidden: false,
+                  menuType: '0',
+                  isTagsView: true,
+                  isAffix: false
+                },
+                {
+                  menuName: '菜单标记',
+                  orderSort: 4,
                   name: 'MenuBadgeDemo',
                   path: '/fun/menuBadge',
                   component: 'fun/menuBadge/index',
