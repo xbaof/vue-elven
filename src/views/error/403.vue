@@ -40,10 +40,12 @@ const goBack = async () => {
 
 <style scoped lang="scss">
 .forbiddenPage {
-  min-height: calc(100vh - var(--header-height, 81px) - 30px);
+  flex: 1 1 0%;
+  min-height: 100%;
 }
 
 .forbiddenCard {
   width: min(640px, 100%);
+  background-color: transparent;
 }
 </style>
