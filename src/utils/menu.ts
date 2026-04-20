@@ -1,6 +1,6 @@
 ﻿import type { MenuOption, BadgeProps } from 'naive-ui'
 import { NBadge } from 'naive-ui'
-import { h } from 'vue'
+import { h, type VNodeChild } from 'vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useMenuBadgeStore } from '@/store/modules/menuBadge'
 import type { RouteRecordRaw } from 'vue-router'
@@ -77,32 +77,52 @@ const createMenuExtra = (extraText: Nullable<string>, extraType: Nullable<BadgeP
 }
 
 /**
+ * 统一渲染菜单右侧额外内容。
+ */
+export const renderMenuOptionExtra = (option: MenuOption): VNodeChild => {
+  const menuExtra = option.extra
+  if (!menuExtra) {
+    return null
+  }
+
+  return typeof menuExtra === 'function' ? menuExtra() : menuExtra
+}
+
+const createMenuOptionBase = (
+  route: RouteRecordRaw,
+  menuBadgeStore: ReturnType<typeof useMenuBadgeStore>,
+  label: MenuOption['label'] = route.meta?.title
+): Partial<MenuOption> => {
+  const { path, meta } = route
+  const { extraText, extraType } = resolveRouteBadge(path, meta, menuBadgeStore)
+
+  return {
+    key: path,
+    label,
+    icon: createMenuIcon(meta?.icon),
+    extra: createMenuExtra(extraText, extraType),
+    isTagsView: meta?.isTagsView,
+    isKeepAlive: meta?.isKeepAlive,
+    isAffix: meta?.isAffix,
+    isLink: meta?.isLink,
+    linkUrl: meta?.linkUrl,
+    sort: meta?.sort,
+    activePath: meta?.activePath,
+    extraText,
+    extraType,
+    query: meta?.query,
+    show: !meta?.isHidden
+  }
+}
+
+/**
  * @description 将路由树转换为 naive-ui 菜单数据。
  */
 export function transformRoutesToMenus(routes: RouteRecordRaw[]): MenuOption[] {
   const menuBadgeStore = useMenuBadgeStore()
 
   return routes.map((route) => {
-    const { path, meta } = route
-    const { extraText, extraType } = resolveRouteBadge(path, meta, menuBadgeStore)
-
-    const menuOption: Partial<MenuOption> = {
-      key: path,
-      label: meta?.title,
-      icon: createMenuIcon(meta?.icon),
-      extra: createMenuExtra(extraText, extraType),
-      isTagsView: meta?.isTagsView,
-      isKeepAlive: meta?.isKeepAlive,
-      isAffix: meta?.isAffix,
-      isLink: meta?.isLink,
-      linkUrl: meta?.linkUrl,
-      sort: meta?.sort,
-      activePath: meta?.activePath,
-      extraText,
-      extraType,
-      query: meta?.query,
-      show: !meta?.isHidden
-    }
+    const menuOption: Partial<MenuOption> = createMenuOptionBase(route, menuBadgeStore)
 
     const showChild = (route.children || []).filter((item) => !item.meta?.isHidden)
     if (showChild.length > 0) {
@@ -123,22 +143,12 @@ export function flatRoutesToMenus(options: RouteRecordRaw[], parentLabel?: Nulla
   options
     .filter((item) => !item.meta?.isHidden)
     .forEach((route) => {
-      const { path, meta } = route
-      const { extraText, extraType } = resolveRouteBadge(path, meta, menuBadgeStore)
-      const label = parentLabel ? `${parentLabel} > ${meta?.title}` : meta?.title
+      const label = parentLabel ? `${parentLabel} > ${route.meta?.title}` : route.meta?.title
 
       if (route.children && route.children.length > 0) {
         result = result.concat(flatRoutesToMenus(route.children, label))
       } else {
-        result.push({
-          key: path,
-          label,
-          isLink: meta?.isLink,
-          icon: createMenuIcon(meta?.icon),
-          extra: createMenuExtra(extraText, extraType),
-          linkUrl: meta?.linkUrl,
-          query: meta?.query
-        })
+        result.push(createMenuOptionBase(route, menuBadgeStore, label) as MenuOption)
       }
     })
 

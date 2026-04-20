@@ -8,15 +8,16 @@ export const useAppStore = defineStore('app', {
   state: defaultState,
   getters: {
     getThemeOverridesCommon: (state) => {
-      return Object.entries(state.overrideColor).reduce((result, [key, color]) => {
-        return {
-          ...result,
-          [`${key}Color`]: color,
-          [`${key}ColorHover`]: createHoverColor(color),
-          [`${key}ColorPressed`]: createPressedColor(color),
-          [`${key}ColorSuppl`]: createHoverColor(color)
-        }
-      }, {})
+      const themeOverridesCommon: Recordable<string> = {}
+
+      Object.entries(state.overrideColor).forEach(([key, color]) => {
+        themeOverridesCommon[`${key}Color`] = color
+        themeOverridesCommon[`${key}ColorHover`] = createHoverColor(color)
+        themeOverridesCommon[`${key}ColorPressed`] = createPressedColor(color)
+        themeOverridesCommon[`${key}ColorSuppl`] = createHoverColor(color)
+      })
+
+      return themeOverridesCommon
     }
   },
   actions: {
