@@ -7,7 +7,7 @@ import { collectRouteBadgeMap } from '@/utils/menu'
 import { useMenuBadgeStore } from './menuBadge'
 import type { RouteRecordRaw, Router } from 'vue-router'
 
-let buildingRoutesPromise: Promise<RouteRecordRaw[]> | null = null
+let buildingRoutesPromise: Nullable<Promise<RouteRecordRaw[]>> = null
 
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionState => ({

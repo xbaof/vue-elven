@@ -5,7 +5,7 @@
       ref="menuRef"
       :value="activeMenu"
       :options="menuOptions"
-      :render-extra="renderMenuExtra"
+      :render-extra="renderMenuOptionExtra"
       :collapsed="!sidebar.opened"
       :accordion="sidebar.accordion"
       :inverted="inverted"
@@ -19,14 +19,14 @@
   <collapse v-if="app.device === 'desktop'" class="collapse pl-18" />
 </template>
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, watchEffect, VNodeChild } from 'vue'
+import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { MenuInst, type MenuOption } from 'naive-ui'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useMenuNavigate } from '@/hooks/useMenuNavigate'
-import { transformRoutesToMenus } from '@/utils/menu'
+import { renderMenuOptionExtra, transformRoutesToMenus } from '@/utils/menu'
 import Logo from './logo.vue'
 import Collapse from './collapse.vue'
 
@@ -79,17 +79,6 @@ watch(route, async () => {
  */
 const handleClick = (key: string, item: MenuOption): void => {
   void navigateByMenuOption(item, key)
-}
-
-/**
- * 渲染菜单右侧额外内容。
- */
-const renderMenuExtra = (option: MenuOption): VNodeChild => {
-  const menuExtra = option.extra
-  if (!menuExtra) {
-    return null
-  }
-  return typeof menuExtra === 'function' ? menuExtra() : menuExtra
 }
 
 const iconColor = ref('')
