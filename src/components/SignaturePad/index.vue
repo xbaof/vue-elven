@@ -18,8 +18,8 @@ const props = withDefaults(defineProps<SignaturePadProps>(), {
   height: 260,
   backgroundColor: '#ffffff',
   penColor: '#1f2937',
-  minWidth: 1,
-  maxWidth: 2.5,
+  minWidth: 1.2,
+  maxWidth: 1.8,
   disabled: false
 })
 
