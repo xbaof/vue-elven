@@ -266,6 +266,18 @@ export default [
                   menuType: '0',
                   isTagsView: true,
                   isAffix: false
+                },
+                {
+                  menuName: '电子签名',
+                  orderSort: 6,
+                  name: 'SignatureDemo',
+                  path: '/signature',
+                  component: 'components/signature/index',
+                  isKeepAlive: true,
+                  isHidden: false,
+                  menuType: '0',
+                  isTagsView: true,
+                  isAffix: false
                 }
               ]
             },
