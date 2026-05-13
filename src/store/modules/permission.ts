@@ -7,11 +7,10 @@ import { collectRouteBadgeMap } from '@/utils/menu'
 import { useMenuBadgeStore } from './menuBadge'
 import type { RouteRecordRaw, Router } from 'vue-router'
 
-let buildingRoutesPromise: Nullable<Promise<RouteRecordRaw[]>> = null
-
 export const usePermissionStore = defineStore('permission', {
   state: (): PermissionState => ({
     isDynamicRouteAdded: false,
+    buildingPromise: null,
     routes: [],
     roles: [],
     perms: []
@@ -22,9 +21,9 @@ export const usePermissionStore = defineStore('permission', {
      */
     async buildRoutes(): Promise<RouteRecordRaw[]> {
       if (this.isDynamicRouteAdded && this.routes.length) return this.routes
-      if (buildingRoutesPromise) return buildingRoutesPromise
+      if (this.buildingPromise) return this.buildingPromise
 
-      buildingRoutesPromise = (async () => {
+      this.buildingPromise = (async () => {
         const { data } = await getPermission()
         const { perms, menus, roles } = data
         const menuBadgeStore = useMenuBadgeStore()
@@ -41,9 +40,9 @@ export const usePermissionStore = defineStore('permission', {
       })()
 
       try {
-        return await buildingRoutesPromise
+        return await this.buildingPromise
       } finally {
-        buildingRoutesPromise = null
+        this.buildingPromise = null
       }
     },
 
@@ -62,7 +61,7 @@ export const usePermissionStore = defineStore('permission', {
      */
     resetPermission(router?: Router): void {
       if (router) this.resetRoutes(router)
-      buildingRoutesPromise = null
+      this.buildingPromise = null
       this.$reset()
     }
   }

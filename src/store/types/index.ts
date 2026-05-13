@@ -49,6 +49,8 @@ export interface UserState {
 export interface PermissionState {
   /** 是否已基于权限生成并挂载动态路由 */
   isDynamicRouteAdded: boolean
+  /** 正在构建路由的 Promise，用于防止并发调用 */
+  buildingPromise: Nullable<Promise<RouteRecordRaw[]>>
   routes: RouteRecordRaw[]
   roles: string[]
   /** like [ 'sys:user:add', 'sys:user:update' ] */
