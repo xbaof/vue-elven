@@ -67,7 +67,7 @@ import SignaturePad from '@/components/SignaturePad/index.vue'
 import type { SignatureEndPayload, SignaturePadExpose } from '@/components/SignaturePad/types'
 import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { downloadByData } from '@/utils/index'
+import { downloadFile } from '@/utils'
 import signaturePadDocRaw from '@docs/component-api/signature-pad.md?raw'
 
 defineOptions({
@@ -104,9 +104,7 @@ const clearSignature = () => {
 }
 
 const restoreSignature = async (): Promise<void> => {
-  if (!latestBase64.value) {
-    return
-  }
+  if (!latestBase64.value) return
 
   try {
     await signaturePadRef.value?.fromDataUrl(latestBase64.value)
@@ -117,9 +115,7 @@ const restoreSignature = async (): Promise<void> => {
 }
 
 const copyBase64 = async (): Promise<void> => {
-  if (!latestBase64.value) {
-    return
-  }
+  if (!latestBase64.value) return
   if (!isSupported.value) {
     msgWarning('当前环境不支持剪贴板复制')
     return
@@ -140,7 +136,7 @@ const downloadPng = async (): Promise<void> => {
       msgInfo('请先完成签名再下载')
       return
     }
-    downloadByData(pngBlob, 'signature.png', 'image/png')
+    downloadFile(pngBlob, 'signature.png', 'image/png')
     msgSuccess('签名图片已下载')
   } catch (error) {
     msgErrorFromUnknown(error, '下载签名失败')

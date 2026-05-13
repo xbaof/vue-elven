@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   language: 'zh-CN',
   toolbars: () => [],
-  toolbarsExclude: () => []
+  toolbarsExclude: () => ['github', 'save']
 })
 
 const emit = defineEmits<{

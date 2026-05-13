@@ -18,9 +18,7 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
      * 设置本地运行时标记覆盖值。
      */
     setLocalBadge(path: string, badge: MenuBadge) {
-      if (!path) {
-        return
-      }
+      if (!path) return
 
       const mergedBadge: MenuBadge = {
         ...(this.localMap[path] || {}),
@@ -37,10 +35,7 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
      * 清除单个本地标记覆盖值。
      */
     clearLocalBadge(path: string) {
-      if (!path) {
-        return
-      }
-      delete this.localMap[path]
+      if (path) delete this.localMap[path]
     },
     /**
      * 清空全部本地标记覆盖值。
@@ -52,18 +47,14 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
      * 获取菜单最终标记（本地覆盖优先）。
      */
     resolveBadge(path: string): MenuBadge | undefined {
-      if (!path) {
-        return undefined
-      }
+      if (!path) return undefined
 
       const resolvedBadge: MenuBadge = {
         ...(this.serverMap[path] || {}),
         ...(this.localMap[path] || {})
       }
 
-      if (resolvedBadge?.extraText?.trim().length === 0) {
-        return undefined
-      }
+      if (!resolvedBadge?.extraText?.trim()) return undefined
 
       return resolvedBadge
     },
@@ -71,9 +62,7 @@ export const useMenuBadgeStore = defineStore('menuBadge', {
      * 对数字标记执行减法，仅更新本地覆盖值。
      */
     decreaseLocalBadge(path: string, step: number = 1) {
-      if (!path) {
-        return
-      }
+      if (!path) return
 
       const currentBadge = this.resolveBadge(path)
       if (!isNumericText(currentBadge?.extraText ?? '')) return

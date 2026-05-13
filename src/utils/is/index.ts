@@ -17,20 +17,14 @@ export function isFunction<T = Fn>(val: unknown): val is T {
 /**
  * 是否已定义
  */
-export const isDef = <T = unknown>(val?: T): val is Exclude<T, undefined> => {
-  return typeof val !== 'undefined'
-}
+export const isDef = <T = unknown>(val?: T): val is Exclude<T, undefined> => typeof val !== 'undefined'
 
-export const isUnDef = <T = unknown>(val?: T): val is undefined => {
-  return !isDef(val)
-}
+export const isUnDef = <T = unknown>(val?: T): val is undefined => !isDef(val)
 
 /**
  * 是否为对象
  */
-export const isObject = (val: unknown): val is AnyObject => {
-  return val !== null && is(val, 'Object')
-}
+export const isObject = (val: unknown): val is AnyObject => val !== null && is(val, 'Object')
 
 /**
  * 是否为时间对象
@@ -90,23 +84,17 @@ export function isStringArray(value: unknown): value is string[] {
 /**
  * 是否为客户端环境
  */
-export const isClient = (): boolean => {
-  return typeof window !== 'undefined'
-}
+export const isClient = (): boolean => typeof window !== 'undefined'
 
 /**
  * 是否为 window 对象
  */
-export const isWindow = (val: unknown): val is Window => {
-  return typeof window !== 'undefined' && is(val, 'Window')
-}
+export const isWindow = (val: unknown): val is Window => typeof window !== 'undefined' && is(val, 'Window')
 
 /**
  * 是否为 DOM 元素
  */
-export const isElement = (val: unknown): val is Element => {
-  return isObject(val) && 'tagName' in val
-}
+export const isElement = (val: unknown): val is Element => isObject(val) && 'tagName' in val
 
 export const isServer = typeof window === 'undefined'
 
@@ -138,18 +126,9 @@ export function isUrl(path: string): boolean {
 
 /** 空数组 | 空字符串 | 空对象 | 空 Map | 空 Set */
 export function isEmpty(val: unknown): boolean {
-  if (isArray(val) || isString(val)) {
-    return val.length === 0
-  }
-
-  if (val instanceof Map || val instanceof Set) {
-    return val.size === 0
-  }
-
-  if (isObject(val)) {
-    return Object.keys(val).length === 0
-  }
-
+  if (isArray(val) || isString(val)) return val.length === 0
+  if (val instanceof Map || val instanceof Set) return val.size === 0
+  if (isObject(val)) return Object.keys(val).length === 0
   return false
 }
 
