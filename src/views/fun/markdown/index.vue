@@ -5,13 +5,7 @@
         <n-thing title="MarkdownEditor 示例" description="演示 Markdown 编辑、只读切换与内容回填能力。" />
       </n-list-item>
       <n-list-item>
-        <markdown-editor
-          ref="editorRef"
-          v-model="markdownValue"
-          :height="'480px'"
-          :read-only="readOnlyMode"
-          :toolbars-exclude="toolbarExcludeList"
-        />
+        <markdown-editor ref="editorRef" v-model="markdownValue" :height="'480px'" :read-only="readOnlyMode" />
         <n-flex class="actionRow" :size="8" wrap>
           <n-button type="primary" @click="copyMarkdown">复制 Markdown</n-button>
           <n-button @click="resetDemoContent">重置示例内容</n-button>
@@ -37,7 +31,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
-import type { ToolbarNames } from 'md-editor-v3'
 import MarkdownEditor from '@/components/MarkdownEditor/index.vue'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
@@ -73,8 +66,6 @@ const readOnlyMode = ref(false)
 const { copy, isSupported } = useClipboard()
 const { msgSuccess, msgWarning, msgErrorFromUnknown } = useUiFeedback()
 const { docHtml } = useMarkdownDoc(markdownEditorDocRaw)
-
-const toolbarExcludeList: ToolbarNames[] = ['github', 'catalog', 'save']
 
 const resetDemoContent = (): void => {
   editorRef.value?.setValue(initialDemoContent)

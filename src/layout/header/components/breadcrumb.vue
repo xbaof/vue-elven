@@ -21,7 +21,7 @@ import { computed, h } from 'vue'
 import { useRoute, type RouteRecordNormalized } from 'vue-router'
 import type { MenuOption } from 'naive-ui'
 import { storeToRefs } from 'pinia'
-import { getTagViewTitle, toTagView } from '@/store/modules/tagsView'
+import { getTagTitle, routeToTag } from '@/utils'
 import { useAppStore } from '@/store/modules/app'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useMenuNavigate } from '@/hooks/useMenuNavigate'
@@ -81,7 +81,7 @@ const breadcrumbs = computed(() => {
   const breadcrumbList = generator(matcheds)
   const lastItem = breadcrumbList.at(-1)
   if (lastItem) {
-    lastItem.label = getTagViewTitle(toTagView(route))
+    lastItem.label = getTagTitle(routeToTag(route))
   }
   return breadcrumbList
 })

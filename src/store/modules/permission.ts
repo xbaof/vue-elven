@@ -21,21 +21,16 @@ export const usePermissionStore = defineStore('permission', {
      * 从后端拉取菜单与权限，并基于菜单生成动态路由。
      */
     async buildRoutes(): Promise<RouteRecordRaw[]> {
-      if (this.isDynamicRouteAdded && this.routes.length > 0) {
-        return this.routes
-      }
+      if (this.isDynamicRouteAdded && this.routes.length) return this.routes
+      if (buildingRoutesPromise) return buildingRoutesPromise
 
-      if (buildingRoutesPromise) {
-        return buildingRoutesPromise
-      }
-
-      buildingRoutesPromise = (async (): Promise<RouteRecordRaw[]> => {
-        const permissionResponse = await getPermission()
-        const { perms, menus, roles } = permissionResponse.data
+      buildingRoutesPromise = (async () => {
+        const { data } = await getPermission()
+        const { perms, menus, roles } = data
         const menuBadgeStore = useMenuBadgeStore()
 
         this.perms = perms
-        this.roles = roles?.length ? roles : []
+        this.roles = roles || []
 
         const asyncRoutes = generatorDynamicRouter(menus, basicLayoutRoutes)
         menuBadgeStore.clearLocalBadges()
@@ -51,22 +46,22 @@ export const usePermissionStore = defineStore('permission', {
         buildingRoutesPromise = null
       }
     },
+
     /**
      * 重置路由，仅移除 Layout 相关动态子路由。
      */
     resetRoutes(router: Router): void {
-      const layoutRoute = basicLayoutRoutes.find((item) => item.name === 'Layout')
-      if (layoutRoute && router.hasRoute(layoutRoute.name!)) {
-        router.removeRoute(layoutRoute.name!)
+      const layoutRoute = basicLayoutRoutes.find((r) => r.name === 'Layout')
+      if (layoutRoute?.name && router.hasRoute(layoutRoute.name)) {
+        router.removeRoute(layoutRoute.name)
       }
     },
+
     /**
      * 重置权限状态。
      */
     resetPermission(router?: Router): void {
-      if (router) {
-        this.resetRoutes(router)
-      }
+      if (router) this.resetRoutes(router)
       buildingRoutesPromise = null
       this.$reset()
     }

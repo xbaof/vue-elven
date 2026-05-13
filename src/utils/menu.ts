@@ -1,4 +1,4 @@
-﻿import type { MenuOption, BadgeProps } from 'naive-ui'
+﻿import type { MenuOption } from 'naive-ui'
 import { NBadge } from 'naive-ui'
 import { h, type VNodeChild } from 'vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'
@@ -8,99 +8,60 @@ import type { MenuBadge } from '@/store/types'
 import { isNumericText } from '@/utils/is'
 
 /**
- * 从动态路由树中提取菜单标记基线数据。
+ * 从动态路由树中提取菜单标记数据。
  */
 export const collectRouteBadgeMap = (routeList: RouteRecordRaw[]): Recordable<MenuBadge> => {
-  const serverBadgeMap: Recordable<MenuBadge> = {}
+  const result: Recordable<MenuBadge> = {}
 
-  const walkRouteTree = (routes: RouteRecordRaw[]) => {
-    routes.forEach((routeItem) => {
-      const extraText = routeItem.meta?.extraText
-      const extraType = routeItem.meta?.extraType
+  const walk = (routes: RouteRecordRaw[]) => {
+    routes.forEach((route) => {
+      const { path, meta, children } = route
+      const extraText = meta?.extraText
 
-      if (routeItem.path && typeof extraText === 'string' && extraText.trim().length > 0) {
-        serverBadgeMap[routeItem.path] = {
-          extraText,
-          extraType
-        }
+      if (path && typeof extraText === 'string' && extraText.trim()) {
+        result[path] = { extraText, extraType: meta?.extraType }
       }
 
-      if (routeItem.children && routeItem.children.length > 0) {
-        walkRouteTree(routeItem.children)
-      }
+      if (children?.length) walk(children)
     })
   }
 
-  walkRouteTree(routeList)
-  return serverBadgeMap
-}
-
-/**
- * 统一解析菜单标记，优先使用本地覆盖值，再回退到路由元信息。
- */
-const resolveRouteBadge = (
-  routePath: string,
-  routeMeta: RouteRecordRaw['meta'],
-  menuBadgeStore: ReturnType<typeof useMenuBadgeStore>
-): MenuBadge => {
-  const resolvedBadge = menuBadgeStore.resolveBadge(routePath)
-  return {
-    extraText: resolvedBadge?.extraText ?? routeMeta?.extraText,
-    extraType: resolvedBadge?.extraType ?? routeMeta?.extraType
-  }
-}
-
-/**
- * 安全创建菜单图标渲染函数。
- */
-const createMenuIcon = (icon: Nullable<string>): MenuOption['icon'] => {
-  if (typeof icon !== 'string' || !icon) {
-    return undefined
-  }
-  return () => h(SvgIcon, { icon })
-}
-
-/**
- * 创建菜单右侧额外标记渲染函数。
- */
-const createMenuExtra = (extraText: Nullable<string>, extraType: Nullable<BadgeProps['type']>): MenuOption['extra'] => {
-  if (typeof extraText !== 'string' || !extraText.trim()) {
-    return undefined
-  }
-
-  return () =>
-    h(NBadge, {
-      type: extraType || 'default',
-      value: isNumericText(extraText) ? Number(extraText) : extraText,
-      class: 'ml-4'
-    })
+  walk(routeList)
+  return result
 }
 
 /**
  * 统一渲染菜单右侧额外内容。
  */
 export const renderMenuOptionExtra = (option: MenuOption): VNodeChild => {
-  const menuExtra = option.extra
-  if (!menuExtra) {
-    return null
-  }
-
-  return typeof menuExtra === 'function' ? menuExtra() : menuExtra
+  const { extra } = option
+  return typeof extra === 'function' ? extra() : (extra ?? null)
 }
 
-const createMenuOptionBase = (
+// 创建菜单项
+const createMenuOption = (
   route: RouteRecordRaw,
-  menuBadgeStore: ReturnType<typeof useMenuBadgeStore>,
+  badgeStore: ReturnType<typeof useMenuBadgeStore>,
   label: MenuOption['label'] = route.meta?.title
 ): Partial<MenuOption> => {
   const { path, meta } = route
-  const { extraText, extraType } = resolveRouteBadge(path, meta, menuBadgeStore)
+  const badge = badgeStore.resolveBadge(path)
+  const extraText = badge?.extraText ?? meta?.extraText
+  const extraType = badge?.extraType ?? meta?.extraType
 
   return {
     key: path,
     label,
-    icon: createMenuIcon(meta?.icon),
-    extra: createMenuExtra(extraText, extraType),
+    icon: meta?.icon ? () => h(SvgIcon, { icon: meta.icon as string }) : undefined,
+    extra:
+      extraText && extraText.trim()
+        ? () =>
+            h(NBadge, {
+              type: extraType || 'default',
+              value: isNumericText(extraText) ? Number(extraText) : extraText,
+              class: 'ml-4'
+            })
+        : undefined,
     isTagsView: meta?.isTagsView,
     isKeepAlive: meta?.isKeepAlive,
     isAffix: meta?.isAffix,
@@ -119,36 +80,36 @@ const createMenuOptionBase = (
  * @description 将路由树转换为 naive-ui 菜单数据。
  */
 export function transformRoutesToMenus(routes: RouteRecordRaw[]): MenuOption[] {
-  const menuBadgeStore = useMenuBadgeStore()
+  const badgeStore = useMenuBadgeStore()
 
   return routes.map((route) => {
-    const menuOption: Partial<MenuOption> = createMenuOptionBase(route, menuBadgeStore)
+    const menu = createMenuOption(route, badgeStore)
+    const children = route.children?.filter((item) => !item.meta?.isHidden)
 
-    const showChild = (route.children || []).filter((item) => !item.meta?.isHidden)
-    if (showChild.length > 0) {
-      menuOption.children = transformRoutesToMenus(showChild)
+    if (children?.length) {
+      menu.children = transformRoutesToMenus(children)
     }
 
-    return menuOption
+    return menu as MenuOption
   })
 }
 
 /**
  * @description 扁平化路由。
  */
-export function flatRoutesToMenus(options: RouteRecordRaw[], parentLabel?: Nullable<string>): MenuOption[] {
-  const menuBadgeStore = useMenuBadgeStore()
-  let result: MenuOption[] = []
+export function flatRoutesToMenus(routes: RouteRecordRaw[], parentLabel?: Nullable<string>): MenuOption[] {
+  const badgeStore = useMenuBadgeStore()
+  const result: MenuOption[] = []
 
-  options
+  routes
     .filter((item) => !item.meta?.isHidden)
     .forEach((route) => {
       const label = parentLabel ? `${parentLabel} > ${route.meta?.title}` : route.meta?.title
 
-      if (route.children && route.children.length > 0) {
-        result = result.concat(flatRoutesToMenus(route.children, label))
+      if (route.children?.length) {
+        result.push(...flatRoutesToMenus(route.children, label))
       } else {
-        result.push(createMenuOptionBase(route, menuBadgeStore, label) as MenuOption)
+        result.push(createMenuOption(route, badgeStore, label) as MenuOption)
       }
     })
 

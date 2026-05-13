@@ -13,32 +13,23 @@ export const useUserStore = defineStore('user', {
     avatar: ''
   }),
   getters: {
-    getName(state): string {
-      return state.name
-    },
-    getNickName(state): string {
-      return state.nickName
-    },
-    getAvatar(state): string {
-      return state.avatar
-    }
+    getName: (state) => state.name,
+    getNickName: (state) => state.nickName,
+    getAvatar: (state) => state.avatar
   },
   actions: {
     /**
      * 获取并缓存基础用户信息（用户名、昵称、头像）。
      */
     async fetchUserInfo(): Promise<User> {
-      if (fetchingUserPromise) {
-        return fetchingUserPromise
-      }
+      if (fetchingUserPromise) return fetchingUserPromise
 
-      fetchingUserPromise = (async (): Promise<User> => {
-        const userResponse = await getUser()
-        const { userName, nickName, avatar } = userResponse.data
-        this.name = userName
-        this.nickName = nickName
-        this.avatar = avatar
-        return userResponse.data
+      fetchingUserPromise = (async () => {
+        const { data } = await getUser()
+        this.name = data.userName
+        this.nickName = data.nickName
+        this.avatar = data.avatar
+        return data
       })()
 
       try {

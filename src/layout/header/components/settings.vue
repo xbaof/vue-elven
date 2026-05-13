@@ -172,21 +172,13 @@ const swatches = [
   outline: 2px solid var(--primary-color);
 }
 
-.dark-mode {
-  margin: 0 auto;
-}
-
 .layout-model {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 40px;
 
-  &.inverted {
-    .item {
-      &::before {
-        background-color: #273352 !important;
-      }
-    }
+  &.inverted .item::before {
+    background-color: #273352 !important;
   }
 
   .item {
@@ -199,85 +191,53 @@ const swatches = [
     border-radius: 4px;
     box-shadow: 0 1px 2.5px 0 rgb(0 0 0 / 18%);
 
-    &.vertical {
-      &::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        width: 33%;
-        height: 100%;
-        content: '';
-        background-color: #ffffff;
-        border-radius: 4px 0 0 4px;
-        box-shadow: 1px 0 4px rgb(0 21 41 / 8%);
-      }
-
-      &::after {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 25%;
-        content: '';
-        background-color: #ffffff;
-        border-radius: 4px 4px 0;
-        box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
-      }
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      content: '';
+      background-color: #ffffff;
+      box-shadow: 1px 0 4px rgb(0 21 41 / 8%);
     }
 
-    &.horizontal {
-      &::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        width: 100%;
-        height: 33%;
-        content: '';
-        background-color: #ffffff;
-        border-radius: 4px 4px 0 0;
-        box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
-      }
+    &.vertical::before {
+      width: 33%;
+      height: 100%;
+      border-radius: 4px 0 0 4px;
     }
 
-    &.mix {
-      &::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        width: 33%;
-        height: 100%;
-        content: '';
-        background-color: #ffffff;
-        border-radius: 4px 0 0 4px;
-        box-shadow: 1px 0 4px rgb(0 21 41 / 8%);
-      }
+    &.horizontal::before {
+      width: 100%;
+      height: 33%;
+      border-radius: 4px 4px 0 0;
+    }
 
-      &::after {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 25%;
-        content: '';
-        background-color: #ffffff;
-        border-radius: 4px 4px 0;
-        box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
-      }
+    &.mix::before {
+      width: 33%;
+      height: 100%;
+      border-radius: 4px 0 0 4px;
+    }
+
+    &.vertical::after,
+    &.mix::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 25%;
+      content: '';
+      background-color: #ffffff;
+      border-radius: 4px 4px 0;
+      box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
     }
   }
 }
 
-.configuration {
+.configuration .item {
+  display: flex;
   align-items: center;
-
-  .item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-  }
+  justify-content: space-between;
+  padding: 10px;
 }
 </style>

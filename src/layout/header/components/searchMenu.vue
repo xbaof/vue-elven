@@ -51,8 +51,8 @@
         </ul>
         <n-empty v-else class="pt-20 pb-20" description="暂无搜索结果" />
       </div>
-      <template #footer>
-        <div v-if="app.device === 'desktop'" class="search-commands">
+      <template v-if="app.device === 'desktop'" #footer>
+        <div class="search-commands">
           <ul>
             <li>
               <kbd class="search-commands-key">
@@ -124,7 +124,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, getCurrentInstance, nextTick, ref, shallowRef, unref } from 'vue'
+import { computed, getCurrentInstance, nextTick, ref, shallowRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { onKeyStroke, useDebounceFn, useScroll } from '@vueuse/core'
 import searchIcon from '@iconify-icons/icon-park-outline/search'
@@ -142,14 +142,15 @@ const app = useAppStore()
 const permissionStore = usePermissionStore()
 const { navigateByMenuOption } = useMenuNavigate()
 const { routes } = storeToRefs(permissionStore)
-const showModal = ref(false)
 const instance = getCurrentInstance()
+
+const showModal = ref(false)
+const searchMenuLabel = ref('')
+const searchResult = shallowRef<MenuOption[]>([])
+const activeIndex = ref(0)
 const ulRef = ref()
 const scrollbarRef = ref()
 const { y } = useScroll(scrollbarRef)
-const activeIndex = ref(0)
-const searchMenuLabel = ref('')
-const searchResult = shallowRef<MenuOption[]>([])
 
 type SearchableMenu = MenuOption & { __labelLower: string }
 
@@ -181,83 +182,56 @@ const handleClick = async (option: MenuOption): Promise<void> => {
  * 将当前高亮项滚动到可视区域。
  */
 const handleScroll = (): void => {
-  if (!instance) {
-    return
-  }
+  if (!instance) return
 
   const liRefs = instance.refs['li' + activeIndex.value] as HTMLElement[] | undefined
-  if (!liRefs?.length) {
-    return
-  }
+  if (!liRefs?.length) return
 
-  const liItemPadding = 8
-  const liItemElement = liRefs[0]
-  const liItemOffsetTop = liItemElement.offsetTop
-  const liItemOffsetHeight = liItemElement.offsetHeight
-  const scrollbarRefHeight = scrollbarRef.value?.offsetHeight || 0
-  const ulRefHeight = ulRef.value?.offsetHeight || 0
+  const liItem = liRefs[0]
+  const scrollbar = scrollbarRef.value
+  const ul = ulRef.value
+  if (!scrollbar || !ul) return
 
-  if (ulRefHeight <= scrollbarRefHeight || liItemOffsetTop === 0) {
+  const padding = 8
+  const liTop = liItem.offsetTop
+  const liHeight = liItem.offsetHeight
+  const scrollbarHeight = scrollbar.offsetHeight
+  const ulHeight = ul.offsetHeight
+
+  if (ulHeight <= scrollbarHeight || liTop === 0) {
     y.value = 0
-    return
-  }
-
-  if (liItemOffsetTop < y.value) {
-    y.value = liItemOffsetTop - liItemPadding
-    return
-  }
-
-  if (liItemOffsetTop + liItemOffsetHeight > scrollbarRefHeight + y.value && liItemOffsetTop > y.value) {
-    y.value = liItemOffsetTop - (scrollbarRefHeight - liItemOffsetHeight - liItemPadding)
+  } else if (liTop < y.value) {
+    y.value = liTop - padding
+  } else if (liTop + liHeight > scrollbarHeight + y.value) {
+    y.value = liTop - scrollbarHeight + liHeight + padding
   }
 }
 
 const handleMouseenter = (event: MouseEvent): void => {
   const target = event.currentTarget as HTMLElement | null
-  if (!target) {
-    return
+  const index = target?.dataset.index
+  if (index != null) {
+    activeIndex.value = Number(index)
   }
-
-  const index = target.dataset.index
-  if (index == null) {
-    return
-  }
-
-  activeIndex.value = Number(index)
 }
 
-const handleUp = (): void => {
-  if (!searchResult.value.length) {
-    return
-  }
+const moveActiveIndex = (direction: 'up' | 'down'): void => {
+  if (!searchResult.value.length) return
 
-  activeIndex.value--
-  if (activeIndex.value < 0) {
-    activeIndex.value = searchResult.value.length - 1
+  const len = searchResult.value.length
+  if (direction === 'up') {
+    activeIndex.value = activeIndex.value <= 0 ? len - 1 : activeIndex.value - 1
+  } else {
+    activeIndex.value = activeIndex.value >= len - 1 ? 0 : activeIndex.value + 1
   }
   handleScroll()
 }
 
-const handleDown = (): void => {
-  if (!searchResult.value.length) {
-    return
-  }
-
-  activeIndex.value++
-  if (activeIndex.value > searchResult.value.length - 1) {
-    activeIndex.value = 0
-  }
-  handleScroll()
-}
+const handleUp = () => moveActiveIndex('up')
+const handleDown = () => moveActiveIndex('down')
 
 const handleEnter = async (): Promise<void> => {
-  const resultList = unref(searchResult)
-  const currentIndex = unref(activeIndex)
-  if (!resultList.length || currentIndex < 0 || currentIndex >= resultList.length) {
-    return
-  }
-
-  const selectedOption = resultList[currentIndex]
+  const selectedOption = searchResult.value[activeIndex.value]
   if (selectedOption) {
     await handleClick(selectedOption)
   }
@@ -351,7 +325,6 @@ onKeyStroke('ArrowDown', handleDown)
         }
 
         .list-item-enter {
-          display: flex;
           display: none;
           align-items: center;
           justify-content: left;

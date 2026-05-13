@@ -16,17 +16,14 @@ export const useAuthStore = defineStore('auth', {
     token: ''
   }),
   getters: {
-    getToken(): string {
-      return this.token
-    }
+    getToken: (state) => state.token
   },
   actions: {
     /**
      * 登录并保存 token。
      */
     async login(params: ReqLogin): Promise<string> {
-      const response = await loginApi(params)
-      const { data } = response
+      const { data } = await loginApi(params)
       this.token = data.token
       return data.token
     },
@@ -34,16 +31,11 @@ export const useAuthStore = defineStore('auth', {
      * 前端登出并重置相关状态。
      */
     logOut() {
-      const userStore = useUserStore()
-      const permissionStore = usePermissionStore()
-      const tagsViewStore = useTagsViewStore()
-      const menuBadgeStore = useMenuBadgeStore()
-
       clearAllPendingRequests()
-      userStore.resetUser()
-      permissionStore.resetPermission(router)
-      tagsViewStore.resetTagsView()
-      menuBadgeStore.resetAllBadges()
+      useUserStore().resetUser()
+      usePermissionStore().resetPermission(router)
+      useTagsViewStore().resetTagsView()
+      useMenuBadgeStore().resetAllBadges()
       this.resetAuth()
     },
     resetAuth() {

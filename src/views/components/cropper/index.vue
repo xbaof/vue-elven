@@ -37,7 +37,7 @@ import { defineAsyncComponent, ref } from 'vue'
 import { type ImageRenderToolbarProps } from 'naive-ui'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
-import { downloadByData } from '@/utils/index'
+import { downloadFile } from '@/utils'
 import type CropperComponent from '@/components/Cropper/index.vue'
 import cropperDocRaw from '@docs/component-api/cropper.md?raw'
 
@@ -51,9 +51,7 @@ const uiFeedback = useUiFeedback()
 const { docHtml } = useMarkdownDoc(cropperDocRaw)
 
 const handleCropImage = async (): Promise<void> => {
-  if (!cropperRef.value) {
-    return
-  }
+  if (!cropperRef.value) return
 
   try {
     const cropImgInfo = await cropperRef.value.confirmCropImage()
@@ -66,14 +64,12 @@ const handleCropImage = async (): Promise<void> => {
 const renderToolbar = ({ nodes }: ImageRenderToolbarProps) => {
   if (nodes.download?.props) {
     nodes.download.props.onClick = async () => {
-      if (!cropperRef.value) {
-        return
-      }
+      if (!cropperRef.value) return
 
       try {
         const cropImgInfo = await cropperRef.value.confirmCropImage()
         if (cropImgInfo.blob) {
-          downloadByData(cropImgInfo.blob, 'cropped-image.png')
+          downloadFile(cropImgInfo.blob, 'cropped-image.png')
         }
       } catch (error) {
         uiFeedback.msgErrorFromUnknown(error, '裁剪图片失败，请稍后重试')

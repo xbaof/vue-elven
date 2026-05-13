@@ -23,8 +23,7 @@ export interface HslColor {
  * @param color 待校验颜色值 支持 #fff / #ffffff 格式
  */
 export function isHexColor(color: string): boolean {
-  const reg = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
-  return reg.test(color)
+  return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(color)
 }
 
 /**
@@ -32,8 +31,27 @@ export function isHexColor(color: string): boolean {
  * @param color 待校验颜色值 格式 rgb(0,0,0)
  */
 export function isRgbColor(color: string): boolean {
-  const reg = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/
-  return reg.test(color)
+  return /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/.test(color)
+}
+
+const showColorError = (message: string): void => {
+  window.$notification.warning({
+    content: '异常',
+    meta: message,
+    duration: 2500,
+    keepAliveOnHover: true
+  })
+}
+
+const normalizeHex = (hex: string): string => {
+  let newHex = hex.toLowerCase().slice(1)
+  if (newHex.length === 3) {
+    newHex = newHex
+      .split('')
+      .map((c) => c + c)
+      .join('')
+  }
+  return newHex
 }
 
 /**
@@ -42,27 +60,12 @@ export function isRgbColor(color: string): boolean {
  * @returns 标准rgb格式字符串 rgb(255,255,255)
  */
 export function hexToRgb(hex: string): string {
-  // 入参校验 & 容错处理
   if (!isHexColor(hex)) {
-    window.$notification.warning({
-      content: '异常',
-      meta: `传入的不是合法16进制颜色值: ${hex}`,
-      duration: 2500,
-      keepAliveOnHover: true
-    })
+    showColorError(`传入的不是合法16进制颜色值: ${hex}`)
     return hex
   }
 
-  // 处理简写 #fff -> #ffffff
-  let newHex = hex.toLowerCase().slice(1)
-  if (newHex.length === 3) {
-    newHex = newHex
-      .split('')
-      .map((item) => item + item)
-      .join('')
-  }
-
-  // 解析rgb值
+  const newHex = normalizeHex(hex)
   const r = parseInt(newHex.slice(0, 2), 16)
   const g = parseInt(newHex.slice(2, 4), 16)
   const b = parseInt(newHex.slice(4, 6), 16)
@@ -77,23 +80,11 @@ export function hexToRgb(hex: string): string {
  */
 export function hexToRgbObj(hex: string): RgbColor {
   if (!isHexColor(hex)) {
-    window.$notification.warning({
-      content: '异常',
-      meta: `传入的不是合法16进制颜色值: ${hex}`,
-      duration: 2500,
-      keepAliveOnHover: true
-    })
+    showColorError(`传入的不是合法16进制颜色值: ${hex}`)
     return { r: 255, g: 255, b: 255 }
   }
 
-  let newHex = hex.toLowerCase().slice(1)
-  if (newHex.length === 3) {
-    newHex = newHex
-      .split('')
-      .map((item) => item + item)
-      .join('')
-  }
-
+  const newHex = normalizeHex(hex)
   return {
     r: parseInt(newHex.slice(0, 2), 16),
     g: parseInt(newHex.slice(2, 4), 16),
@@ -107,33 +98,20 @@ export function hexToRgbObj(hex: string): RgbColor {
  * @returns 标准6位16进制颜色 #ffffff
  */
 export function rgbToHex(rgb: string): string {
-  // 入参校验 & 容错处理
   if (!isRgbColor(rgb)) {
-    window.$notification.warning({
-      content: '异常',
-      meta: `传入的不是合法RGB颜色值: ${rgb}`,
-      duration: 2500,
-      keepAliveOnHover: true
-    })
+    showColorError(`传入的不是合法RGB颜色值: ${rgb}`)
     return rgb
   }
 
-  // 匹配rgb数值
-  const reg = /rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/
-  const match = rgb.match(reg)
+  const match = rgb.match(/rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/)
   if (!match) return '#ffffff'
 
-  // 转16进制并补位
   const hex = (x: string) => {
     const hexVal = parseInt(x).toString(16)
     return hexVal.length === 1 ? '0' + hexVal : hexVal
   }
 
-  const r = hex(match[1])
-  const g = hex(match[2])
-  const b = hex(match[3])
-
-  return `#${r}${g}${b}`.toLowerCase()
+  return `#${hex(match[1])}${hex(match[2])}${hex(match[3])}`.toLowerCase()
 }
 
 /**
@@ -142,16 +120,13 @@ export function rgbToHex(rgb: string): string {
  * @returns 标准6位16进制颜色 #ffffff
  */
 export function rgbObjToHex(rgbObj: RgbColor): string {
-  const { r, g, b } = rgbObj
-  // 边界值处理，防止数值溢出 0-255 范围
   const clamp = (val: number) => Math.max(0, Math.min(255, val))
-
   const hex = (x: number) => {
     const hexVal = clamp(x).toString(16)
     return hexVal.length === 1 ? '0' + hexVal : hexVal
   }
 
-  return `#${hex(r)}${hex(g)}${hex(b)}`.toLowerCase()
+  return `#${hex(rgbObj.r)}${hex(rgbObj.g)}${hex(rgbObj.b)}`.toLowerCase()
 }
 
 /**
@@ -209,14 +184,8 @@ function rgbToHslObj(rgbArr: RgbColor): HslColor {
  * @returns 标准hsl格式字符串 hsl(360, 100%, 100%)
  */
 export function hexToHsl(hex: string): string {
-  // 入参校验 & 容错处理
   if (!isHexColor(hex)) {
-    window.$notification.warning({
-      content: '异常',
-      meta: `传入的不是合法16进制颜色值: ${hex}`,
-      duration: 2500,
-      keepAliveOnHover: true
-    })
+    showColorError(`传入的不是合法16进制颜色值: ${hex}`)
     return hex
   }
 
@@ -234,14 +203,8 @@ export function hexToHsl(hex: string): string {
  * @returns HslColor 对象 { h: 0-360, s: 0-100, l: 0-100 }
  */
 export function hexToHslObj(hex: string): HslColor {
-  // 入参校验 & 容错处理
   if (!isHexColor(hex)) {
-    window.$notification.warning({
-      content: '异常',
-      meta: `传入的不是合法16进制颜色值: ${hex}`,
-      duration: 2500,
-      keepAliveOnHover: true
-    })
+    showColorError(`传入的不是合法16进制颜色值: ${hex}`)
     return { h: 0, s: 0, l: 100 } // 默认返回白色对应的HslColor对象
   }
 

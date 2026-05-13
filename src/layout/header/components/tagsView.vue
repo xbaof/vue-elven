@@ -9,18 +9,15 @@
           v-for="(tag, index) in visitedViews"
           :ref="'dynamic' + index"
           :key="index"
-          :class="{
-            active: isActive(tag),
-            'mr-5': index == visitedViews.length - 1
-          }"
+          :class="{ active: isCurrentTag(tag), 'mr-5': index == visitedViews.length - 1 }"
           class="tags-view-item"
-          @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
-          @click="tagOnClick(tag)"
+          @click.middle="!isAffixTag(tag) ? closeSelectedTag(tag) : ''"
+          @click="openTag(tag)"
           @contextmenu.prevent="handleContextMenu(tag, $event)"
         >
           {{ tag.title }}
           <svg-icon
-            v-if="!isAffix(tag)"
+            v-if="!isAffixTag(tag)"
             class="tags-view-item-close"
             :icon="closeSmallIcon"
             @click.prevent.stop="closeSelectedTag(tag)"
@@ -40,11 +37,7 @@
       :y="top"
       :options="menuOptions"
       :show="visible"
-      :on-clickoutside="
-        () => {
-          visible = false
-        }
-      "
+      :on-clickoutside="() => (visible = false)"
       @select="handleMenuSelect"
     />
   </div>
@@ -67,7 +60,7 @@ import type { DropdownOption } from 'naive-ui'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useAppStore } from '@/store/modules/app'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-import { isPathAndQueryEqual, toTagView } from '@/store/modules/tagsView'
+import { isSameRoute, routeToTag } from '@/utils'
 import { sortRoutesByMetaOrder } from '@/router/dynamicRouter'
 import { useTagsActions, type TagActionKey } from '@/hooks/useTagsActions'
 import type { TagView } from '@/store/types'
@@ -79,11 +72,13 @@ defineOptions({
 const router = useRouter()
 const app = useAppStore()
 const tagsView = useTagsViewStore()
-const visitedViews = computed<TagView[]>(() => tagsView.visitedViews as TagView[])
-const instance = getCurrentInstance()
-const routes = computed<RouteRecordRaw[]>(() => router.getRoutes())
 const route = useRoute()
+const instance = getCurrentInstance()
+
 const { currentRouteTag, isCurrentTag, isAffixTag, openTag, closeCurrentTag, executeTagAction } = useTagsActions()
+
+const visitedViews = computed<TagView[]>(() => tagsView.visitedViews as TagView[])
+const routes = computed<RouteRecordRaw[]>(() => router.getRoutes())
 
 const showTool = ref(false)
 const visible = ref(false)
@@ -95,12 +90,8 @@ const scrollbarRef = ref<HTMLElement | null>(null)
 const tabRef = ref<HTMLElement | null>(null)
 const { x } = useScroll(scrollbarRef, { behavior: 'smooth' })
 const displayX = computed({
-  get() {
-    return x.value
-  },
-  set(value) {
-    x.value = value
-  }
+  get: () => x.value,
+  set: (value) => (x.value = value)
 })
 
 const menuOptions = reactive<Array<DropdownOption>>([
@@ -141,26 +132,10 @@ const menuOptions = reactive<Array<DropdownOption>>([
   }
 ])
 
-const isActive = (tag: TagView): boolean => {
-  return isCurrentTag(tag)
-}
-
-const isAffix = (tag: TagView): boolean => {
-  return isAffixTag(tag)
-}
-
-const tagOnClick = (tag: TagView): void => {
-  void openTag(tag)
-}
-
 const handleMenuSelect = async (key: TagActionKey): Promise<void> => {
-  const tag = unref(selectedTag)
-  if (!tag) {
-    return
-  }
+  if (!selectedTag.value) return
 
-  await executeTagAction(key, tag)
-
+  await executeTagAction(key, selectedTag.value)
   visible.value = false
 }
 
@@ -170,17 +145,16 @@ const handleMenuSelect = async (key: TagActionKey): Promise<void> => {
 const handleContextMenu = (tag: TagView, event: MouseEvent): void => {
   left.value = event.clientX
   top.value = event.clientY
-  const index = visitedViews.value.findIndex((item) => isPathAndQueryEqual(item, tag))
+  const index = visitedViews.value.findIndex((item) => isSameRoute(item, tag))
+  const isActive = isCurrentTag(tag)
+  const isAffix = isAffixTag(tag)
 
-  menuOptions[0].show = isActive(tag)
-  menuOptions[1].show = !isAffix(tag)
-  menuOptions[2].show =
-    visitedViews.value.filter((item, itemIndex) => itemIndex < index && !item?.meta?.isAffix).length > 0
-  menuOptions[3].show =
-    visitedViews.value.filter((item, itemIndex) => itemIndex > index && !item?.meta?.isAffix).length > 0
-  menuOptions[4].show =
-    visitedViews.value.filter((item) => !item?.meta?.isAffix && !isPathAndQueryEqual(item, tag)).length > 0
-  menuOptions[5].show = visitedViews.value.filter((item) => !item?.meta?.isAffix).length > 0
+  menuOptions[0].show = isActive
+  menuOptions[1].show = !isAffix
+  menuOptions[2].show = visitedViews.value.slice(0, index).some((item) => !item?.meta?.isAffix)
+  menuOptions[3].show = visitedViews.value.slice(index + 1).some((item) => !item?.meta?.isAffix)
+  menuOptions[4].show = visitedViews.value.some((item) => !item?.meta?.isAffix && !isSameRoute(item, tag))
+  menuOptions[5].show = visitedViews.value.some((item) => !item?.meta?.isAffix)
 
   visible.value = true
   selectedTag.value = tag
@@ -189,69 +163,57 @@ const handleContextMenu = (tag: TagView, event: MouseEvent): void => {
 const closeSelectedTag = (view: TagView): void => {
   void closeCurrentTag(view)
 }
+/**
+ * 计算并移动滚动条位置。
+ */
+const moveToTarget = (index: number): void => {
+  if (!instance) return
+
+  nextTick(() => {
+    const dynamicRefs = instance.refs['dynamic' + index] as HTMLElement[] | undefined
+    if (!dynamicRefs?.length) return
+
+    const tabItem = dynamicRefs[0]
+    const scrollbar = scrollbarRef.value
+    const tab = tabRef.value
+    if (!scrollbar || !tab) return
+
+    const tabItemLeft = tabItem.offsetLeft
+    const tabItemWidth = tabItem.offsetWidth
+    const scrollbarWidth = scrollbar.offsetWidth
+    const tabWidth = tab.offsetWidth
+
+    const needShowTool = scrollbarWidth <= tabWidth
+    if (needShowTool !== showTool.value) {
+      showTool.value = needShowTool
+      moveToTarget(index)
+      return
+    }
+
+    const padding = 10
+    if (tabWidth < scrollbarWidth || tabItemLeft === 0) {
+      displayX.value = 0
+    } else if (tabItemLeft < displayX.value) {
+      displayX.value = tabItemLeft - padding
+    } else if (tabItemLeft + tabItemWidth < scrollbarWidth + displayX.value && tabItemLeft > displayX.value) {
+      displayX.value = Math.max(displayX.value, tabItemWidth + tabItemLeft + padding - scrollbarWidth)
+    } else {
+      displayX.value = tabItemLeft - (scrollbarWidth - padding - tabItemWidth)
+    }
+  })
+}
 
 /**
  * 将滚动条定位到当前激活标签。
  */
 const dynamicTagView = (): void => {
-  const index = visitedViews.value.findIndex((item) => isActive(item))
-  if (index >= 0) {
-    moveToTarget(index)
-  }
+  const index = visitedViews.value.findIndex((item) => isCurrentTag(item))
+  if (index >= 0) moveToTarget(index)
 }
-
-/**
- * 计算并移动滚动条位置。
- */
-const moveToTarget = (index: number): void => {
-  if (!instance) {
-    return
-  }
-
-  nextTick(() => {
-    const tabNavPadding = 10
-    const dynamicRefs = instance.refs['dynamic' + index] as HTMLElement[] | undefined
-    if (!dynamicRefs?.length) {
-      return
-    }
-
-    const tabItemElement = dynamicRefs[0]
-    const tabItemOffsetLeft = tabItemElement.offsetLeft
-    const tabItemOffsetWidth = tabItemElement.offsetWidth
-    const scrollbarRefWidth = scrollbarRef.value ? scrollbarRef.value.offsetWidth : 0
-    const tabRefWidth = tabRef.value ? tabRef.value.offsetWidth : 0
-
-    if (scrollbarRefWidth <= tabRefWidth !== showTool.value) {
-      showTool.value = scrollbarRefWidth <= tabRefWidth
-      moveToTarget(index)
-      return
-    }
-
-    if (tabRefWidth < scrollbarRefWidth || tabItemOffsetLeft === 0) {
-      displayX.value = 0
-    } else if (tabItemOffsetLeft < displayX.value) {
-      displayX.value = tabItemOffsetLeft - tabNavPadding
-    } else if (
-      tabItemOffsetLeft + tabItemOffsetWidth < scrollbarRefWidth + displayX.value &&
-      tabItemOffsetLeft > displayX.value
-    ) {
-      displayX.value = Math.max(
-        displayX.value,
-        tabItemOffsetWidth + tabItemOffsetLeft + tabNavPadding - scrollbarRefWidth
-      )
-    } else {
-      displayX.value = tabItemOffsetLeft - (scrollbarRefWidth - tabNavPadding - tabItemOffsetWidth)
-    }
-  })
-}
-
-useEventListener(document, 'click', () => {
-  visible.value = false
-})
 
 const initTags = (): void => {
   const tags: TagView[] = sortRoutesByMetaOrder(
-    routes.value.filter((item) => item.meta?.isAffix).map((item) => toTagView(item))
+    routes.value.filter((item) => item.meta?.isAffix).map((item) => routeToTag(item))
   )
 
   for (const tag of tags) {
@@ -260,6 +222,8 @@ const initTags = (): void => {
     }
   }
 }
+
+useEventListener(document, 'click', () => (visible.value = false))
 
 watch(
   route,
