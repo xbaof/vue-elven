@@ -24,7 +24,7 @@ export const isUnDef = <T = unknown>(val?: T): val is undefined => !isDef(val)
 /**
  * 是否为对象
  */
-export const isObject = (val: unknown): val is AnyObject => val !== null && is(val, 'Object')
+export const isObject = (val: unknown): val is Recordable => val !== null && is(val, 'Object')
 
 /**
  * 是否为时间对象

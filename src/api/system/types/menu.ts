@@ -34,7 +34,7 @@ interface MenuBase {
   /** 菜单右侧额外标记类型 */
   extraType?: 'default' | 'success' | 'error' | 'warning' | 'info'
   /** 菜单导航附带的 URL 参数 */
-  query?: AnyObject
+  query?: Recordable
   /** 子菜单 */
   children?: Menu[]
 }

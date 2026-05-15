@@ -1,6 +1,5 @@
+// 宽泛对象可直接使用 Recordable，需要显式值类型时写成 Recordable<string> 等形式
 type Recordable<T = unknown> = Record<string, T>
-
-type AnyObject = Recordable<unknown>
 
 type Fn<T = void, TArgs extends unknown[] = unknown[]> = (...args: TArgs) => T
 
@@ -29,9 +28,6 @@ type ValueOf<T> = T[keyof T]
 
 // 提取特定类型的键
 type KeysOfType<T, U> = { [K in keyof T]: T[K] extends U ? K : never }[keyof T]
-
-// ID 类型
-type ID = string | number
 
 // 时间戳类型
 type Timestamp = number

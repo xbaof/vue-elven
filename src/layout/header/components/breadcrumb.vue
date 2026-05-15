@@ -42,7 +42,7 @@ interface BreadcrumbItem {
   icon: (() => ReturnType<typeof h>) | null
   isLink?: boolean
   linkUrl?: string
-  query?: AnyObject
+  query?: Recordable
   children?: BreadcrumbItem[]
 }
 

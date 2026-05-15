@@ -3,6 +3,6 @@
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
 
-  const component: DefineComponent<Recordable<unknown>, Recordable<unknown>, unknown>
+  const component: DefineComponent<Recordable, Recordable, unknown>
   export default component
 }

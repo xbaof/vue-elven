@@ -35,18 +35,10 @@ export interface PageBase {
 }
 
 /**
- * 分页请求额外参数（用于扩展）
- * @template T 扩展字段类型
- */
-export type ReqPageExtra<T extends object = Recordable<never>> = {
-  [P in keyof T]?: T[P]
-}
-
-/**
  * 分页请求参数
  * @template T 扩展字段类型
  */
-export type ReqPage<T extends object = Recordable<never>> = PageBase & ReqPageExtra<T>
+export type ReqPage<T extends object = Recordable<never>> = PageBase & Partial<T>
 
 /**
  * 分页响应结构
@@ -101,14 +93,14 @@ export type ReqPageFull<T extends object = Recordable<never>> = ReqPage<T> & Sor
  * ID 参数（单个）
  */
 export interface IdParams {
-  id: string | number
+  id: StringNumber
 }
 
 /**
  * ID 参数（多个）
  */
 export interface IdsParams {
-  ids: Array<string | number>
+  ids: Array<StringNumber>
 }
 
 /**

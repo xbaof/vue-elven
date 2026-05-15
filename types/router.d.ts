@@ -37,10 +37,10 @@ declare module 'vue-router' {
     /** 菜单右侧额外标记类型 */
     extraType?: 'default' | 'success' | 'error' | 'warning' | 'info'
     /** 菜单导航附带的 URL 参数 */
-    query?: AnyObject
+    query?: Recordable
   }
 }
 
 declare interface RouteParams {
-  [key: string]: string | number
+  [key: string]: StringNumber
 }
