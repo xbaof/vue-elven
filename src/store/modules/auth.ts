@@ -9,7 +9,6 @@ import { useUserStore } from './user'
 import { useMenuBadgeStore } from './menuBadge'
 import { createFullEncryptSerializer } from '@/utils/pinia-persist.serializer'
 import router from '@/router'
-import { clearAllPendingRequests } from '@/api/http/cancel'
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -31,7 +30,6 @@ export const useAuthStore = defineStore('auth', {
      * 前端登出并重置相关状态。
      */
     logOut() {
-      clearAllPendingRequests()
       useUserStore().resetUser()
       usePermissionStore().resetPermission(router)
       useTagsViewStore().resetTagsView()

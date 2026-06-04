@@ -9,7 +9,5 @@ export const login = (params: ReqLogin): Promise<ResData<ResLogin>> => {
 
 // 获取用户权限及路由菜单
 export const getPermission = (): Promise<ResData<ResUserPermission>> => {
-  return request.get<ResUserPermission>(`/getPermission`, undefined, {
-    cancelKey: 'auth:getPermission'
-  })
+  return request.get<ResUserPermission>(`/getPermission`)
 }

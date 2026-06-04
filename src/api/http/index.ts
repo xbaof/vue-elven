@@ -1,11 +1,8 @@
-import axios, { type AxiosResponse, type CreateAxiosDefaults } from 'axios'
+import axios, { type AxiosRequestConfig, type AxiosResponse, type CreateAxiosDefaults } from 'axios'
 import { StatusCodeEnum } from '@/enums/httpEnum'
 import type { ResData } from '@/api/common.types'
-import { addPendingRequest, clearAllPendingRequests, removePendingRequest } from './cancel'
-import { normalizeUnknownError } from './error'
+import { getErrorMessage } from './error'
 import { getToken } from './tokenProvider'
-import { canShowNormalizedError, isNormalizedError, markNormalizedErrorShown } from '@/utils/error'
-import type { HttpRequestMethods, InternalRequestConfig, RequestConfig, NormalizedError, RequestOptions } from './types'
 
 const defaultConfig: CreateAxiosDefaults = {
   baseURL: import.meta.env.VITE_API_BASE_URL || undefined,
@@ -17,116 +14,83 @@ const defaultConfig: CreateAxiosDefaults = {
   }
 }
 
-const shouldShowErrorMessage = (config?: RequestConfig): boolean => {
-  return config?.showErrorMessage !== false
-}
-
 const service = axios.create(defaultConfig)
 
+// 请求拦截器：添加 token
 service.interceptors.request.use(
   (config) => {
-    const requestConfig = config as InternalRequestConfig
+    // 添加 token
     const token = getToken()
-
-    if (token && requestConfig.headers) {
-      requestConfig.headers.Authorization = `Bearer ${token}`
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`
     }
 
-    requestConfig.cancel ??= true
-    return addPendingRequest(requestConfig)
-  },
-  (error: unknown) => Promise.reject(normalizeUnknownError(error))
-)
-
-service.interceptors.response.use(
-  (response: AxiosResponse<ResData<unknown>>) => {
-    const responseConfig = response.config as RequestConfig
-    removePendingRequest(responseConfig)
-
-    const responseData = response.data
-    const statusCode = responseData?.code ?? StatusCodeEnum.INTERNAL_SERVER_ERROR
-    if (statusCode !== StatusCodeEnum.SUCCESS) {
-      const normalizedError: NormalizedError = {
-        kind: 'business',
-        code: statusCode,
-        message: responseData?.msg || '业务处理失败，请稍后重试',
-        raw: responseData
-      }
-
-      if (canShowNormalizedError(normalizedError, shouldShowErrorMessage(responseConfig))) {
-        window.$message.error(normalizedError.message)
-        markNormalizedErrorShown(normalizedError)
-      }
-      return Promise.reject(normalizedError)
-    }
-
-    return response
+    return config
   },
   (error: unknown) => {
-    const requestConfig = axios.isAxiosError(error) ? (error.config as RequestConfig) : undefined
-    if (requestConfig) {
-      removePendingRequest(requestConfig)
-    }
-
-    const normalizedError = normalizeUnknownError(error)
-    const shouldDisplayMessage = !requestConfig || shouldShowErrorMessage(requestConfig)
-    if (canShowNormalizedError(normalizedError, shouldDisplayMessage)) {
-      window.$message.error(normalizedError.message)
-      markNormalizedErrorShown(normalizedError)
-    }
-    return Promise.reject(normalizedError)
+    const message = getErrorMessage(error)
+    window.$message.error(message)
+    return Promise.reject(new Error(message))
   }
 )
 
-const sendRequest = <T>(config: RequestConfig): Promise<ResData<T>> => {
+// 响应拦截器：处理业务错误和 HTTP 错误
+service.interceptors.response.use(
+  (response: AxiosResponse<ResData<unknown>>) => {
+    const responseData = response.data
+    const statusCode = responseData?.code ?? StatusCodeEnum.INTERNAL_SERVER_ERROR
+
+    // 业务成功
+    if (statusCode === StatusCodeEnum.SUCCESS) {
+      return response
+    }
+
+    // 业务错误
+    const errorMessage = responseData?.msg || '业务处理失败，请稍后重试'
+
+    // 显示错误提示（除非明确关闭）
+    if (response.config.showErrorMessage !== false) {
+      window.$message.error(errorMessage)
+    }
+
+    return Promise.reject(new Error(errorMessage))
+  },
+  (error: unknown) => {
+    const errorMessage = getErrorMessage(error)
+
+    // 显示错误提示（请求取消不显示，或用户明确关闭）
+    const isCanceled = axios.isAxiosError(error) && error.code === 'ERR_CANCELED'
+    const config = axios.isAxiosError(error) ? error.config : undefined
+    const shouldShow = !isCanceled && (!config || config.showErrorMessage !== false)
+
+    if (shouldShow) {
+      window.$message.error(errorMessage)
+    }
+
+    return Promise.reject(new Error(errorMessage))
+  }
+)
+
+const sendRequest = <T>(config: AxiosRequestConfig): Promise<ResData<T>> => {
   return service.request<ResData<T>>(config).then((response) => response.data)
 }
 
-const request: HttpRequestMethods = {
-  request<T>(config: RequestConfig): Promise<ResData<T>> {
+const request = {
+  request<T>(config: AxiosRequestConfig): Promise<ResData<T>> {
     return sendRequest<T>(config)
   },
-  get<T>(url: string, params?: Recordable, options: RequestOptions = {}): Promise<ResData<T>> {
-    return sendRequest<T>({
-      url,
-      method: 'get',
-      params,
-      ...options
-    })
+  get<T>(url: string, params?: Recordable, options: AxiosRequestConfig = {}): Promise<ResData<T>> {
+    return sendRequest<T>({ url, method: 'get', params, ...options })
   },
-  post<T>(url: string, params?: unknown, options: RequestOptions = {}): Promise<ResData<T>> {
-    return sendRequest<T>({
-      url,
-      method: 'post',
-      data: params,
-      ...options
-    })
+  post<T>(url: string, params?: unknown, options: AxiosRequestConfig = {}): Promise<ResData<T>> {
+    return sendRequest<T>({ url, method: 'post', data: params, ...options })
   },
-  put<T>(url: string, params?: unknown, options: RequestOptions = {}): Promise<ResData<T>> {
-    return sendRequest<T>({
-      url,
-      method: 'put',
-      data: params,
-      ...options
-    })
+  put<T>(url: string, params?: unknown, options: AxiosRequestConfig = {}): Promise<ResData<T>> {
+    return sendRequest<T>({ url, method: 'put', data: params, ...options })
   },
-  delete<T>(url: string, params?: Recordable, options: RequestOptions = {}): Promise<ResData<T>> {
-    return sendRequest<T>({
-      url,
-      method: 'delete',
-      params,
-      ...options
-    })
+  delete<T>(url: string, params?: Recordable, options: AxiosRequestConfig = {}): Promise<ResData<T>> {
+    return sendRequest<T>({ url, method: 'delete', params, ...options })
   }
 }
 
 export default request
-
-export {
-  canShowNormalizedError,
-  clearAllPendingRequests,
-  isNormalizedError,
-  markNormalizedErrorShown,
-  normalizeUnknownError
-}
-export type { RequestConfig, NormalizedError, NormalizedErrorKind, RequestOptions } from './types'

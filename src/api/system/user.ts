@@ -4,7 +4,5 @@ import type { User } from './types/user'
 
 // 获取登录用户信息
 export const getUser = (): Promise<ResData<User>> => {
-  return request.get<User>(`/getUser`, undefined, {
-    cancelKey: 'user:getUser'
-  })
+  return request.get<User>(`/getUser`)
 }

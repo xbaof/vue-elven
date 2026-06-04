@@ -6,14 +6,10 @@ import type { ReqUploadFile, ResFileUrl } from './types/upload'
  */
 // 图片上传
 export const uploadImg = (formData: ReqUploadFile): Promise<ResData<ResFileUrl>> => {
-  return request.post<ResFileUrl>(`/file/upload/img`, formData, {
-    cancel: false
-  })
+  return request.post<ResFileUrl>(`/file/upload/img`, formData)
 }
 
 // 视频上传
 export const uploadVideo = (formData: ReqUploadFile): Promise<ResData<ResFileUrl>> => {
-  return request.post<ResFileUrl>(`/file/upload/video`, formData, {
-    cancel: false
-  })
+  return request.post<ResFileUrl>(`/file/upload/video`, formData)
 }
