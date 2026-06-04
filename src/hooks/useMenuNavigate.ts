@@ -1,14 +1,13 @@
 ﻿import type { MenuOption } from 'naive-ui'
+import { useRouter, type LocationQueryRaw } from 'vue-router'
 import { openLink } from '@/utils'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
-import type { LocationQueryRaw } from 'vue-router'
 
 /**
  * 菜单项导航 Hook。
  * 统一处理外链与站内路由，减少页面重复分支。
  */
 export const useMenuNavigate = () => {
-  const { push } = useSafeNavigation()
+  const router = useRouter()
 
   /**
    * 将 query 参数追加到 URL。
@@ -44,7 +43,7 @@ export const useMenuNavigate = () => {
     }
 
     if (routeKey != null) {
-      await push(routeQuery ? { path: String(routeKey), query: routeQuery } : String(routeKey))
+      await router.push(routeQuery ? { path: String(routeKey), query: routeQuery } : String(routeKey))
     }
   }
 

@@ -33,10 +33,11 @@ defineOptions({
   name: 'CropperDemo'
 })
 
-import { defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { type ImageRenderToolbarProps } from 'naive-ui'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
 import { downloadFile } from '@/utils'
 import type CropperComponent from '@/components/Cropper/index.vue'
 import cropperDocRaw from '@docs/component-api/cropper.md?raw'
@@ -48,7 +49,7 @@ const cropImage = ref<string>('')
 const mode = ref<'rectangle' | 'circle'>('rectangle')
 const cropperRef = ref<InstanceType<typeof CropperComponent> | null>(null)
 const uiFeedback = useUiFeedback()
-const { docHtml } = useMarkdownDoc(cropperDocRaw)
+const docHtml = computed(() => DOMPurify.sanitize(marked.parse(cropperDocRaw) as string))
 
 const handleCropImage = async (): Promise<void> => {
   if (!cropperRef.value) return

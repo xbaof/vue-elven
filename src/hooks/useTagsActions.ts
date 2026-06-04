@@ -1,16 +1,15 @@
 import { computed, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/store/modules/app'
 import { useTagsViewStore } from '@/store/modules/tagsView'
 import { isSameRoute, routeToTag } from '@/utils'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 import type { TagView, TagsViewState } from '@/store/types'
 
 export type TagActionKey = 'refresh' | 'close' | 'closeLeft' | 'closeRight' | 'closeOther' | 'closeAll' | 'fullScreen'
 
 export const useTagsActions = () => {
   const route = useRoute()
-  const { push, replace } = useSafeNavigation()
+  const router = useRouter()
   const appStore = useAppStore()
   const tagsViewStore = useTagsViewStore()
 
@@ -27,7 +26,7 @@ export const useTagsActions = () => {
 
   const openTag = async (tag: TagView): Promise<void> => {
     if (!isCurrentTag(tag)) {
-      await push({ path: tag.path, query: tag.query })
+      await router.push({ path: tag.path, query: tag.query })
     }
   }
 
@@ -36,16 +35,16 @@ export const useTagsActions = () => {
     if (latestView?.path) {
       await openTag(latestView)
     } else if (fallbackView?.name === 'Dashboard') {
-      await replace({ path: '/redirect' + fallbackView.path })
+      await router.replace({ path: '/redirect' + fallbackView.path })
     } else {
-      await push('/')
+      await router.push('/')
     }
   }
 
   const refreshCurrentTag = async (tag: TagView): Promise<void> => {
     await tagsViewStore.delCachedView(tag)
     await nextTick()
-    await push({ path: '/redirect' + route.fullPath, query: route.query })
+    await router.push({ path: '/redirect' + route.fullPath, query: route.query })
   }
 
   const closeCurrentTag = async (tag: TagView): Promise<TagsViewState> => {

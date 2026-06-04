@@ -58,7 +58,7 @@ import type { VNodeChild } from 'vue'
 import type { SelectOption } from 'naive-ui'
 import { NBadge, type BadgeProps } from 'naive-ui'
 import { useRoute } from 'vue-router'
-import { useMenuBadge } from '@/hooks/useMenuBadge'
+import { useMenuBadgeStore } from '@/store/modules/menuBadge'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 import type { MenuBadge } from '@/store/types'
 
@@ -67,8 +67,9 @@ defineOptions({
 })
 
 const route = useRoute()
+const menuBadgeStore = useMenuBadgeStore()
 const { msgWarning, msgSuccess } = useUiFeedback()
-const { setCurrentBadge, decreaseCurrentBadge, clearBadge, getBadge } = useMenuBadge()
+const currentBadge = computed(() => menuBadgeStore.resolveBadge(route.path))
 
 const typeOptions = [
   { label: 'default', value: 'default' },
@@ -85,7 +86,6 @@ const countValue = ref<number | null>(9)
 const countType = ref<MenuBadge['extraType']>('error')
 const decreaseStep = ref<number | null>(1)
 
-const currentBadge = computed(() => getBadge(route.path))
 const renderLabel = (option: SelectOption): VNodeChild => {
   return [
     h(NBadge, {
@@ -101,7 +101,7 @@ const handleSetTextBadge = () => {
     return
   }
 
-  setCurrentBadge({
+  menuBadgeStore.setLocalBadge(route.path, {
     extraText: nextText,
     extraType: textType.value
   })
@@ -114,7 +114,7 @@ const handleSetCountBadge = () => {
     return
   }
 
-  setCurrentBadge({
+  menuBadgeStore.setLocalBadge(route.path, {
     extraText: String(Math.max(0, Math.floor(countValue.value))),
     extraType: countType.value
   })
@@ -123,12 +123,12 @@ const handleSetCountBadge = () => {
 
 const handleDecreaseBadge = () => {
   const stepValue = decreaseStep.value && decreaseStep.value > 0 ? Math.floor(decreaseStep.value) : 1
-  decreaseCurrentBadge(stepValue)
+  menuBadgeStore.decreaseLocalBadge(route.path, stepValue)
   msgSuccess(`已执行减量，步长：${stepValue}`)
 }
 
 const handleClearBadge = () => {
-  clearBadge(route.path)
+  menuBadgeStore.clearLocalBadge(route.path)
   msgSuccess('已清空当前菜单标记')
 }
 </script>

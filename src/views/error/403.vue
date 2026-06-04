@@ -15,17 +15,15 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
 
 defineOptions({
   name: 'Forbidden'
 })
 
 const router = useRouter()
-const { push } = useSafeNavigation()
 
 const goHome = async () => {
-  await push('/index')
+  await router.push('/index')
 }
 
 const goBack = async () => {
@@ -34,7 +32,7 @@ const goBack = async () => {
     return
   }
 
-  await push('/index')
+  await router.push('/index')
 }
 </script>
 

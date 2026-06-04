@@ -84,11 +84,11 @@ import closeLeftIcon from '@iconify-icons/icon-park-outline/to-left'
 import closeRightIcon from '@iconify-icons/icon-park-outline/to-right'
 import closeAllIcon from '@iconify-icons/icon-park-outline/minus'
 import fullScreenIcon from '@iconify-icons/icon-park-outline/full-screen'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
+import { useRouter } from 'vue-router'
 import { useTagsActions, type TagActionKey } from '@/hooks/useTagsActions'
 
 const title = ref('标题-01')
-const { push } = useSafeNavigation()
+const router = useRouter()
 const { currentTag, executeTagAction } = useTagsActions()
 
 const handleClick = async (actionKey: TagActionKey): Promise<void> => {
@@ -96,14 +96,14 @@ const handleClick = async (actionKey: TagActionKey): Promise<void> => {
 }
 
 const handleQuery = (id: number): void => {
-  void push({
+  void router.push({
     name: 'TagsQuery',
     query: { id, tagViewTitle: title.value }
   })
 }
 
 const handleParams = (id: number): void => {
-  void push({
+  void router.push({
     name: 'TagsParams',
     params: { id, tagViewTitle: title.value }
   })

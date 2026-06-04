@@ -61,11 +61,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useClipboard, useDebounceFn } from '@vueuse/core'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import SignaturePad from '@/components/SignaturePad/index.vue'
 import type { SignatureEndPayload, SignaturePadExpose } from '@/components/SignaturePad/types'
-import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 import { downloadFile } from '@/utils'
 import signaturePadDocRaw from '@docs/component-api/signature-pad.md?raw'
@@ -78,7 +79,7 @@ const signaturePadRef = ref<SignaturePadExpose | null>(null)
 const latestBase64 = ref('')
 const disabledMode = ref(false)
 const { copy, isSupported } = useClipboard()
-const { docHtml } = useMarkdownDoc(signaturePadDocRaw)
+const docHtml = computed(() => DOMPurify.sanitize(marked.parse(signaturePadDocRaw) as string))
 const { msgSuccess, msgWarning, msgInfo, msgErrorFromUnknown } = useUiFeedback()
 
 // change 在书写和重绘期间会高频触发，这里做轻量防抖同步。

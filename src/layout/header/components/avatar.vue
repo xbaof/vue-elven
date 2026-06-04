@@ -16,7 +16,7 @@ import SvgIcon from '@/components/SvgIcon/index.vue'
 import { useAuthStore } from '@/store/modules/auth'
 import { useUserStore } from '@/store/modules/user'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
+import { useRouter } from 'vue-router'
 import defaultAvatarUrl from '@/assets/images/default_avatar.jpeg'
 
 defineOptions({
@@ -26,7 +26,7 @@ defineOptions({
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const dialog = useDialog()
-const { replace } = useSafeNavigation()
+const router = useRouter()
 const uiFeedback = useUiFeedback()
 const route = useRoute()
 const avatarSrc = computed(() => userStore.getAvatar ?? defaultAvatarUrl)
@@ -53,7 +53,7 @@ const handleLogout = async (dialogRef: DialogReactive): Promise<void> => {
   try {
     await sleep()
     authStore.logOut()
-    await replace({
+    await router.replace({
       path: '/login',
       query: route.query
     })

@@ -39,7 +39,7 @@ import { reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useAuthStore } from '@/store/modules/auth'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
+import { useRouter } from 'vue-router'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
 
 defineOptions({
@@ -48,7 +48,7 @@ defineOptions({
 
 const authStore = useAuthStore()
 const route = useRoute()
-const { replace } = useSafeNavigation()
+const router = useRouter()
 const uiFeedback = useUiFeedback()
 
 const formRef = ref<FormInst | null>(null)
@@ -75,7 +75,7 @@ const handleLogin = async (): Promise<void> => {
       captchaId: ''
     })
     uiFeedback.msgSuccess('登录成功')
-    await replace((route.query.redirect as string) ?? '/')
+    await router.replace((route.query.redirect as string) ?? '/')
   } catch (error) {
     uiFeedback.msgErrorFromUnknown(error, '登录失败，请稍后重试')
   } finally {

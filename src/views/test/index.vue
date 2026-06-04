@@ -90,7 +90,7 @@ import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
+import { useRouter } from 'vue-router'
 import { useTagsActions } from '@/hooks/useTagsActions'
 import type { TagView } from '@/store/types'
 
@@ -99,7 +99,7 @@ defineOptions({
 })
 
 const route = useRoute()
-const { push } = useSafeNavigation()
+const router = useRouter()
 const tagsViewStore = useTagsViewStore()
 const { visitedViews, cachedViews } = storeToRefs(tagsViewStore)
 const { currentTag, executeTagAction } = useTagsActions()
@@ -159,7 +159,7 @@ const refreshCurrentTag = async (): Promise<void> => {
 
 const openCurrentWithNewQuery = async (): Promise<void> => {
   querySerial.value += 1
-  await push({
+  await router.push({
     path: route.path,
     query: {
       ...route.query,
@@ -170,11 +170,11 @@ const openCurrentWithNewQuery = async (): Promise<void> => {
 }
 
 const goDashboard = async (): Promise<void> => {
-  await push('/index')
+  await router.push('/index')
 }
 
 const backToTest = async (): Promise<void> => {
-  await push('/test')
+  await router.push('/test')
 }
 </script>
 

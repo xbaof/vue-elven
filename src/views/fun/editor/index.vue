@@ -54,10 +54,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import type { IEditorConfig } from '@wangeditor/editor'
 import WangEditor from '@/components/WangEditor/index.vue'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
 import { useAppStore } from '@/store/modules/app'
 import editorDocRaw from '@docs/component-api/editor.md?raw'
 
@@ -78,7 +79,7 @@ const editorHtml = ref(initialDemoContent)
 const readonlyMode = ref(false)
 const { copy, isSupported } = useClipboard()
 const { msgSuccess, msgWarning, msgErrorFromUnknown } = useUiFeedback()
-const { docHtml } = useMarkdownDoc(editorDocRaw)
+const docHtml = computed(() => DOMPurify.sanitize(marked.parse(editorDocRaw) as string))
 
 const editorConfig = computed<Partial<IEditorConfig>>(() => ({
   placeholder: '请输入内容...',

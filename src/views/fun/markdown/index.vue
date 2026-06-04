@@ -29,11 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import MarkdownEditor from '@/components/MarkdownEditor/index.vue'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
 import markdownEditorDocRaw from '@docs/component-api/markdown-editor.md?raw'
 
 defineOptions({
@@ -56,7 +57,6 @@ const initialDemoContent = `# MarkdownEditor 组件示例
 
 \`\`\`ts
 const message = 'hello markdown'
-console.log(message)
 \`\`\`
 `
 
@@ -65,7 +65,7 @@ const markdownValue = ref(initialDemoContent)
 const readOnlyMode = ref(false)
 const { copy, isSupported } = useClipboard()
 const { msgSuccess, msgWarning, msgErrorFromUnknown } = useUiFeedback()
-const { docHtml } = useMarkdownDoc(markdownEditorDocRaw)
+const docHtml = computed(() => DOMPurify.sanitize(marked.parse(markdownEditorDocRaw) as string))
 
 const resetDemoContent = (): void => {
   editorRef.value?.setValue(initialDemoContent)

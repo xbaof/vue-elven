@@ -58,10 +58,11 @@ defineOptions({
   name: 'Icon'
 })
 
-import { defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import { useUiFeedback } from '@/hooks/useUiFeedback'
-import { useMarkdownDoc } from '@/hooks/useMarkdownDoc'
 import iconDocRaw from '@docs/component-api/icon.md?raw'
 import adProductIcon from '@iconify-icons/icon-park-outline/ad-product'
 import apiAppIcon from '@iconify-icons/icon-park-outline/api-app'
@@ -142,7 +143,7 @@ const demoIconList = [
 
 const { copy, isSupported } = useClipboard()
 const uiFeedback = useUiFeedback()
-const { docHtml } = useMarkdownDoc(iconDocRaw)
+const docHtml = computed(() => DOMPurify.sanitize(marked.parse(iconDocRaw) as string))
 
 const handleCopy = async (iconValue: string): Promise<void> => {
   if (!isSupported.value) {

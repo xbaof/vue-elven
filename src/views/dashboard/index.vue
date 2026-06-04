@@ -43,7 +43,7 @@
       <n-grid-item span="2 m:1">
         <n-card title="快捷入口" class="h-full">
           <n-flex wrap :size="10">
-            <n-button v-for="entryItem in quickEntryList" :key="entryItem.path" @click="push(entryItem.path)">
+            <n-button v-for="entryItem in quickEntryList" :key="entryItem.path" @click="router.push(entryItem.path)">
               {{ entryItem.label }}
             </n-button>
           </n-flex>
@@ -108,7 +108,7 @@ import { useAppStore } from '@/store/modules/app'
 import { useUserStore } from '@/store/modules/user'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useTagsViewStore } from '@/store/modules/tagsView'
-import { useSafeNavigation } from '@/hooks/useSafeNavigation'
+import { useRouter } from 'vue-router'
 import { useTagsActions } from '@/hooks/useTagsActions'
 import githubIcon from '@iconify-icons/icon-park-outline/github'
 import defaultAvatarUrl from '@/assets/images/default_avatar.jpeg'
@@ -118,7 +118,7 @@ defineOptions({
 })
 
 const route = useRoute()
-const { push } = useSafeNavigation()
+const router = useRouter()
 const { openTag, closeCurrentTag } = useTagsActions()
 
 const appStore = useAppStore()
