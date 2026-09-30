@@ -123,8 +123,8 @@ const defaultVideoUpload = async (file: File, insertFn: (url: string, poster?: s
 
 const editorConfig = computed<Partial<IEditorConfig>>(() => {
   const menuConfig = props.editorConfig.MENU_CONF || ({} as Recordable)
-  const uploadImageConfig = menuConfig.uploadImage || {}
-  const uploadVideoConfig = menuConfig.uploadVideo || {}
+  const uploadImageConfig = (menuConfig.uploadImage || {}) as Recordable
+  const uploadVideoConfig = (menuConfig.uploadVideo || {}) as Recordable
 
   return {
     ...props.editorConfig,
